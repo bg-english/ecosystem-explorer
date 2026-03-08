@@ -1949,20 +1949,9 @@ function UnscrambleChallenge({ data, onResult }) {
 }
 
 // ── CHALLENGE MODAL ────────────────────────────────
-function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult }) {
+function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, challenge }) {
   const eco=ECOSYSTEMS[ecosystem.id];
   const ct=CT[cell.type];
-  const [challenge]=useState(()=>{
-    const c=eco.challenges;
-    if(cell.type==="trivia")return pick(c.trivia);
-    if(cell.type==="foodchain")return pick(c.foodchain);
-    if(cell.type==="identify")return pick(c.identify);
-    if(cell.type==="hangman")return pick(c.hangman);
-    if(cell.type==="match")return pick(c.match);
-    if(cell.type==="unscramble")return pick(c.unscramble);
-    if(cell.type==="truefalse")return pick(c.truefalse);
-    return null;
-  });
   const [result,setResult]=useState(null);
 
   if(result!==null){
@@ -2086,6 +2075,20 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const curTeam=teams[curIdx];
   const tc=TEAM_COLORS[curTeam?.colorIdx||0];
 
+  // ── Non-repeating question queues (one shuffled deck per challenge type) ──
+  const queues = useRef({});
+  const pickFresh = (type) => {
+    const pool = eco.challenges[type];
+    if (!pool || pool.length === 0) return null;
+    if (!queues.current[type] || queues.current[type].length === 0) {
+      queues.current[type] = shuffle([...Array(pool.length).keys()]);
+    }
+    const idx = queues.current[type].pop();
+    return pool[idx];
+  };
+
+  const [activeChallenge, setActiveChallenge] = useState(null);
+
   const getUncollected=team=>{const ids=team.organisms.map(o=>o.id);return eco.organisms.filter(o=>!ids.includes(o.id));};
 
   const rollDice=()=>{
@@ -2117,7 +2120,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
       if(cell.type==="center"){setPhase("center");}
       else if(cell.type==="wildcard"){setActiveCell(cell);setPhase("wildcard");}
       else if(cell.type==="start"){nextTurn();}
-      else{const uncol=getUncollected(teams[curIdx]);setPendingOrg(uncol.length>0?pick(uncol):null);setActiveCell(cell);setPhase("challenge");}
+      else{const uncol=getUncollected(teams[curIdx]);setPendingOrg(uncol.length>0?pick(uncol):null);setActiveChallenge(pickFresh(cell.type));setActiveCell(cell);setPhase("challenge");}
     },500);
   };
 
@@ -2291,7 +2294,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
         </div>
       </div>
 
-      {phase==="challenge"&&activeCell&&<ChallengeModal cell={activeCell} ecosystem={ecosystem} team={curTeam} pendingOrganism={pendingOrg} onResult={handleChallengeResult} />}
+      {phase==="challenge"&&activeCell&&<ChallengeModal cell={activeCell} ecosystem={ecosystem} team={curTeam} pendingOrganism={pendingOrg} onResult={handleChallengeResult} challenge={activeChallenge} />}
       {phase==="wildcard"&&activeCell&&<WildcardModal cell={activeCell} onDone={handleWildcardDone} />}
     </div>
   );
