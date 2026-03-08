@@ -2773,7 +2773,13 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const [revealedChapters, setRevealedChapters] = useState(new Set([0]));
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [totalAnswers,   setTotalAnswers]   = useState(0);
-  const [restorationModal, setRestorationModal] = useState(false);
+  // ── Collapse Emergency System ──────────────────────
+  const [collapseCount, setCollapseCount]       = useState(0);
+  const [collapseEmergency, setCollapseEmergency] = useState(null);
+  // collapseEmergency: { queue:[teamIdx,...], qIdx:int, trigIdx:int, alertShown:bool } | null
+  const [ecosystemDestroyed, setEcosystemDestroyed] = useState(false);
+  const wasCollapsedRef  = useRef(false);
+  const collapseCountRef = useRef(0);
   const curTeam=teams[curIdx];
   const tc=TEAM_COLORS[curTeam?.colorIdx||0];
 
@@ -2787,6 +2793,27 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     ? { label:"Stressed",  icon:"⚠️", color:"#fbbf24", msg:"The gourds are withering. The chains are breaking.",      state:"stressed"  }
     : { label:"Collapsed", icon:"🥀", color:"#f87171", msg:"The Garden has lost its guardian. The Builder must rise.", state:"collapsed" };
   const isCollapsed = healthStatus.state === "collapsed";
+
+  // ── Collapse Emergency Trigger ────────────────────
+  useEffect(()=>{
+    if(isCollapsed && !wasCollapsedRef.current && !collapseEmergency && !ecosystemDestroyed){
+      wasCollapsedRef.current = true;
+      const newCount = collapseCountRef.current + 1;
+      collapseCountRef.current = newCount;
+      setCollapseCount(newCount);
+      if(newCount > 2){
+        setEcosystemDestroyed(true);
+        return;
+      }
+      // Build queue: all teams except the one that caused collapse, in turn order
+      const queue=[];
+      for(let i=1;i<teams.length;i++) queue.push((curIdx+i)%teams.length);
+      setCollapseEmergency({ queue, qIdx:0, trigIdx:curIdx, alertShown:false });
+    } else if(!isCollapsed && wasCollapsedRef.current){
+      wasCollapsedRef.current = false;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[isCollapsed]);
 
   // ── Non-repeating question queues (one shuffled deck per challenge type) ──
   const queues = useRef({});
@@ -2874,6 +2901,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     setCurIdx(next);
   };
 
+  if(ecosystemDestroyed) return <EcosystemDestroyedScreen ecosystem={ecosystem} teams={teams} onRestart={onEnd} />;
   if(phase==="center")return <VictoryScreen teams={teams} ecosystem={ecosystem} winner={teams[curIdx]} onRestart={onEnd} />;
 
   // Revealed ecosystem elements (unique per chapter)
@@ -2930,23 +2958,19 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
         <div style={{background:"linear-gradient(90deg,rgba(127,29,29,0.9),rgba(69,10,10,0.9))",borderBottom:"1px solid rgba(239,68,68,0.4)",padding:"0.5rem 1.4rem",display:"flex",alignItems:"center",gap:"0.7rem",animation:"fadeUp 0.5s ease",flexShrink:0}}>
           <span style={{fontSize:"1.3rem",animation:"chaosFloat 1.2s ease-in-out infinite"}}>🥀</span>
           <div style={{flex:1}}>
-            <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.75rem",color:"#fca5a5",fontWeight:700,letterSpacing:"0.08em"}}>ECOSYSTEM COLLAPSE</span>
+            <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.75rem",color:"#fca5a5",fontWeight:700,letterSpacing:"0.08em"}}>
+              ECOSYSTEM COLLAPSE {collapseCount > 0 ? `(${collapseCount}/2)` : ""}
+            </span>
             <span style={{fontSize:"0.72rem",color:"rgba(255,200,200,0.65)",marginLeft:"0.75rem"}}>{healthStatus.msg}</span>
           </div>
-          {(()=>{const builderPlayer=(curTeam?.roleAssignments||{}).builder;return builderPlayer?(
-            <button onClick={()=>setRestorationModal(true)} style={{background:"linear-gradient(135deg,rgba(251,146,60,0.3),rgba(234,88,12,0.3))",border:"1.5px solid rgba(251,146,60,0.55)",borderRadius:"0.6rem",padding:"0.3rem 0.85rem",display:"flex",alignItems:"center",gap:"0.5rem",cursor:"pointer",animation:"popIn 0.4s ease"}}>
+          {collapseEmergency ? (
+            <div style={{background:"rgba(251,146,60,0.18)",border:"1.5px solid rgba(251,146,60,0.5)",borderRadius:"0.6rem",padding:"0.3rem 0.85rem",display:"flex",alignItems:"center",gap:"0.5rem",animation:"chaosFloat 1.5s ease-in-out infinite"}}>
               <span style={{fontSize:"1rem"}}>🏗️</span>
-              <div>
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.62rem",color:"#fb923c",fontWeight:700,letterSpacing:"0.06em"}}>RESTORE THE GARDEN</div>
-                <div style={{fontSize:"0.58rem",color:"rgba(253,186,116,0.7)"}}>{builderPlayer} · The Builder</div>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.62rem",color:"#fb923c",fontWeight:700,letterSpacing:"0.06em"}}>
+                EMERGENCY ACTIVE — Builder {collapseEmergency.qIdx + 1}/{collapseEmergency.queue.length}
               </div>
-            </button>
-          ):(
-            <div style={{background:"rgba(251,146,60,0.12)",border:"1px solid rgba(251,146,60,0.3)",borderRadius:"0.55rem",padding:"0.2rem 0.65rem",display:"flex",alignItems:"center",gap:"0.4rem"}}>
-              <span style={{fontSize:"0.95rem"}}>🏗️</span>
-              <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.65rem",color:"#fb923c",fontWeight:700}}>Need The Builder (assign in roles screen)</span>
             </div>
-          );})()}
+          ) : null}
         </div>
       )}
 
@@ -3065,38 +3089,173 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
       {phase==="wildcard"&&activeCell&&<WildcardModal cell={activeCell} onDone={handleWildcardDone} />}
 
       {/* ── RESTORATION MODAL ── */}
-      {restorationModal&&(
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200,padding:"1.5rem"}}>
-          <div style={{background:"#0a0f1a",border:"2px solid rgba(251,146,60,0.45)",borderRadius:"1.3rem",padding:"1.8rem",maxWidth:"48rem",width:"100%",boxShadow:"0 0 60px rgba(251,146,60,0.2)",maxHeight:"90vh",overflowY:"auto"}}>
-            {/* Header */}
-            <div style={{display:"flex",alignItems:"center",gap:"0.9rem",marginBottom:"1.2rem"}}>
-              <div style={{width:"3rem",height:"3rem",borderRadius:"0.8rem",background:"#1a0800",border:"2px solid rgba(251,146,60,0.4)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.4rem"}}>🕸️</div>
-              <div style={{flex:1}}>
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:"1rem",color:"#fb923c",letterSpacing:"0.1em",fontWeight:700}}>GARDEN RESTORATION</div>
-                <div style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.45)"}}>The Builder · Nehemiah 2:18 — "Rise up and build"</div>
-              </div>
-              <div style={{background:"rgba(251,146,60,0.12)",border:"1px solid rgba(251,146,60,0.35)",borderRadius:"0.7rem",padding:"0.3rem 0.7rem",display:"flex",alignItems:"center",gap:7}}>
-                <span style={{fontSize:18}}>🏗️</span>
-                <div>
-                  <div style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em"}}>GUARDIAN</div>
-                  <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.72rem",color:"#fb923c",fontWeight:700}}>The Builder</div>
-                  <div style={{fontSize:"0.68rem",color:"rgba(255,255,255,0.6)",marginTop:1}}>👤 {(curTeam?.roleAssignments||{}).builder}</div>
+      {/* ── COLLAPSE EMERGENCY MODAL ── */}
+      {collapseEmergency && (()=>{
+        const ce = collapseEmergency;
+        const activeTeamIdx = ce.queue[ce.qIdx];
+        const activeTeam = teams[activeTeamIdx];
+        const builderName = (activeTeam?.roleAssignments||{}).builder || "The Builder";
+        const tc2 = TEAM_COLORS[activeTeam?.colorIdx||0];
+
+        const handleBuilderResult = (won) => {
+          if(won){
+            // Restore health to ~66% (Stable)
+            setCorrectAnswers(prev=>Math.max(prev, Math.round(totalAnswers*0.66)));
+            // Bonus organism for winning team
+            const uncol = eco.organisms.filter(o=>!activeTeam.organisms.find(x=>x.id===o.id));
+            if(uncol.length>0){
+              const org=pick(uncol);
+              setTeams(p=>{const u=[...p];u[activeTeamIdx]={...u[activeTeamIdx],organisms:[...u[activeTeamIdx].organisms,org]};return u;});
+            }
+            // Winning team plays next (bonus turn)
+            setCurIdx(activeTeamIdx);
+            setPhase("idle");
+            setCollapseEmergency(null);
+          } else {
+            const nextQIdx = ce.qIdx + 1;
+            if(nextQIdx >= ce.queue.length){
+              // All builders failed → ecosystem destroyed
+              setEcosystemDestroyed(true);
+              setCollapseEmergency(null);
+            } else {
+              setCollapseEmergency({...ce, qIdx: nextQIdx, alertShown: false});
+            }
+          }
+        };
+
+        if(!ce.alertShown){
+          // Phase 1: Dramatic ALL-PLAYERS alert
+          return(
+            <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.95)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,padding:"1.5rem"}}>
+              <div style={{maxWidth:"36rem",width:"100%",textAlign:"center",animation:"popIn 0.5s ease"}}>
+                <div style={{fontSize:"4rem",animation:"chaosFloat 1s ease-in-out infinite",marginBottom:"1rem"}}>🚨</div>
+                <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"1.4rem",color:"#f87171",letterSpacing:"0.1em",marginBottom:"0.5rem",textShadow:"0 0 30px rgba(248,113,113,0.8)"}}>
+                  ECOSYSTEM EMERGENCY
                 </div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.85rem",color:"rgba(255,255,255,0.5)",letterSpacing:"0.15em",marginBottom:"2rem"}}>
+                  ALL PLAYERS — ATTENTION REQUIRED
+                </div>
+                <div style={{background:"rgba(127,29,29,0.4)",border:"1px solid rgba(248,113,113,0.35)",borderRadius:"1rem",padding:"1.2rem",marginBottom:"2rem"}}>
+                  <p style={{color:"rgba(255,220,220,0.85)",fontFamily:"'Libre Baskerville',serif",fontSize:"0.9rem",lineHeight:1.7,margin:0}}>
+                    The ecosystem is collapsing! <strong style={{color:"#f87171"}}>All Builders</strong> must attempt to restore it — 
+                    starting with <strong style={{color:tc2.light}}>{activeTeam?.name}</strong>'s Builder.
+                    If all Builders fail, the ecosystem will be destroyed.
+                  </p>
+                </div>
+                {/* Queue preview */}
+                <div style={{display:"flex",gap:"0.6rem",justifyContent:"center",marginBottom:"2rem",flexWrap:"wrap"}}>
+                  {ce.queue.map((tIdx,i)=>{
+                    const t=teams[tIdx]; const tc3=TEAM_COLORS[t?.colorIdx||0];
+                    return(
+                      <div key={tIdx} style={{background:i===0?`${tc3.bg}30`:"rgba(255,255,255,0.05)",border:`1.5px solid ${i===0?tc3.bg:"rgba(255,255,255,0.12)"}`,borderRadius:"0.6rem",padding:"0.4rem 0.8rem",display:"flex",alignItems:"center",gap:"0.4rem"}}>
+                        <span style={{fontSize:"1rem"}}>🏗️</span>
+                        <div>
+                          <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.65rem",color:i===0?tc3.light:"rgba(255,255,255,0.5)",fontWeight:700}}>{t?.name}</div>
+                          <div style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.35)"}}>{(t?.roleAssignments||{}).builder||"Builder"}</div>
+                        </div>
+                        {i===0&&<span style={{fontSize:"0.7rem",color:tc3.light,fontFamily:"'Cinzel',serif",fontWeight:700,marginLeft:2}}>▶ FIRST</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.7rem",color:"rgba(255,255,255,0.3)",marginBottom:"1.5rem",letterSpacing:"0.1em"}}>
+                  COLLAPSE {collapseCount}/2
+                </div>
+                <button
+                  onClick={()=>setCollapseEmergency({...ce, alertShown:true})}
+                  style={{padding:"0.9rem 2.5rem",background:"linear-gradient(135deg,rgba(251,146,60,0.4),rgba(234,88,12,0.5))",border:"2px solid rgba(251,146,60,0.7)",borderRadius:"0.85rem",color:"#fb923c",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.95rem",cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 0 30px rgba(251,146,60,0.3)"}}>
+                  🏗️ {activeTeam?.name} — Begin Restoration
+                </button>
               </div>
             </div>
-            <FoodWebChallenge ecosystem={ecosystem} isRestoration={true} onResult={(won)=>{
-              setRestorationModal(false);
-              if(won){
-                // Restore health to ~65% Stable by adding bonus correct answers
-                setCorrectAnswers(prev=>Math.max(prev,Math.round(totalAnswers*0.66)));
-                // Also give the team a bonus organism as reward
-                const uncol=getUncollected(curTeam);
-                if(uncol.length>0){const org=pick(uncol);setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,org]};return u;});}
-              }
-            }} />
+          );
+        }
+
+        // Phase 2: Builder challenge
+        return(
+          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,padding:"1.5rem"}}>
+            <div style={{background:"#0a0f1a",border:`2px solid ${tc2.bg}66`,borderRadius:"1.3rem",padding:"1.8rem",maxWidth:"48rem",width:"100%",boxShadow:`0 0 60px ${tc2.bg}33`,maxHeight:"90vh",overflowY:"auto"}}>
+              <div style={{display:"flex",alignItems:"center",gap:"0.9rem",marginBottom:"1.2rem"}}>
+                <div style={{width:"3rem",height:"3rem",borderRadius:"0.8rem",background:"#1a0800",border:"2px solid rgba(251,146,60,0.4)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.4rem"}}>🕸️</div>
+                <div style={{flex:1}}>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:"1rem",color:"#fb923c",letterSpacing:"0.1em",fontWeight:700}}>EMERGENCY RESTORATION</div>
+                  <div style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.45)"}}>Nehemiah 2:18 — "Rise up and build"</div>
+                </div>
+                <div style={{background:`${tc2.bg}22`,border:`1px solid ${tc2.bg}55`,borderRadius:"0.7rem",padding:"0.3rem 0.7rem",display:"flex",alignItems:"center",gap:7}}>
+                  <div style={{width:"0.6rem",height:"0.6rem",borderRadius:"50%",background:tc2.bg}} />
+                  <div>
+                    <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.72rem",color:tc2.light,fontWeight:700}}>{activeTeam?.name}</div>
+                    <div style={{fontSize:"0.63rem",color:"rgba(255,255,255,0.5)"}}>👤 {builderName}</div>
+                    <div style={{fontSize:"0.58rem",color:"rgba(255,180,100,0.6)"}}>Builder {ce.qIdx+1} of {ce.queue.length}</div>
+                  </div>
+                </div>
+              </div>
+              <FoodWebChallenge ecosystem={ecosystem} isRestoration={true} onResult={handleBuilderResult} />
+            </div>
           </div>
+        );
+      })()}
+    </div>
+  );
+}
+
+// ── ECOSYSTEM DESTROYED ──────────────────────────────
+function EcosystemDestroyedScreen({ ecosystem, teams, onRestart }) {
+  const eco = ECOSYSTEMS[ecosystem.id];
+  return (
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 30%,#1a0000,#020407)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:24,position:"relative",overflow:"hidden"}}>
+      {/* Falling embers */}
+      {Array.from({length:20}).map((_,i)=>(
+        <div key={i} style={{position:"absolute",left:`${Math.random()*100}%`,top:`${Math.random()*100}%`,fontSize:Math.random()*18+8,opacity:0.15,animation:`float ${3+Math.random()*4}s ease-in-out ${Math.random()*5}s infinite`,pointerEvents:"none"}}>
+          {["🥀","💀","🌑","🖤","🍂"][i%5]}
         </div>
-      )}
+      ))}
+
+      {/* Main icon */}
+      <div style={{fontSize:"5rem",animation:"chaosFloat 2s ease-in-out infinite",marginBottom:"1.2rem",filter:"drop-shadow(0 0 30px rgba(239,68,68,0.6))"}}>🥀</div>
+
+      {/* Title */}
+      <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"clamp(1.2rem,5vw,2rem)",color:"#f87171",letterSpacing:"0.08em",textAlign:"center",textShadow:"0 0 40px rgba(248,113,113,0.7)",marginBottom:"0.5rem"}}>
+        The Ecosystem Was Destroyed
+      </div>
+      <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.8rem",color:"rgba(255,200,200,0.4)",letterSpacing:"0.25em",marginBottom:"2.5rem"}}>
+        {eco.name.toUpperCase()} · ALL BUILDERS HAVE FALLEN
+      </div>
+
+      {/* Scripture */}
+      <div style={{maxWidth:"32rem",width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"1.1rem",padding:"1.6rem 2rem",marginBottom:"2rem",textAlign:"center"}}>
+        <div style={{fontSize:"1.6rem",marginBottom:"0.8rem"}}>✝️</div>
+        <p style={{fontStyle:"italic",color:"rgba(255,230,200,0.85)",fontSize:"1rem",lineHeight:1.8,margin:"0 0 0.9rem 0",fontFamily:"'Libre Baskerville',serif"}}>
+          "No nos cansemos de hacer el bien, porque a su debido tiempo cosecharemos si no nos damos por vencidos."
+        </p>
+        <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.75rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em"}}>
+          GÁLATAS 6:9
+        </div>
+      </div>
+
+      {/* Encouragement */}
+      <p style={{color:"rgba(255,200,200,0.55)",fontSize:"0.88rem",textAlign:"center",maxWidth:"28rem",lineHeight:1.7,marginBottom:"2.5rem"}}>
+        El ecosistema fue destruido... pero cada acto de cuidado importa.{" "}
+        <strong style={{color:"rgba(255,180,100,0.8)"}}>El bien siempre es más fuerte</strong> — ¡vuelve a intentarlo!
+      </p>
+
+      {/* Teams summary */}
+      <div style={{width:"100%",maxWidth:480,display:"flex",flexDirection:"column",gap:8,marginBottom:"2rem"}}>
+        {[...teams].sort((a,b)=>b.organisms.length-a.organisms.length).map((team,i)=>{
+          const tc=TEAM_COLORS[team.colorIdx];
+          return(
+            <div key={team.id} style={{background:"rgba(255,255,255,0.04)",border:`1px solid ${tc.bg}33`,borderRadius:10,padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
+              <div style={{width:8,height:8,borderRadius:"50%",background:tc.bg,flexShrink:0}} />
+              <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.8rem",color:"rgba(255,255,255,0.6)",flex:1}}>{team.name}</span>
+              <span style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.3)"}}>{team.organisms.length} organisms</span>
+            </div>
+          );
+        })}
+      </div>
+
+      <button onClick={onRestart} style={{padding:"13px 40px",background:"linear-gradient(135deg,rgba(185,28,28,0.6),rgba(127,29,29,0.8))",border:"1.5px solid rgba(248,113,113,0.45)",borderRadius:14,color:"#fca5a5",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.95rem",cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 8px 30px rgba(127,29,29,0.5)"}}>
+        🌍 Try Again
+      </button>
     </div>
   );
 }
