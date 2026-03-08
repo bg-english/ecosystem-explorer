@@ -99,6 +99,73 @@ const CHALLENGE_ROLE = {
   trivia:"keeper", truefalse:"witness", foodweb:"builder",
 };
 
+// ── WOW FACTS (7 science+faith pairs per ecosystem) ────
+const WOW_FACTS = {
+  desert: [
+    { science:"The saguaro cactus can store up to 200 gallons of water after a single rainstorm, then slowly release it over months.", faith:"God provides hidden reserves in the driest places — just as He gave Elijah water and bread in the wilderness." },
+    { science:"Kangaroo rats never drink water. They extract all the moisture they need from the seeds they eat through their own metabolism.", faith:"God designed creatures to need nothing beyond what He already placed in their environment. His provision is built in." },
+    { science:"Rattlesnakes detect prey using heat-sensing pit organs so precise they can feel temperature differences of just 0.003°C.", faith:"God gave every creature exactly the tools it needs for its calling — from rattlesnakes to prophets." },
+    { science:"Desert soil bacteria can lie completely dormant for decades, then fully revive within hours of the first rainfall.", faith:"What looks dead in God's creation is rarely truly gone — revival waits for the right season." },
+    { science:"The Gila woodpecker carves cavities in saguaro cacti that later become homes for over 25 other species — including owls and hawks.", faith:"One act of faithful work, done for your own survival, can create shelter for generations of others." },
+    { science:"Deserts cover 33% of Earth's land surface and harbor over 4,000 unique species — all precisely adapted.", faith:"Even in the harshest conditions, God placed life — because He wills that every corner of creation flourish." },
+    { science:"Desert food chains are typically only 3 levels long — making them fragile but astonishingly energy-efficient.", faith:"Simple, faithful systems can be the most powerful. A few devoted stewards can guard an entire ecosystem." },
+  ],
+  tropical: [
+    { science:"Tropical rainforests produce 20% of the world's oxygen despite covering only 6% of Earth's surface.", faith:"The most life-giving places are often hidden and overlooked. God's most powerful work rarely happens in the spotlight." },
+    { science:"A single hectare of Amazon rainforest can contain up to 40,000 different plant species — more variety than entire continents.", faith:"God's creativity is boundless. He never runs out of new forms of beauty — and He made you one of them." },
+    { science:"The Brazil nut tree can only be pollinated by one specific orchid bee. Remove that bee, and the entire tree species goes extinct.", faith:"Every small creature in God's design is irreplaceable. Nothing — and no one — is throwaway." },
+    { science:"The rainforest floor receives less than 2% of sunlight, yet supports thousands of species through nutrient recycling.", faith:"God sustains life even in the deepest darkness. No corner of His creation is ever abandoned." },
+    { science:"Trees in rainforests share nutrients with struggling neighbors through underground fungal networks — a literal underground economy of care.", faith:"Godly communities support their weakest members. This pattern of care is written into creation itself." },
+    { science:"The harpy eagle holds territories up to 100 km² — not out of greed, but to keep prey populations in balance for the whole ecosystem.", faith:"Authority in God's design is not for pride. It is given for service — to maintain balance for everyone else." },
+    { science:"Rainforest soils are surprisingly poor in nutrients. Almost all nutrients are locked inside living organisms, not the ground.", faith:"True wealth in God's kingdom lives in relationships, not stored reserves. The treasure is in the living." },
+  ],
+  savanna: [
+    { science:"The annual wildebeest migration involves 1.5 million animals traveling over 800 km — the largest land migration on Earth.", faith:"God built obedience to seasonal rhythms into entire species. All of creation moves in time with its Maker." },
+    { science:"African elephants dig waterholes with their tusks during drought, creating water sources that sustain dozens of other species.", faith:"God calls His people to create abundance for others — to dig wells that others will drink from long after you're gone." },
+    { science:"Lions sleep up to 20 hours a day, conserving energy for the critical 4% of time spent hunting.", faith:"Sabbath rest is written into creation. Even the apex predator was designed to stop, rest, and be still." },
+    { science:"Acacia trees release toxic tannins when grazed, then send airborne chemical signals warning neighboring trees to do the same.", faith:"Creation has language. God built communication and warning systems into every organism — even trees look out for each other." },
+    { science:"Dung beetles navigate at night using the Milky Way as a star map — rolling dung balls in a perfectly straight line.", faith:"God embedded stellar navigation into a creature smaller than your thumbnail. His signature of wonder is everywhere." },
+    { science:"The savanna loses up to 90% of its plant biomass to fire every 3–5 years, yet regenerates completely each time.", faith:"God designed destruction as part of renewal. Fire makes room for new growth — loss is not the end of the story." },
+    { science:"Termites weighing less than a gram build mounds over 9 meters tall — 300 times their own body height.", faith:"God uses the smallest creatures for the greatest structural work. Never underestimate who He chooses to build with." },
+  ],
+  ocean: [
+    { science:"The ocean produces over 50% of Earth's oxygen — more than all land forests combined — mostly from invisible phytoplankton.", faith:"The unseen, deep places sustain all life on Earth. God works powerfully in hiddenness." },
+    { science:"Blue whales communicate through low-frequency calls detectable across 1,000 km of open ocean.", faith:"God designed the capacity for connection across impossible distances — in blue whales and in prayer." },
+    { science:"A single phytoplankton cell, invisible to the naked eye, produces the oxygen for every other breath you take.", faith:"The smallest invisible organism keeps you alive. God's care for you is built into the microscopic world." },
+    { science:"Hydrothermal vents 3,000 meters underwater support entire ecosystems with no sunlight — powered entirely by chemical energy.", faith:"God provides alternative energy sources in places where normal light cannot reach. He is never without a plan." },
+    { science:"Sea otters wrap themselves in kelp before sleeping so they don't drift away — and mothers hold their pups' paws while floating.", faith:"God built tender, parental care into animal behavior. Creation overflows with images of His love for us." },
+    { science:"The ocean food web contains over 12 trophic levels — the most complex feeding structure of any ecosystem on Earth.", faith:"God loves complexity. His creation is never simple, never repetitive, and never exhausted." },
+    { science:"Coral reefs occupy just 1% of the ocean floor, yet support 25% of all known marine species.", faith:"Small, dense communities of faithful stewards can sustain disproportionate abundance for the world around them." },
+  ],
+  arctic: [
+    { science:"Arctic permafrost stores twice as much carbon as is currently present in Earth's entire atmosphere.", faith:"God designed the frozen north as a planetary vault — a safeguard hidden in creation's architecture for all life." },
+    { science:"Arctic wolves can survive over 5 months between successful hunts during polar winters, with no guaranteed meal.", faith:"God equips His people to endure long seasons of scarcity without losing their strength or their purpose." },
+    { science:"Lemming populations boom and crash in precise 3–5 year cycles, regulating the entire Arctic food web automatically.", faith:"God built self-correcting rhythms into creation. He is the God of cycles, and His design always restores balance." },
+    { science:"Polar bears can smell a seal through 3 feet of solid ice and detect prey from up to 20 miles away.", faith:"God gave every hunter what it needs to find its purpose — and He designed creation so purpose can always be found." },
+    { science:"Arctic foxes grow a completely white coat in winter and brown fur in summer — camouflage engineered for every season.", faith:"Faithfulness looks different in every season of life. God designed adaptability as a form of faithful obedience." },
+    { science:"The midnight sun means Arctic producers photosynthesize continuously for 24 hours during summer, creating enormous energy pulses.", faith:"There are seasons of abundant light — seasons to work without ceasing — and God designs them with perfect precision." },
+    { science:"Only the top 50 cm of Arctic soil thaws each summer, yet this thin layer supports over 1,700 plant species.", faith:"In the thinnest soil, with the shortest season, God placed 1,700 forms of life. His generosity knows no constraint." },
+  ],
+  wetland: [
+    { science:"Wetlands filter up to 80% of water pollutants before water reaches rivers and lakes — acting as Earth's kidneys.", faith:"God built a purification system into creation. Before water reaches the city, He already cleaned it." },
+    { science:"A single acre of wetland can absorb and store up to 1.5 million gallons of floodwater, protecting entire cities downstream.", faith:"Small, unimpressive-looking places hold back destruction for thousands of people. Never despise hidden servants." },
+    { science:"Frogs absorb water and oxygen directly through their skin, making them the most pollution-sensitive indicator species on Earth.", faith:"God designed the most sensitive creatures to be the first warning of danger — the canary in the garden." },
+    { science:"Beaver dams raise water tables, create wetlands, and directly benefit over 43 other species — all from one builder's instinct.", faith:"One faithful builder changes the landscape for generations. What you build in obedience outlasts you." },
+    { science:"Dragonflies predate dinosaurs by 100 million years and are still the most efficient hunters on Earth — with a 95% success rate.", faith:"Some of God's best designs have been working faithfully for 300 million years. Faithfulness endures." },
+    { science:"Water lilies seal their flowers at night to protect pollen from dew, then reopen at dawn — every single day.", faith:"Creation knows when to close and when to open. Wisdom about timing is written into every flower." },
+    { science:"Freshwater makes up only 2.5% of Earth's water, yet supports 10% of all known species.", faith:"God does extraordinary things with scarce resources. Scarcity in His hands becomes abundance." },
+  ],
+  reef: [
+    { science:"Coral is actually an animal, not a plant — a tiny polyp that builds a limestone skeleton over thousands of years.", faith:"What looks like rock is alive. God hides extraordinary life in the most unexpected, overlooked forms." },
+    { science:"The Great Barrier Reef is the largest living structure on Earth and is visible from space.", faith:"God's most faithful builders create structures visible from the heavens. Faithful work has cosmic scale." },
+    { science:"Parrotfish eat coral and excrete the remains as white sand — entire tropical beaches are literally made from fish waste.", faith:"God built a recycling system into creation where even waste becomes beauty. Nothing is wasted in His economy." },
+    { science:"Coral's vibrant color comes from symbiotic algae living inside its tissue. Bleaching happens when stress drives the algae away.", faith:"Beauty and health in God's creation depend on right relationship. Lose the relationship, lose the color." },
+    { science:"A reef 1,000 years old was built by polyps just 2 mm long — patience and faithfulness multiplied by uncountable generations.", faith:"God's greatest works are built slowly, invisibly, one small faithful act at a time. Your small acts matter eternally." },
+    { science:"Clownfish are immune to anemone stings through a special mucus layer — a protection uniquely designed for one specific partnership.", faith:"God prepares some creatures — and some people — for one specific partnership. Unique protection for unique callings." },
+    { science:"Scientists have discovered over 800 new coral reef species in the last decade alone — and estimate 91% of ocean species remain unknown.", faith:"God's creation still holds secrets. Wonder is not something we exhaust — it is something we grow deeper into." },
+  ],
+};
+
 // Dynamic board generator — length varies by ecosystem (multiples of 6)
 function generateBoard(size) {
   // 9-tile chapter: trivia, identify, foodchain, hangman, match, unscramble, truefalse, foodweb, wildcard
@@ -1455,6 +1522,10 @@ const GS = `
   @keyframes genesisReveal { from{opacity:0;letter-spacing:0.6em} to{opacity:1;letter-spacing:0.12em} }
   @keyframes lightBurst { 0%{opacity:0;transform:scale(0.3)} 60%{opacity:1;transform:scale(1.2)} 100%{opacity:1;transform:scale(1)} }
   @keyframes narrativeSlide { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes wowSlideLeft { from{opacity:0;transform:translateX(-40px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes wowSlideRight { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slowFade { from{opacity:0} to{opacity:1} }
+  @keyframes shimmer { 0%,100%{opacity:0.7} 50%{opacity:1} }
   ::-webkit-scrollbar{width:7px} ::-webkit-scrollbar-track{background:rgba(255,255,255,0.04)} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.18);border-radius:4px}
 `;
 
@@ -2637,6 +2708,161 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
   );
 }
 
+// ── WOW FACTS MODAL ────────────────────────────────
+function WowFactsModal({ fact, ecosystem, context, onDone }) {
+  const eco = ECOSYSTEMS[ecosystem.id];
+  const [phase, setPhase] = useState("in"); // "in" | "ready"
+  useEffect(() => {
+    const t = setTimeout(() => setPhase("ready"), 800);
+    return () => clearTimeout(t);
+  }, []);
+
+  const contextLabel = context === "restoration"
+    ? "🌿 Garden Restored!"
+    : context === "victory"
+    ? "🏆 Ecosystem Complete!"
+    : "🕸️ Food Web Mastered!";
+
+  return (
+    <div style={{
+      position:"fixed", inset:0,
+      background:"rgba(0,0,0,0.92)",
+      display:"flex", alignItems:"center", justifyContent:"center",
+      zIndex:250, padding:"1.5rem",
+      animation:"slowFade 0.4s ease",
+    }}>
+      <div style={{
+        maxWidth:"54rem", width:"100%",
+        display:"flex", flexDirection:"column", alignItems:"center",
+        gap:"1.5rem",
+      }}>
+        {/* Header */}
+        <div style={{textAlign:"center", animation:"fadeUp 0.6s ease"}}>
+          <div style={{fontSize:"3rem", marginBottom:"0.4rem", animation:"float 3s ease-in-out infinite", filter:`drop-shadow(0 0 20px ${eco.glow})`}}>
+            {eco.emoji}
+          </div>
+          <div style={{
+            fontFamily:"'Cinzel Decorative',serif",
+            fontSize:"clamp(1rem,3vw,1.6rem)",
+            color:"#fde047",
+            letterSpacing:"0.12em",
+            textShadow:"0 0 30px rgba(253,224,71,0.6)",
+            marginBottom:"0.3rem",
+          }}>
+            WOW FACT!
+          </div>
+          <div style={{
+            fontFamily:"'Cinzel',serif",
+            fontSize:"0.72rem",
+            color: eco.color,
+            letterSpacing:"0.25em",
+            opacity:0.85,
+          }}>
+            {contextLabel.toUpperCase()} · {eco.name.toUpperCase()}
+          </div>
+        </div>
+
+        {/* Two panels */}
+        <div style={{
+          display:"grid",
+          gridTemplateColumns:"1fr 1fr",
+          gap:"1rem",
+          width:"100%",
+        }}>
+          {/* Science panel */}
+          <div style={{
+            background:"rgba(56,189,248,0.06)",
+            border:"1.5px solid rgba(56,189,248,0.3)",
+            borderRadius:"1.2rem",
+            padding:"1.6rem 1.4rem",
+            animation:"wowSlideLeft 0.55s cubic-bezier(0.34,1.4,0.64,1) 0.15s both",
+          }}>
+            <div style={{display:"flex", alignItems:"center", gap:"0.6rem", marginBottom:"1rem"}}>
+              <div style={{
+                width:"2.2rem", height:"2.2rem",
+                borderRadius:"0.6rem",
+                background:"rgba(56,189,248,0.15)",
+                border:"1.5px solid rgba(56,189,248,0.4)",
+                display:"flex", alignItems:"center", justifyContent:"center",
+                fontSize:"1.1rem", flexShrink:0,
+              }}>🔬</div>
+              <div>
+                <div style={{fontFamily:"'Cinzel',serif", fontSize:"0.65rem", color:"rgba(56,189,248,0.7)", letterSpacing:"0.2em"}}>SCIENCE FACT</div>
+                <div style={{fontFamily:"'Cinzel',serif", fontSize:"0.85rem", color:"#38bdf8", fontWeight:700}}>Did you know?</div>
+              </div>
+            </div>
+            <p style={{
+              color:"rgba(255,255,255,0.88)",
+              fontSize:"0.92rem",
+              lineHeight:1.75,
+              fontFamily:"'Libre Baskerville',serif",
+              margin:0,
+            }}>
+              {fact.science}
+            </p>
+          </div>
+
+          {/* Faith panel */}
+          <div style={{
+            background:"rgba(253,224,71,0.05)",
+            border:"1.5px solid rgba(253,224,71,0.25)",
+            borderRadius:"1.2rem",
+            padding:"1.6rem 1.4rem",
+            animation:"wowSlideRight 0.55s cubic-bezier(0.34,1.4,0.64,1) 0.35s both",
+          }}>
+            <div style={{display:"flex", alignItems:"center", gap:"0.6rem", marginBottom:"1rem"}}>
+              <div style={{
+                width:"2.2rem", height:"2.2rem",
+                borderRadius:"0.6rem",
+                background:"rgba(253,224,71,0.1)",
+                border:"1.5px solid rgba(253,224,71,0.3)",
+                display:"flex", alignItems:"center", justifyContent:"center",
+                fontSize:"1.1rem", flexShrink:0,
+              }}>✝️</div>
+              <div>
+                <div style={{fontFamily:"'Cinzel',serif", fontSize:"0.65rem", color:"rgba(253,224,71,0.7)", letterSpacing:"0.2em"}}>FAITH CONNECTION</div>
+                <div style={{fontFamily:"'Cinzel',serif", fontSize:"0.85rem", color:"#fde047", fontWeight:700}}>God's Design</div>
+              </div>
+            </div>
+            <p style={{
+              color:"rgba(255,245,200,0.88)",
+              fontSize:"0.92rem",
+              lineHeight:1.75,
+              fontFamily:"'Libre Baskerville',serif",
+              fontStyle:"italic",
+              margin:0,
+            }}>
+              {fact.faith}
+            </p>
+          </div>
+        </div>
+
+        {/* Dismiss button */}
+        <button
+          onClick={onDone}
+          style={{
+            padding:"0.85rem 2.8rem",
+            background:"linear-gradient(135deg,rgba(74,222,128,0.25),rgba(22,163,74,0.35))",
+            border:"1.5px solid rgba(74,222,128,0.5)",
+            borderRadius:"0.85rem",
+            color:"#4ade80",
+            fontFamily:"'Cinzel',serif",
+            fontWeight:700,
+            fontSize:"0.9rem",
+            cursor:"pointer",
+            letterSpacing:"0.12em",
+            boxShadow:"0 0 20px rgba(74,222,128,0.2)",
+            animation:"fadeUp 0.5s ease 0.6s both",
+            transition:"all 0.2s",
+          }}
+        >
+          ✨ Amazing! Continue →
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── CHALLENGE MODAL ────────────────────────────────
 function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, challenge }) {
   const eco=ECOSYSTEMS[ecosystem.id];
@@ -2780,6 +3006,9 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const [ecosystemDestroyed, setEcosystemDestroyed] = useState(false);
   const wasCollapsedRef  = useRef(false);
   const collapseCountRef = useRef(0);
+  const wowCallbackRef   = useRef(null);
+  const [wowModal, setWowModal] = useState(null);
+  // wowModal: { fact:{science,faith}, context:"foodweb"|"restoration"|"victory" } | null
   const curTeam=teams[curIdx];
   const tc=TEAM_COLORS[curTeam?.colorIdx||0];
 
@@ -2827,6 +3056,22 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     return pool[idx];
   };
 
+  // Show a random WOW fact for the current ecosystem, then run callback on dismiss
+  const showWow = (context, callback) => {
+    const facts = WOW_FACTS[ecosystem.id] || [];
+    if (facts.length === 0) { callback(); return; }
+    const fact = facts[Math.floor(Math.random() * facts.length)];
+    wowCallbackRef.current = callback;
+    setWowModal({ fact, context });
+  };
+
+  const handleWowDone = () => {
+    setWowModal(null);
+    const cb = wowCallbackRef.current;
+    wowCallbackRef.current = null;
+    if (cb) cb();
+  };
+
   const [activeChallenge, setActiveChallenge] = useState(null);
 
   const getUncollected=team=>{const ids=team.organisms.map(o=>o.id);return eco.organisms.filter(o=>!ids.includes(o.id));};
@@ -2857,7 +3102,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     }
     const cell=board[newPos];
     setTimeout(()=>{
-      if(cell.type==="center"){setPhase("center");}
+      if(cell.type==="center"){showWow("victory", ()=>setPhase("center"));}
       else if(cell.type==="wildcard"){setActiveCell(cell);setPhase("wildcard");}
       else if(cell.type==="start"){nextTurn();}
       else{
@@ -2886,12 +3131,18 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
 
   const handleChallengeResult=(won,org)=>{
     setTotalAnswers(c=>c+1);
+    const isFoodweb = activeCell?.type === "foodweb";
     if(won&&org){
       setCorrectAnswers(c=>c+1);
       const isDouble=teams[curIdx].doubleNext;
       setTeams(p=>{const u=[...p];const newOrgs=[...u[curIdx].organisms];if(!newOrgs.find(o=>o.id===org.id))newOrgs.push(org);if(isDouble){const u2=eco.organisms.filter(o=>!newOrgs.find(n=>n.id===o.id));if(u2.length>0)newOrgs.push(pick(u2));}u[curIdx]={...u[curIdx],organisms:newOrgs,doubleNext:false};return u;});
     }
-    setPendingOrg(null);setActiveCell(null);nextTurn();
+    setPendingOrg(null);setActiveCell(null);
+    if(won && isFoodweb){
+      showWow("foodweb", ()=>nextTurn());
+    } else {
+      nextTurn();
+    }
   };
 
   const nextTurn=()=>{
@@ -3087,6 +3338,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
 
       {phase==="challenge"&&activeCell&&<ChallengeModal cell={activeCell} ecosystem={ecosystem} team={curTeam} pendingOrganism={pendingOrg} onResult={handleChallengeResult} challenge={activeChallenge} />}
       {phase==="wildcard"&&activeCell&&<WildcardModal cell={activeCell} onDone={handleWildcardDone} />}
+      {wowModal&&<WowFactsModal fact={wowModal.fact} ecosystem={ecosystem} context={wowModal.context} onDone={handleWowDone} />}
 
       {/* ── RESTORATION MODAL ── */}
       {/* ── COLLAPSE EMERGENCY MODAL ── */}
@@ -3111,6 +3363,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
             setCurIdx(activeTeamIdx);
             setPhase("idle");
             setCollapseEmergency(null);
+            showWow("restoration", ()=>{});
           } else {
             const nextQIdx = ce.qIdx + 1;
             if(nextQIdx >= ce.queue.length){
