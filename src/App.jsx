@@ -1398,36 +1398,98 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
         if (!s) return;
         group.forEach(({ t, ti }, gi) => {
           const isActive = ti === activeIdx;
-          const bounce = isActive ? Math.sin(frame * .08) * 2.5 : 0;
-          const ox = (gi - (group.length-1)/2) * (tw*0.38);
+          const bounce = isActive ? Math.sin(frame * .07) * 3.5 : 0;
+          const ox = (gi - (group.length-1)/2) * (tw*0.42);
           const cx = s.sx + ox;
-          const cy = s.sy - th - 10 + bounce;
-          const r  = Math.max(6, tw * 0.28);
+          const cy = s.sy - th - 12 + bounce;
+          const r  = Math.max(7, tw * 0.32);
+          const col = TEAM_COLORS[t.colorIdx];
 
-          // Glow for active
-          if (isActive) {
-            ctx.save();
-            ctx.shadowColor = TEAM_COLORS[t.colorIdx].bg;
-            ctx.shadowBlur  = 12;
-          }
-          // Circle
+          // ── Drop shadow base ──
+          ctx.save();
           ctx.beginPath();
-          ctx.arc(cx, cy, r, 0, Math.PI*2);
-          ctx.fillStyle = TEAM_COLORS[t.colorIdx].bg;
+          ctx.ellipse(cx, s.sy - th - 2, r * 1.1, r * 0.45, 0, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(0,0,0,0.45)";
           ctx.fill();
-          ctx.strokeStyle = isActive ? "#fff" : "rgba(255,255,255,.6)";
-          ctx.lineWidth = isActive ? 2 : 1.2;
-          ctx.stroke();
-          if (isActive) ctx.restore();
+          ctx.restore();
 
-          // Letter
+          // ── Pulse ring for active team ──
+          if (isActive) {
+            const pulse = 0.45 + 0.55 * Math.sin(frame * .075);
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, r + 4 + pulse * 4, 0, Math.PI * 2);
+            ctx.strokeStyle = `${col.bg}${Math.round(pulse * 200 + 30).toString(16).padStart(2,'0')}`;
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
+            // outer faint ring
+            ctx.beginPath();
+            ctx.arc(cx, cy, r + 9 + pulse * 5, 0, Math.PI * 2);
+            ctx.strokeStyle = `${col.bg}${Math.round(pulse * 80).toString(16).padStart(2,'0')}`;
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+            ctx.restore();
+          }
+
+          // ── Token body gradient ──
+          ctx.save();
+          if (isActive) {
+            ctx.shadowColor = col.bg;
+            ctx.shadowBlur  = 14;
+          }
+          const bodyGrad = ctx.createRadialGradient(cx - r*.25, cy - r*.25, r*.05, cx, cy, r);
+          bodyGrad.addColorStop(0, col.light);
+          bodyGrad.addColorStop(0.6, col.bg);
+          bodyGrad.addColorStop(1, col.dark);
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.fillStyle = bodyGrad;
+          ctx.fill();
+          ctx.restore();
+
+          // ── Token rim ──
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.strokeStyle = isActive ? "#fff" : "rgba(255,255,255,0.55)";
+          ctx.lineWidth = isActive ? 2.2 : 1.4;
+          ctx.stroke();
+
+          // ── Sheen highlight ──
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.clip();
+          const sheen = ctx.createRadialGradient(cx - r*.3, cy - r*.35, 0, cx, cy, r);
+          sheen.addColorStop(0, "rgba(255,255,255,0.45)");
+          sheen.addColorStop(0.5, "rgba(255,255,255,0.0)");
+          ctx.fillStyle = sheen;
+          ctx.fill();
+          ctx.restore();
+
+          // ── Letter ──
           ctx.save();
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
-          ctx.font = `bold ${Math.max(7, Math.round(r*0.95))}px Cinzel,serif`;
+          ctx.font = `bold ${Math.max(8, Math.round(r * 0.98))}px Cinzel,serif`;
+          ctx.shadowColor = "rgba(0,0,0,0.6)";
+          ctx.shadowBlur = 3;
           ctx.fillStyle = "#fff";
-          ctx.fillText(String.fromCharCode(65+t.id), cx, cy+0.5);
+          ctx.fillText(String.fromCharCode(65 + t.id), cx, cy + 0.5);
           ctx.restore();
+
+          // ── Team name label below token (active only) ──
+          if (isActive) {
+            const labelY = cy + r + 9;
+            ctx.save();
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            ctx.font = `bold ${Math.max(7, Math.round(tw * 0.22))}px Cinzel,serif`;
+            ctx.shadowColor = "rgba(0,0,0,0.85)";
+            ctx.shadowBlur = 5;
+            ctx.fillStyle = col.light;
+            ctx.fillText(t.name.length > 10 ? t.name.slice(0, 9) + "…" : t.name, cx, labelY);
+            ctx.restore();
+          }
         });
       });
     }
@@ -1463,6 +1525,30 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
     // ── Render loop ───────────────────────────────
     let animId, frame=0, shimIdx=0, shimTimer=0;
 
+    function drawActiveGlow(s, frame) {
+      const curTeams = teamsRef.current;
+      const activeIdx = curRef.current;
+      const curTeam = curTeams[activeIdx];
+      if (!curTeam) return;
+      const pos = curTeam.position ?? 0;
+      if (s.idx !== pos) return;
+      const col = TEAM_COLORS[curTeam.colorIdx];
+      const pulse = 0.5 + 0.5 * Math.sin(frame * .07);
+      const {sx, sy} = s;
+      // Glow halo on tile top face
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(sx, sy-th); ctx.lineTo(sx+tw, sy);
+      ctx.lineTo(sx, sy+th); ctx.lineTo(sx-tw, sy);
+      ctx.closePath();
+      ctx.strokeStyle = `${col.bg}${Math.round((0.5 + 0.5*pulse)*255).toString(16).padStart(2,'0')}`;
+      ctx.lineWidth = 2.5 + pulse * 1.5;
+      ctx.shadowColor = col.bg;
+      ctx.shadowBlur = 12 + pulse * 10;
+      ctx.stroke();
+      ctx.restore();
+    }
+
     function render() {
       frame++;
       shimTimer++;
@@ -1483,6 +1569,7 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
       for(const s of drawOrder){
         if(s.idx===N-1) continue;
         drawTile(s, s.idx===shimIdx);
+        drawActiveGlow(s, frame);
       }
       // META on top
       drawTile(steps[N-1], true);
@@ -2948,23 +3035,82 @@ function TeamPanel({ teams, currentTeamIdx, ecosystem }) {
     <div style={{display:"flex",flexDirection:"column",gap:"0.7rem",overflowY:"auto",maxHeight:"100%"}}>
       {teams.map((team,i)=>{
         const isA=i===currentTeamIdx,tc=TEAM_COLORS[team.colorIdx],col=team.organisms||[],total=eco.organisms.length,pct=Math.round((col.length/total)*100);
+        const roles=team.roleAssignments||{};
+        const activeRoleEntries=Object.entries(roles).filter(([,v])=>v?.trim());
         return(
-          <div key={team.id} style={{background:isA?`${tc.bg}15`:"rgba(255,255,255,0.03)",border:`1.5px solid ${isA?tc.bg:"rgba(255,255,255,0.07)"}`,borderRadius:"0.9rem",padding:"0.85rem 0.9rem",transition:"all 0.3s",boxShadow:isA?`0 0 14px ${tc.bg}33`:"none"}}>
-            <div style={{display:"flex",alignItems:"center",gap:"0.55rem",marginBottom:"0.5rem"}}>
-              <div style={{width:"0.65rem",height:"0.65rem",borderRadius:"50%",background:tc.bg,boxShadow:`0 0 6px ${tc.bg}`}} />
-              <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.8rem",color:isA?tc.light:"rgba(255,255,255,0.7)",fontWeight:isA?700:400}}>{team.name}</span>
-              {isA&&<span style={{marginLeft:"auto",fontSize:"0.6rem",background:tc.bg,color:"#fff",borderRadius:"0.5rem",padding:"0.15rem 0.5rem",letterSpacing:"0.1em",fontFamily:"'Cinzel',serif"}}>TURN</span>}
-              {team.skipNext&&<span style={{marginLeft:"auto",fontSize:"0.6rem",background:"#7f1d1d",color:"#fca5a5",borderRadius:"0.5rem",padding:"0.15rem 0.5rem"}}>SKIP</span>}
-              {team.doubleNext&&<span style={{marginLeft:"auto",fontSize:"0.6rem",background:"#1e3a8a",color:"#93c5fd",borderRadius:"0.5rem",padding:"0.15rem 0.5rem"}}>×2</span>}
+          <div key={team.id} style={{
+            background:isA?`${tc.bg}18`:"rgba(255,255,255,0.03)",
+            border:`1.5px solid ${isA?tc.bg:"rgba(255,255,255,0.07)"}`,
+            borderRadius:"0.9rem",
+            padding:"0.85rem 0.9rem",
+            transition:"all 0.35s ease",
+            boxShadow:isA?`0 0 18px ${tc.bg}40,inset 0 0 12px ${tc.bg}08`:"none",
+          }}>
+            {/* Header row */}
+            <div style={{display:"flex",alignItems:"center",gap:"0.55rem",marginBottom:"0.45rem"}}>
+              <div style={{
+                width:"0.7rem",height:"0.7rem",borderRadius:"50%",
+                background:tc.bg,
+                boxShadow:isA?`0 0 8px ${tc.bg},0 0 16px ${tc.bg}66`:`0 0 4px ${tc.bg}`,
+                transition:"box-shadow 0.3s",
+              }} />
+              <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.8rem",color:isA?tc.light:"rgba(255,255,255,0.7)",fontWeight:isA?700:400,flex:1}}>{team.name}</span>
+              {isA&&<span style={{fontSize:"0.58rem",background:`linear-gradient(90deg,${tc.bg},${tc.dark})`,color:"#fff",borderRadius:"0.4rem",padding:"0.15rem 0.55rem",letterSpacing:"0.1em",fontFamily:"'Cinzel',serif",boxShadow:`0 2px 8px ${tc.bg}55`,animation:"shimmer 1.8s ease-in-out infinite"}}>▶ TURN</span>}
+              {team.skipNext&&<span style={{fontSize:"0.58rem",background:"#7f1d1d",color:"#fca5a5",borderRadius:"0.4rem",padding:"0.15rem 0.5rem",fontFamily:"'Cinzel',serif"}}>SKIP</span>}
+              {team.doubleNext&&<span style={{fontSize:"0.58rem",background:"#1e3a8a",color:"#93c5fd",borderRadius:"0.4rem",padding:"0.15rem 0.5rem",fontFamily:"'Cinzel',serif"}}>×2</span>}
             </div>
-            <div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.35)",marginBottom:"0.4rem"}}>Square {team.position+1} of {eco.boardSize||81} · {col.length}/{total} organisms</div>
-            <div style={{height:"0.3rem",background:"rgba(255,255,255,0.06)",borderRadius:"0.2rem",marginBottom:"0.5rem",overflow:"hidden"}}>
-              <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${tc.bg},${tc.light})`,borderRadius:"0.2rem",transition:"width 0.5s ease"}} />
+
+            {/* Progress bar + stats */}
+            <div style={{display:"flex",alignItems:"center",gap:"0.5rem",marginBottom:"0.4rem"}}>
+              <div style={{flex:1,height:"0.32rem",background:"rgba(255,255,255,0.07)",borderRadius:"0.2rem",overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${tc.bg},${tc.light})`,borderRadius:"0.2rem",transition:"width 0.6s cubic-bezier(0.34,1.56,0.64,1)"}} />
+              </div>
+              <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.6rem",color:pct>0?tc.light:"rgba(255,255,255,0.25)",fontWeight:700,minWidth:"2.2rem",textAlign:"right"}}>{col.length}/{total}</span>
             </div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:"0.2rem"}}>
+            <div style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.28)",marginBottom:"0.5rem"}}>
+              Square {team.position+1} · {pct}% collected
+            </div>
+
+            {/* Role badges (compact) */}
+            {activeRoleEntries.length>0&&(
+              <div style={{display:"flex",flexWrap:"wrap",gap:"0.3rem",marginBottom:"0.55rem"}}>
+                {activeRoleEntries.map(([roleId,player])=>{
+                  const role=ROLES.find(r=>r.id===roleId);
+                  if(!role)return null;
+                  return(
+                    <div key={roleId} title={`${role.name}: ${player}`} style={{
+                      display:"flex",alignItems:"center",gap:"0.25rem",
+                      background:`${role.color}12`,
+                      border:`1px solid ${role.color}30`,
+                      borderRadius:"0.4rem",
+                      padding:"0.12rem 0.45rem",
+                    }}>
+                      <span style={{fontSize:"0.75rem"}}>{role.emoji}</span>
+                      <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.55rem",color:role.color,fontWeight:700,maxWidth:"3.5rem",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{player}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Organism grid */}
+            <div style={{display:"flex",flexWrap:"wrap",gap:"0.22rem"}}>
               {eco.organisms.map(org=>{
                 const has=col.find(c=>c.id===org.id);
-                return(<div key={org.id} title={org.name} style={{width:"1.7rem",height:"1.7rem",borderRadius:"0.4rem",background:has?"rgba(255,255,255,0.1)":"rgba(255,255,255,0.03)",border:`1px solid ${has?tc.bg+"55":"rgba(255,255,255,0.06)"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.95rem",opacity:has?1:0.2,transition:"all 0.3s",animation:has?"popIn 0.4s ease":undefined}}>{org.emoji}</div>);
+                return(
+                  <div key={org.id} title={has?`${org.name} (${org.role})`:org.name} style={{
+                    width:"1.75rem",height:"1.75rem",
+                    borderRadius:"0.4rem",
+                    background:has?`${tc.bg}18`:"rgba(255,255,255,0.025)",
+                    border:`1px solid ${has?tc.bg+"55":"rgba(255,255,255,0.05)"}`,
+                    display:"flex",alignItems:"center",justifyContent:"center",
+                    fontSize:"0.95rem",
+                    opacity:has?1:0.18,
+                    transition:"all 0.4s ease",
+                    boxShadow:has?`0 0 8px ${tc.bg}44`:"none",
+                    animation:has?"popIn 0.4s ease":undefined,
+                  }}>{org.emoji}</div>
+                );
               })}
             </div>
           </div>
@@ -2975,11 +3121,50 @@ function TeamPanel({ teams, currentTeamIdx, ecosystem }) {
 }
 
 // ── DICE ───────────────────────────────────────────
-function Dice({ value, rolling }) {
-  const faces=["⚀","⚁","⚂","⚃","⚄","⚅"];
-  return(<div style={{width:"4.8rem",height:"4.8rem",borderRadius:"0.9rem",background:"rgba(255,255,255,0.08)",border:"2px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"3rem",boxShadow:"0 4px 24px rgba(0,0,0,0.4)",animation:rolling?"diceRoll 0.15s ease-in-out infinite":undefined,flexShrink:0}}>
-    {value?faces[value-1]:"🎲"}
-  </div>);
+const DICE_DOTS = {
+  1: [[50,50]],
+  2: [[28,28],[72,72]],
+  3: [[28,28],[50,50],[72,72]],
+  4: [[28,28],[72,28],[28,72],[72,72]],
+  5: [[28,28],[72,28],[50,50],[28,72],[72,72]],
+  6: [[28,22],[72,22],[28,50],[72,50],[28,78],[72,78]],
+};
+function Dice({ value, rolling, teamColor }) {
+  const dots = value ? DICE_DOTS[value] : null;
+  const color = teamColor || "rgba(255,255,255,0.15)";
+  return (
+    <div style={{
+      width:"5rem", height:"5rem",
+      borderRadius:"1rem",
+      background: value
+        ? "linear-gradient(145deg,rgba(255,255,255,0.14) 0%,rgba(255,255,255,0.05) 100%)"
+        : "rgba(255,255,255,0.06)",
+      border:`2px solid ${value ? color+"bb" : "rgba(255,255,255,0.15)"}`,
+      boxShadow: value
+        ? `0 4px 28px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.18),0 0 20px ${color}55`
+        : "0 4px 16px rgba(0,0,0,0.3)",
+      position:"relative",
+      flexShrink:0,
+      animation: rolling ? "diceRoll 0.12s ease-in-out infinite" : value ? "popIn 0.3s ease" : undefined,
+      transition:"border-color 0.3s,box-shadow 0.3s",
+    }}>
+      {!dots ? (
+        <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"2rem",opacity:0.35}}>🎲</div>
+      ) : (
+        dots.map(([x,y],i) => (
+          <div key={i} style={{
+            position:"absolute",
+            left:`${x}%`, top:`${y}%`,
+            transform:"translate(-50%,-50%)",
+            width:"0.75rem", height:"0.75rem",
+            borderRadius:"50%",
+            background:"#fff",
+            boxShadow:`0 1px 4px rgba(0,0,0,0.7),0 0 8px ${color}99`,
+          }} />
+        ))
+      )}
+    </div>
+  );
 }
 
 // ── GAME SCREEN ─────────────────────────────────────
@@ -3313,18 +3498,18 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
             <IsometricBoard teams={teams} currentTeamIdx={curIdx} board={board} gridSize={eco.gridSize} hasImage={!!ECO_IMAGES[eco.id]} />
           </div>
           {/* Dice controls overlay */}
-          <div style={{position:"absolute",bottom:"1rem",left:"50%",transform:"translateX(-50%)",zIndex:10,display:"flex",alignItems:"center",gap:"1.2rem",background:"rgba(0,0,0,0.75)",backdropFilter:"blur(14px)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"1.1rem",padding:"0.9rem 1.5rem",boxShadow:"0 8px 40px rgba(0,0,0,0.6)"}}>
-            <Dice value={diceVal} rolling={rolling} />
+          <div style={{position:"absolute",bottom:"1rem",left:"50%",transform:"translateX(-50%)",zIndex:10,display:"flex",alignItems:"center",gap:"1.2rem",background:"rgba(0,0,0,0.82)",backdropFilter:"blur(16px)",border:`1px solid ${tc.bg}44`,borderRadius:"1.1rem",padding:"0.9rem 1.5rem",boxShadow:`0 8px 40px rgba(0,0,0,0.6),0 0 24px ${tc.bg}22`,transition:"border-color 0.4s,box-shadow 0.4s"}}>
+            <Dice value={diceVal} rolling={rolling} teamColor={tc.bg} />
             <div>
-              <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.85rem",color:tc.light,marginBottom:"0.2rem"}}>Turn: {curTeam?.name}</div>
-              <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.4)",marginBottom:"0.5rem"}}>{curTeam?.players?.join(" · ")}</div>
-              <button onClick={rollDice} disabled={phase!=="idle"} style={{padding:"0.6rem 1.6rem",background:phase==="idle"?`linear-gradient(135deg,${tc.bg},${tc.dark})`:"rgba(255,255,255,0.05)",border:"none",borderRadius:"0.7rem",color:phase==="idle"?"#fff":"rgba(255,255,255,0.3)",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.9rem",cursor:phase==="idle"?"pointer":"not-allowed",letterSpacing:"0.1em",boxShadow:phase==="idle"?`0 4px 20px ${tc.bg}55`:"none"}}>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.85rem",color:tc.light,marginBottom:"0.2rem",fontWeight:700}}>{curTeam?.name}</div>
+              <div style={{fontSize:"0.72rem",color:"rgba(255,255,255,0.38)",marginBottom:"0.5rem"}}>{curTeam?.players?.join(" · ")}</div>
+              <button onClick={rollDice} disabled={phase!=="idle"} style={{padding:"0.6rem 1.6rem",background:phase==="idle"?`linear-gradient(135deg,${tc.bg},${tc.dark})`:"rgba(255,255,255,0.05)",border:"none",borderRadius:"0.7rem",color:phase==="idle"?"#fff":"rgba(255,255,255,0.3)",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.9rem",cursor:phase==="idle"?"pointer":"not-allowed",letterSpacing:"0.1em",boxShadow:phase==="idle"?`0 4px 20px ${tc.bg}66`:"none",transition:"all 0.25s"}}>
                 {phase==="idle"?"🎲 Roll Dice":phase==="rolling"?"Rolling…":"Wait…"}
               </button>
             </div>
-            {diceVal&&<div style={{textAlign:"center",minWidth:"3rem"}}>
-              <div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.4)",marginBottom:"0.1rem"}}>Result</div>
-              <div style={{fontFamily:"'Cinzel',serif",fontSize:"1.8rem",color:"#fde047",fontWeight:700}}>{diceVal}</div>
+            {diceVal&&<div style={{textAlign:"center",minWidth:"3rem",animation:"fadeUp 0.3s ease"}}>
+              <div style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.4)",marginBottom:"0.15rem",letterSpacing:"0.15em"}}>ROLLED</div>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:"2rem",color:tc.light,fontWeight:700,textShadow:`0 0 16px ${tc.bg}`}}>{diceVal}</div>
             </div>}
           </div>
         </div>
