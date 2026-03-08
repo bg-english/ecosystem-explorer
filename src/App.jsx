@@ -18,13 +18,14 @@ const CT = {
   hangman:    { icon: "🔤", color: "#f472b6",  bg: "#1a0010", label: "WORD",    hue: 320 },
   match:      { icon: "🔗", color: "#34d399",  bg: "#001a10", label: "MATCH",       hue: 155 },
   unscramble: { icon: "🧩", color: "#fbbf24",  bg: "#141000", label: "UNSCRAMBLE",    hue: 45  },
+  truefalse:  { icon: "✅", color: "#a3e635",  bg: "#0f1a00", label: "TRUE / FALSE",  hue: 80  },
   wildcard:   { icon: "⚡", color: "#e879f9",  bg: "#180028", label: "WILDCARD",    hue: 290 },
 };
 
 // Dynamic board generator — length varies by ecosystem (multiples of 6)
 function generateBoard(size) {
-  // 6-tile chapter pattern: trivia, identify, foodchain, hangman, match, unscramble, then wildcard at pos 5
-  const chPat = ["trivia","identify","foodchain","hangman","match","unscramble"];
+  // 8-tile chapter: trivia, identify, foodchain, hangman, match, unscramble, truefalse, then wildcard
+  const chPat = ["trivia","identify","foodchain","hangman","match","unscramble","truefalse"];
   const wcSeq = [
     {fx:"advance",val:2},{fx:"back",val:2},{fx:"skip",val:1},{fx:"free",val:1},
     {fx:"steal",val:1},{fx:"double",val:1},{fx:"advance",val:3},{fx:"back",val:3},
@@ -33,12 +34,12 @@ function generateBoard(size) {
   let wcI = 0;
   const b = [{type:"start"}];
   for (let i = 1; i < size - 1; i++) {
-    const posInChapter = (i - 1) % 7;
-    if (posInChapter === 6) {
+    const posInChapter = (i - 1) % 8;
+    if (posInChapter === 7) {
       const wc = wcSeq[wcI % wcSeq.length]; wcI++;
       b.push({type:"wildcard", fx:wc.fx, val:wc.val});
     } else {
-      b.push({type: chPat[posInChapter]});
+      b.push({type: chPat[posInChapter % chPat.length]});
     }
   }
   b.push({type:"center"});
@@ -71,18 +72,26 @@ const ECOSYSTEMS = {
     ],
     challenges:{
       trivia:[
-        {q:"How does the cactus survive without rain?",opts:["Deep roots","Stores water in its stem","Eats insects","Sleeps underground"],a:1,exp:"Cacti expand their spongy stem to store hundreds of liters after rare rains."},
-        {q:"What are animals that are only active at night called?",opts:["Diurnal","Nocturnal","Migratory","Hibernating"],a:1,exp:"Nocturnal animals avoid the heat by sleeping during the day."},
-        {q:"Which animal NEVER needs to drink water?",opts:["Coyote","Rattlesnake","Kangaroo Rat","Gila Monster"],a:2,exp:"The Kangaroo Rat gets all its moisture from the seeds it eats — never drinks!"},
-        {q:"How much of Earth's land surface is covered by deserts?",opts:["10%","20%","33%","50%"],a:2,exp:"Deserts cover 33% of all land on Earth — more than any other biome."},
-        {q:"In the food pyramid, which level has the MOST energy?",opts:["Tertiary Consumers","Secondary Consumers","Primary Consumers","Producers"],a:3,exp:"Producers capture the most solar energy. Only ~10% passes to each higher level."},
-        {q:"What adaptation helps desert reptiles conserve water?",opts:["Thick fur","Dry scaly skin","Large ears","Migration"],a:1,exp:"Scales drastically reduce evaporation — vital where water is scarce."},
-      ],
-      foodchain:[
-        {q:"What does the Rattlesnake eat?",opts:["Cactus fruits","Kangaroo rats and lizards","Other snakes","Only insects"],a:1,exp:""},
-        {q:"Which organism forms the BASE of the desert food chain?",opts:["Coyote","Desert Locust","Saguaro Cactus","Kangaroo Rat"],a:2,exp:""},
-        {q:"What eats the Coyote?",opts:["Nothing — it's apex","Great Horned Owl","Rattlesnake","Locust"],a:0,exp:""},
-        {q:"What role does the Soil Bacteria play?",opts:["Apex predator","Primary consumer","Decomposer","Producer"],a:2,exp:""},
+        {q:"What is a desert?",opts:["A place with lots of rain", "A dry place with very little water", "A cold place with snow", "A place with many lakes"],a:1,exp:"Deserts receive very little precipitation — less than 250mm per year."},
+        {q:"Which plant is most common in the desert?",opts:["Palm tree", "Rose", "Cactus", "Water lily"],a:2,exp:"Cacti are perfectly adapted to store water and survive drought."},
+        {q:"What does a cactus store in its body?",opts:["Food", "Sand", "Water", "Salt"],a:2,exp:"Cacti expand their spongy stems to store hundreds of liters after rare rains."},
+        {q:"Which animal is a herbivore in the desert?",opts:["Rattlesnake", "Hawk", "Jackrabbit", "Scorpion"],a:2,exp:"Jackrabbits eat grass, cacti, and other plants — true herbivores."},
+        {q:"What does a hawk eat in the desert?",opts:["Cactus", "Sand", "Grass", "Small animals like mice"],a:3,exp:"Hawks are carnivores that hunt small mammals and reptiles."},
+        {q:"Where does the energy in a food chain come from FIRST?",opts:["Water", "Soil", "The sun", "Animals"],a:2,exp:"All food chains start with the sun — the ultimate energy source."},
+        {q:"What is a predator?",opts:["An animal that eats only plants", "An animal that hunts other animals", "A plant that makes food", "A dead animal"],a:1,exp:"Predators hunt and kill other animals for food."},
+        {q:"In the chain: Cactus → Mouse → Snake, what does the snake eat?",opts:["Cactus", "The sun", "Mouse", "Grass"],a:2,exp:"Each organism eats the one before it in the food chain."},
+        {q:"What does a decomposer do?",opts:["Hunts animals", "Makes food from sunlight", "Breaks down dead things", "Eats only plants"],a:2,exp:"Decomposers like bacteria recycle nutrients back into the soil."},
+        {q:"Which animal is at the TOP of the desert food chain?",opts:["Mouse", "Cactus", "Grasshopper", "Hawk"],a:3,exp:"Hawks are apex predators with no natural enemies in the desert."},
+        {q:"A desert mouse eats grass. The mouse is a...",opts:["Predator", "Carnivore", "Herbivore", "Decomposer"],a:2,exp:"Animals that eat only plants are called herbivores."},
+        {q:"Which is NOT a characteristic of the desert?",opts:["Hot temperatures", "Very little rain", "Sandy ground", "Lots of water"],a:3,exp:"Deserts are defined by extreme water scarcity."},
+        {q:"What is a food chain?",opts:["A metal chain", "The order in which living things eat each other", "A list of plants", "A type of animal"],a:1,exp:"Food chains show how energy transfers from one organism to the next."},
+        {q:"In a food chain, the grass is a...",opts:["Consumer", "Predator", "Producer", "Decomposer"],a:2,exp:"Plants make their own food using sunlight — they are producers."},
+        {q:"What do rattlesnakes eat in the desert?",opts:["Cactus", "Sand", "Small mammals like mice", "Rocks"],a:2,exp:"Rattlesnakes are carnivores that ambush small mammals."},
+        {q:"Which animal is a carnivore in the desert?",opts:["Jackrabbit", "Grasshopper", "Rattlesnake", "Mouse"],a:2,exp:"Rattlesnakes eat only meat — they are carnivores."},
+        {q:"What is an adaptation?",opts:["A type of food", "A special feature that helps an animal survive", "A type of ecosystem", "A dead animal"],a:1,exp:"Adaptations help animals survive in their specific environment."},
+        {q:"Why is the sun important in a food chain?",opts:["It gives water to animals", "It is the first source of energy for living things", "It eats plants", "It breaks down dead animals"],a:1,exp:"The sun powers photosynthesis, starting all food chains on Earth."},
+        {q:"A lizard eats insects. The lizard is a...",opts:["Producer", "Decomposer", "Consumer", "Top predator"],a:2,exp:"Any organism that eats other organisms is a consumer."},
+        {q:"Which is the CORRECT order of a desert food chain?",opts:["Mouse \u2192 Grass \u2192 Hawk", "Hawk \u2192 Mouse \u2192 Grass", "Grass \u2192 Mouse \u2192 Hawk", "Grass \u2192 Hawk \u2192 Mouse"],a:2,exp:"Energy flows from producers (grass) to primary (mouse) to secondary (hawk) consumers."}
       ],
       identify:[
         {clue:"I store hundreds of liters of water in my thick stem. I can live 150 years.",answer:"Saguaro Cactus",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Carnegiea_gigantea_in_Saguaro_National_Park.jpg/300px-Carnegiea_gigantea_in_Saguaro_National_Park.jpg",emoji:"🌵",opts:["Desert Locust","Saguaro Cactus","Kangaroo Rat","Gila Monster"]},
@@ -90,21 +99,73 @@ const ECOSYSTEMS = {
         {clue:"I move in an S-pattern to avoid the hot sand. My venom is deadly.",answer:"Rattlesnake",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Western_diamondback_rattlesnake.jpg/300px-Western_diamondback_rattlesnake.jpg",emoji:"🐍",opts:["Rattlesnake","Coyote","Gila Monster","Great Horned Owl"]},
         {clue:"I am highly adaptable. I hunt alone or in packs depending on prey size.",answer:"Coyote",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Canis_latrans_standing.jpg/300px-Canis_latrans_standing.jpg",emoji:"🐺",opts:["Great Horned Owl","Coyote","Gila Monster","Rattlesnake"]},
       ],
+      foodchain:[
+        {q:"Sun → Cactus → Mouse → ???",opts:["Grass", "Cactus", "Hawk", "Sun"],a:2,exp:"Hawks eat mice — they are the apex predator in this chain."},
+        {q:"Sun → Grass → Grasshopper → ???",opts:["Hawk", "Lizard", "Cactus", "Sun"],a:1,exp:"Lizards eat grasshoppers in the desert food chain."},
+        {q:"Which organism starts EVERY desert food chain?",opts:["Mouse", "Hawk", "A Producer (plant)", "Decomposer"],a:2,exp:"All food chains begin with a producer that captures solar energy."},
+        {q:"Sun → Cactus → Mouse → Snake → ???",opts:["Grass", "Mouse", "Cactus", "Hawk"],a:3,exp:"Hawks eat snakes, sitting at the very top of this chain."},
+        {q:"In: Sun → Cactus → Lizard → Hawk, what is the PRODUCER?",opts:["Sun", "Lizard", "Cactus", "Hawk"],a:2,exp:"The cactus is the producer — it makes food using sunlight."},
+        {q:"Sun → Grass → Mouse → ??? → Hawk",opts:["Cactus", "Snake", "Grass", "Sun"],a:1,exp:"Snakes eat mice and are eaten by hawks in this chain."},
+        {q:"In: Grass → Mouse → Hawk, the hawk is a...",opts:["Producer", "Primary Consumer", "Secondary Consumer", "Decomposer"],a:2,exp:"The hawk eats the mouse (primary consumer), making it a secondary consumer."},
+        {q:"What happens to dead organisms in a desert food chain?",opts:["They disappear", "Decomposers break them down", "Hawks eat them all", "They become rocks"],a:1,exp:"Decomposers recycle nutrients from dead organisms back into the soil."},
+        {q:"Sun → Grass → ??? → Snake",opts:["Hawk", "Sun", "Mouse", "Cactus"],a:2,exp:"Mice eat grass and are eaten by snakes in the desert."},
+        {q:"Arrange: Hawk | Grass | Mouse | Snake — correct order is...",opts:["Hawk\u2192Snake\u2192Mouse\u2192Grass", "Grass\u2192Mouse\u2192Snake\u2192Hawk", "Mouse\u2192Grass\u2192Hawk\u2192Snake", "Snake\u2192Hawk\u2192Grass\u2192Mouse"],a:1,exp:"Energy flows from grass (producer) up to the apex predator (hawk)."}
+      ],
       hangman:[
-        {word:"PRODUCER",clue:"Organism that makes its own food using sunlight"},
-        {word:"NOCTURNAL",clue:"Active at night to avoid desert heat"},
-        {word:"CACTUS",clue:"Desert plant that stores water in its stem"},
-        {word:"PREDATOR",clue:"Animal that hunts other animals for food"},
-        {word:"ECOSYSTEM",clue:"Community of organisms interacting with their environment"},
+        {word:"DESERT",clue:"A dry ecosystem with very little rain"},
+        {word:"CACTUS",clue:"A plant that stores water in its stem"},
+        {word:"HAWK",clue:"A bird that hunts from the sky"},
+        {word:"LIZARD",clue:"A small reptile in hot, dry places"},
+        {word:"MOUSE",clue:"A small mammal eaten by snakes and hawks"},
+        {word:"SNAKE",clue:"A reptile that moves without legs"},
+        {word:"SCORPION",clue:"A desert animal with a poisonous tail"},
+        {word:"ENERGY",clue:"What living things need to survive"},
+        {word:"PREDATOR",clue:"An animal that hunts other animals"},
+        {word:"PREY",clue:"An animal that is hunted and eaten"},
+        {word:"PRODUCER",clue:"A living thing that makes its own food"},
+        {word:"CONSUMER",clue:"A living thing that eats other organisms"},
+        {word:"GRASS",clue:"A plant eaten by herbivores in the desert"},
+        {word:"HERBIVORE",clue:"An animal that eats only plants"},
+        {word:"OMNIVORE",clue:"An animal that eats plants and animals"},
+        {word:"HABITAT",clue:"The natural home of a living thing"},
+        {word:"ADAPTATION",clue:"A feature that helps an animal survive"},
+        {word:"CARNIVORE",clue:"An animal that eats only meat"},
+        {word:"DECOMPOSER",clue:"Breaks down dead organisms"},
+        {word:"NOCTURNAL",clue:"Active at night to avoid desert heat"}
       ],
       match:[
-        {pairs:[{term:"Producer",def:"Makes food using sunlight"},{term:"Decomposer",def:"Breaks down dead matter"},{term:"Primary Consumer",def:"Eats only plants"},{term:"Apex Predator",def:"Top of the food chain"}]},
-        {pairs:[{term:"Saguaro Cactus",def:"Stores water in stem"},{term:"Kangaroo Rat",def:"Never drinks water"},{term:"Rattlesnake",def:"S-pattern movement on sand"},{term:"Coyote",def:"Highly adaptable hunter"}]},
+        {pairs:[{term:"Desert",def:"A dry place with very little water"},{term:"Cactus",def:"Stores water in its thick stem"},{term:"Producer",def:"Makes food using sunlight"},{term:"Consumer",def:"Eats other organisms for energy"}]},
+        {pairs:[{term:"Herbivore",def:"Eats only plants"},{term:"Carnivore",def:"Eats only meat"},{term:"Predator",def:"Hunts and eats other animals"},{term:"Prey",def:"Hunted and eaten by another animal"}]},
+        {pairs:[{term:"Food chain",def:"Order in which living things eat each other"},{term:"Decomposer",def:"Breaks down dead plants and animals"},{term:"Adaptation",def:"Feature that helps survive in a habitat"},{term:"Habitat",def:"Natural home of a living thing"}]},
+        {pairs:[{term:"Hawk",def:"Large bird that hunts from the sky"},{term:"Rattlesnake",def:"Carnivore that eats small mammals"},{term:"Scorpion",def:"Desert animal with poisonous stinger"},{term:"Kangaroo Rat",def:"Never drinks water"}]},
+        {pairs:[{term:"Apex Predator",def:"Top of the food chain, no enemies"},{term:"Energy",def:"What living things need to survive"},{term:"Omnivore",def:"Eats both plants and animals"},{term:"Sun",def:"First source of energy in all food chains"}]}
       ],
       unscramble:[
         {words:["energy","flows","from","producers","to","consumers"],ans:"energy flows from producers to consumers",hint:"Energy transfer in ecosystems"},
         {words:["decomposers","recycle","nutrients","back","into","the","soil"],ans:"decomposers recycle nutrients back into the soil",hint:"Role of decomposers"},
         {words:["adaptations","help","organisms","survive","in","extreme","environments"],ans:"adaptations help organisms survive in extreme environments",hint:"Survival in the desert"},
+      ],
+      truefalse:[
+        {statement:"A cactus is a producer.",answer:true,correction:""},
+        {statement:"Hawks eat grass in the desert.",answer:false,correction:"Hawks eat animals, not plants."},
+        {statement:"The sun is the source of energy in all food chains.",answer:true,correction:""},
+        {statement:"A snake is a herbivore.",answer:false,correction:"Snakes are carnivores — they eat other animals."},
+        {statement:"Decomposers break down dead plants and animals.",answer:true,correction:""},
+        {statement:"A decomposer makes its own food using sunlight.",answer:false,correction:"That is a producer. Decomposers break down dead matter."},
+        {statement:"The hawk is usually at the top of the desert food chain.",answer:true,correction:""},
+        {statement:"A grasshopper is a carnivore.",answer:false,correction:"Grasshoppers eat plants — they are herbivores."},
+        {statement:"Deserts have a lot of water and rain.",answer:false,correction:"Deserts receive very little rain — less than 250mm per year."},
+        {statement:"A lizard is a consumer.",answer:true,correction:""},
+        {statement:"Producers get their energy from the sun.",answer:true,correction:""},
+        {statement:"In a food chain, energy moves from animals to plants.",answer:false,correction:"Energy moves from plants (producers) to animals (consumers)."},
+        {statement:"The scorpion is a predator in the desert.",answer:true,correction:""},
+        {statement:"All animals in the desert eat only plants.",answer:false,correction:"Carnivores like snakes and hawks eat other animals."},
+        {statement:"A mouse is prey for a hawk.",answer:true,correction:""},
+        {statement:"Decomposers are not important in an ecosystem.",answer:false,correction:"Decomposers recycle nutrients and keep ecosystems healthy."},
+        {statement:"A hawk is a carnivore.",answer:true,correction:""},
+        {statement:"In a food chain, the sun comes AFTER the plant.",answer:false,correction:"The sun always comes first — it powers photosynthesis."},
+        {statement:"A jackrabbit is a herbivore in the desert.",answer:true,correction:""},
+        {statement:"Snakes eat plants in the desert.",answer:false,correction:"Snakes are carnivores — they eat small animals like mice."}
       ],
     }
   },
@@ -136,18 +197,26 @@ const ECOSYSTEMS = {
     ],
     challenges:{
       trivia:[
-        {q:"Which layer of the rainforest receives the most direct sunlight?",opts:["Forest floor","Understory","Canopy","Emergent Layer"],a:3,exp:"The Emergent Layer receives full, unfiltered sunlight above the canopy."},
-        {q:"What % of Earth's species live in tropical rainforests?",opts:["10%","25%","50%","75%"],a:2,exp:"Rainforests cover only 6% of land but hold ~50% of all Earth's species."},
-        {q:"Why are leafcutter ants considered 'farmers'?",opts:["They water plants","They farm fungi","They dig soil","They spread seeds"],a:1,exp:"Ants farm fungi in underground chambers — that's their real food source!"},
-        {q:"Where do Poison Dart Frog toxins come from?",opts:["Their own chemistry","Insects they eat","Water they drink","From the soil"],a:1,exp:"Dart frogs aren't born toxic — their poisons come from specific insects in their diet."},
-        {q:"What does the Jaguar use its extraordinarily strong jaws for?",opts:["Climbing trees","Cracking turtle shells","Swimming faster","Gripping vines"],a:1,exp:"The Jaguar has the strongest bite of any American cat — it can pierce turtle shells."},
-        {q:"Why doesn't the Boa Constrictor use venom?",opts:["It has none","It squeezes prey until they can't breathe","It only eats plants","Its venom is weak"],a:1,exp:"The boa kills by constriction — it wraps around prey and squeezes until it asphyxiates."},
-      ],
-      foodchain:[
-        {q:"What does the Jaguar eat?",opts:["Leaves and fruits","Insects","Deer and capybaras","Orchids"],a:2,exp:""},
-        {q:"Which organism is the BASE of the rainforest food chain?",opts:["Jaguar","Leafcutter Ant","Kapok Tree","Toucan"],a:2,exp:""},
-        {q:"What does the Poison Dart Frog eat?",opts:["Leaves","Insects and invertebrates","Small mammals","Seeds"],a:1,exp:""},
-        {q:"What does the Boa Constrictor do to its prey?",opts:["Poisons it","Squeezes it until it suffocates","Chases it in water","Strikes it"],a:1,exp:""},
+        {q:"Where is the tropical rainforest found?",opts:["Near the North Pole", "Near the equator", "In the desert", "Under the ocean"],a:1,exp:"Tropical rainforests grow near the equator where it is warm and wet year-round."},
+        {q:"How much rain does a tropical rainforest get?",opts:["Very little", "A medium amount", "A very large amount", "No rain at all"],a:2,exp:"Rainforests receive over 2000mm of rain per year — the most of any biome."},
+        {q:"What does a jaguar eat?",opts:["Leaves and fruits", "Insects only", "Fish and water plants", "Animals like deer and monkeys"],a:3,exp:"Jaguars are apex carnivores that hunt large mammals and reptiles."},
+        {q:"What do monkeys eat in the rainforest?",opts:["Jaguars", "Fruits, leaves, and insects", "Other monkeys", "Eagles"],a:1,exp:"Monkeys are omnivores — they eat fruits, leaves, and insects."},
+        {q:"What is photosynthesis?",opts:["An animal eating a plant", "A plant making food using sunlight", "A decomposer eating dead things", "An eagle hunting prey"],a:1,exp:"Photosynthesis converts sunlight, water, and CO₂ into sugar and oxygen."},
+        {q:"What do caterpillars eat in the rainforest?",opts:["Insects", "Small animals", "Leaves and plants", "Birds"],a:2,exp:"Caterpillars are primary consumers that eat leaves and plant matter."},
+        {q:"Which animal is the top predator in the tropical rainforest?",opts:["Caterpillar", "Monkey", "Parrot", "Jaguar"],a:3,exp:"The jaguar is the apex predator of the Amazon — nothing hunts it."},
+        {q:"What is a food web?",opts:["A spider's web", "One food chain", "Many food chains connected together", "A list of plants"],a:2,exp:"A food web shows how multiple food chains are interconnected."},
+        {q:"What is biodiversity?",opts:["A type of plant", "The variety of living things in an area", "A type of food chain", "A type of biome"],a:1,exp:"The Amazon has the highest biodiversity of any ecosystem on Earth."},
+        {q:"Which of these is a PRODUCER in the rainforest?",opts:["Monkey", "Jaguar", "Eagle", "Tree"],a:3,exp:"Trees and plants are producers — they make food through photosynthesis."},
+        {q:"A frog eats a caterpillar that eats leaves. The frog is a...",opts:["Producer", "Primary consumer", "Secondary consumer", "Decomposer"],a:2,exp:"The frog eats the primary consumer (caterpillar), making it secondary."},
+        {q:"What is the canopy of a rainforest?",opts:["The ground level", "An underground area", "The top layer of trees", "A type of animal"],a:2,exp:"The canopy is the dense top layer where most sunlight is captured."},
+        {q:"What happens to dead plants in the rainforest?",opts:["They fly away", "Decomposers break them down and return nutrients to the soil", "Animals hunt them", "They become rocks"],a:1,exp:"Decomposers keep the rainforest nutrient cycle running constantly."},
+        {q:"Which is a CORRECT rainforest food chain?",opts:["Jaguar \u2192 Monkey \u2192 Leaves", "Leaves \u2192 Caterpillar \u2192 Frog \u2192 Jaguar", "Monkey \u2192 Leaves \u2192 Jaguar", "Eagle \u2192 Monkey \u2192 Leaves"],a:1,exp:"Energy flows from producers (leaves) up through consumers to apex predators."},
+        {q:"The tropical rainforest has _____ biodiversity.",opts:["Low", "No", "Very high", "Medium"],a:2,exp:"Rainforests cover only 6% of land but contain over 50% of all species."},
+        {q:"What does a decomposer return to the soil?",opts:["Water", "Sunlight", "Animals", "Nutrients"],a:3,exp:"Decomposers release minerals and nutrients that plants need to grow."},
+        {q:"A tree frog is a...",opts:["Top predator", "Producer", "Decomposer", "Consumer"],a:3,exp:"Tree frogs eat insects — they consume other organisms."},
+        {q:"What is a trophic level?",opts:["A type of plant", "A step or position in a food chain", "A type of ecosystem", "An animal's home"],a:1,exp:"Each feeding position in a food chain represents one trophic level."},
+        {q:"In the rainforest, what does the eagle eat?",opts:["Leaves and fruits", "Seeds only", "Snakes and monkeys", "Cactus plants"],a:2,exp:"Harpy eagles hunt monkeys, sloths, and large reptiles from the canopy."},
+        {q:"Why does the rainforest floor receive very little sunlight?",opts:["It is always raining", "The canopy blocks most sunlight", "Animals block the light", "The soil absorbs it"],a:1,exp:"The dense canopy absorbs up to 99% of sunlight before it reaches the floor."}
       ],
       identify:[
         {clue:"I am the tallest tree in the rainforest. My canopy shelters hundreds of species.",answer:"Kapok Tree",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Kapok_tree.jpg/300px-Kapok_tree.jpg",emoji:"🌳",opts:["Epiphytic Orchid","Kapok Tree","Forest Fungi","Howler Monkey"]},
@@ -155,20 +224,73 @@ const ECOSYSTEMS = {
         {clue:"My bright colors warn predators. My toxins come from my diet.",answer:"Poison Dart Frog",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Dendrobates_azureus_edit2.jpg/300px-Dendrobates_azureus_edit2.jpg",emoji:"🐸",opts:["Poison Dart Frog","Leafcutter Ant","Toucan","Howler Monkey"]},
         {clue:"I am the largest eagle in the Americas. I snatch monkeys right from the canopy.",answer:"Harpy Eagle",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Harpia_harpyja_-_Houston_Zoo.jpg/300px-Harpia_harpyja_-_Houston_Zoo.jpg",emoji:"🦅",opts:["Harpy Eagle","Toucan","Jaguar","Boa Constrictor"]},
       ],
+      foodchain:[
+        {q:"Leaves → Caterpillar → ??? → Jaguar",opts:["Tree", "Eagle", "Frog", "Sun"],a:2,exp:"Frogs eat caterpillars and are eaten by larger predators."},
+        {q:"Which organism forms the BASE of the rainforest food chain?",opts:["Jaguar", "Leafcutter Ant", "Kapok Tree", "Toucan"],a:2,exp:"Trees (producers) form the foundation — they capture solar energy."},
+        {q:"What does the Jaguar eat?",opts:["Leaves and fruits", "Insects", "Deer and capybaras", "Orchids"],a:2,exp:"Jaguars are apex carnivores hunting large mammals."},
+        {q:"A caterpillar eats leaves. The caterpillar is a...",opts:["Producer", "Secondary Consumer", "Primary Consumer", "Decomposer"],a:2,exp:"The caterpillar eats plants directly — it is a primary consumer."},
+        {q:"In: Leaves → Caterpillar → Frog → Eagle, who is SECONDARY CONSUMER?",opts:["Leaves", "Caterpillar", "Frog", "Eagle"],a:2,exp:"The frog eats the primary consumer (caterpillar), so it is secondary."},
+        {q:"What does the Poison Dart Frog eat?",opts:["Leaves", "Insects and invertebrates", "Small mammals", "Seeds"],a:1,exp:"Poison dart frogs are insectivores — their toxins come from their diet."},
+        {q:"Sun → Tree → Monkey → ???",opts:["Leaves", "Caterpillar", "Eagle", "Fruit"],a:2,exp:"Eagles are apex predators that hunt monkeys and other large animals."},
+        {q:"What does the Boa Constrictor do to its prey?",opts:["Poisons it", "Squeezes until it suffocates", "Chases it in water", "Bites with sharp teeth"],a:1,exp:"Boas kill by constriction — wrapping around prey until it cannot breathe."},
+        {q:"In a rainforest food web, what role do fungi play?",opts:["Apex predator", "Primary consumer", "Decomposer", "Producer"],a:2,exp:"Fungi break down dead wood and matter, returning nutrients to the soil."},
+        {q:"Arrange: Eagle | Leaves | Frog | Caterpillar — correct order is...",opts:["Eagle\u2192Frog\u2192Caterpillar\u2192Leaves", "Leaves\u2192Caterpillar\u2192Frog\u2192Eagle", "Frog\u2192Leaves\u2192Eagle\u2192Caterpillar", "Caterpillar\u2192Eagle\u2192Frog\u2192Leaves"],a:1,exp:"Energy flows from producers (leaves) to apex predators (eagle)."}
+      ],
       hangman:[
-        {word:"CANOPY",clue:"Dense layer of treetops in the rainforest"},
+        {word:"RAINFOREST",clue:"A forest with very heavy rainfall"},
+        {word:"CANOPY",clue:"Dense top layer of rainforest trees"},
+        {word:"JAGUAR",clue:"Apex predator of the Amazon"},
+        {word:"MONKEY",clue:"Omnivore primate living in trees"},
+        {word:"PARROT",clue:"Colorful bird eating fruits and seeds"},
+        {word:"CATERPILLAR",clue:"Leaf-eating larva that becomes a butterfly"},
         {word:"BIODIVERSITY",clue:"The variety of life in an ecosystem"},
+        {word:"PHOTOSYNTHESIS",clue:"Process plants use to make food from sunlight"},
+        {word:"DECOMPOSER",clue:"Breaks down dead matter, recycling nutrients"},
+        {word:"PRODUCER",clue:"Makes its own food using sunlight"},
+        {word:"CONSUMER",clue:"Eats other organisms for energy"},
         {word:"EPIPHYTE",clue:"Plant that grows on another without harming it"},
-        {word:"JAGUAR",clue:"Apex predator of the Amazon rainforest"},
-        {word:"CONSTRICTION",clue:"How the Boa kills its prey — by squeezing"},
+        {word:"NUTRIENT",clue:"Substance plants and animals need to grow"},
+        {word:"TROPHIC",clue:"Relating to feeding levels in a food chain"},
+        {word:"PREDATOR",clue:"Hunts and kills other animals"},
+        {word:"CONSTRICTION",clue:"How the boa kills its prey — by squeezing"},
+        {word:"EAGLE",clue:"Large bird of prey at the top of the food chain"},
+        {word:"FROG",clue:"Small amphibian that eats insects in trees"},
+        {word:"FUNGI",clue:"Rainforest decomposer that breaks down dead wood"},
+        {word:"OMNIVORE",clue:"Eats both plants and animals"}
       ],
       match:[
-        {pairs:[{term:"Kapok Tree",def:"Giant of the emergent layer"},{term:"Leafcutter Ant",def:"Underground fungi farmer"},{term:"Poison Dart Frog",def:"Toxins come from its diet"},{term:"Harpy Eagle",def:"Hunts monkeys from the sky"}]},
-        {pairs:[{term:"Emergent Layer",def:"Greatest sun exposure"},{term:"Epiphyte",def:"Grows on other plants"},{term:"Decomposer",def:"Recycles dead matter"},{term:"Apex Predator",def:"No natural enemies"}]},
+        {pairs:[{term:"Rainforest",def:"Forest with very heavy rainfall"},{term:"Canopy",def:"Top layer receiving most sunlight"},{term:"Photosynthesis",def:"Plants making food from sunlight"},{term:"Jaguar",def:"Apex predator of the rainforest"}]},
+        {pairs:[{term:"Monkey",def:"Omnivore primate in trees"},{term:"Parrot",def:"Colorful bird eating fruits and seeds"},{term:"Tree frog",def:"Small amphibian eating insects"},{term:"Caterpillar",def:"Leaf-eating larva, primary consumer"}]},
+        {pairs:[{term:"Food web",def:"Many food chains connected together"},{term:"Primary consumer",def:"Eats plants directly"},{term:"Secondary consumer",def:"Eats primary consumers"},{term:"Biodiversity",def:"Variety of different living things"}]},
+        {pairs:[{term:"Leaf",def:"Flat green plant part used in photosynthesis"},{term:"Fruit",def:"Sweet plant part containing seeds"},{term:"Eagle",def:"Large bird of prey at the food chain top"},{term:"Trophic level",def:"Step showing where organism gets energy"}]},
+        {pairs:[{term:"Nutrient",def:"Substance plants and animals need to grow"},{term:"Decomposer",def:"Returns nutrients to the soil"},{term:"Top predator",def:"No natural enemies"},{term:"Omnivore",def:"Eats both plants and animals"}]}
       ],
       unscramble:[
         {words:["rainforests","contain","50%","of","all","species","on","Earth"],ans:"rainforests contain 50% of all species on Earth",hint:"Rainforest biodiversity"},
         {words:["the","emergent","layer","receives","the","most","direct","sunlight"],ans:"the emergent layer receives the most direct sunlight",hint:"Layers of the rainforest"},
+        {words:["decomposers","break","down","dead","matter","and","return","nutrients"],ans:"decomposers break down dead matter and return nutrients",hint:"Role of decomposers"},
+      ],
+      truefalse:[
+        {statement:"Jaguars eat only plants in the rainforest.",answer:false,correction:"Jaguars are carnivores that eat animals."},
+        {statement:"The canopy is the top layer of the rainforest.",answer:true,correction:""},
+        {statement:"Decomposers return nutrients to the soil.",answer:true,correction:""},
+        {statement:"The tropical rainforest has very low biodiversity.",answer:false,correction:"It has very HIGH biodiversity — over 50% of all species."},
+        {statement:"A tree is a producer in the rainforest.",answer:true,correction:""},
+        {statement:"A frog that eats insects is a secondary consumer.",answer:true,correction:""},
+        {statement:"Photosynthesis is when animals eat plants.",answer:false,correction:"Photosynthesis is when plants make food from sunlight."},
+        {statement:"The eagle is usually at the top of the rainforest food chain.",answer:true,correction:""},
+        {statement:"Monkeys eat only meat in the rainforest.",answer:false,correction:"Monkeys are omnivores — they eat fruits, leaves, and insects."},
+        {statement:"In a food web, many food chains are connected.",answer:true,correction:""},
+        {statement:"A caterpillar eats leaves — it is a primary consumer.",answer:true,correction:""},
+        {statement:"The tropical rainforest receives very little rain.",answer:false,correction:"It receives more than 2000mm of rain per year."},
+        {statement:"Nutrients return to the soil when decomposers break down dead things.",answer:true,correction:""},
+        {statement:"In a food chain, the top predator has the most energy.",answer:false,correction:"Producers have the most energy — energy decreases going up."},
+        {statement:"Parrots are carnivores in the rainforest.",answer:false,correction:"Parrots eat fruits and seeds — they are herbivores/omnivores."},
+        {statement:"A trophic level is a step in a food chain.",answer:true,correction:""},
+        {statement:"Secondary consumers eat plants directly.",answer:false,correction:"Secondary consumers eat primary consumers (herbivores)."},
+        {statement:"The rainforest canopy blocks some sunlight from the forest floor.",answer:true,correction:""},
+        {statement:"Jaguars are prey for smaller animals in the rainforest.",answer:false,correction:"Jaguars are apex predators with no natural enemies."},
+        {statement:"Fruits, leaves, and insects are all food for some rainforest animals.",answer:true,correction:""}
       ],
     }
   },
@@ -201,39 +323,100 @@ const ECOSYSTEMS = {
     ],
     challenges:{
       trivia:[
-        {q:"How many animals take part in the Great Serengeti Migration?",opts:["50,000","500,000","1.5 million","10 million"],a:2,exp:"Over 1.5 million wildebeest — plus zebras and gazelles — make this epic annual journey."},
-        {q:"Why is the African Elephant a keystone species of the savanna?",opts:["It's the largest","Knocks down trees creating open habitat","Digs water holes","Migrates thousands of km"],a:1,exp:"Elephants uproot trees to create open grasslands for other species. Remove them and savanna turns to forest."},
-        {q:"Why must the Cheetah eat quickly after a kill?",opts:["Meat spoils fast","Lions and hyenas steal it","It gets tired","It loses appetite"],a:1,exp:"Cheetahs frequently lose their kills to lions and hyenas — they must eat fast."},
-        {q:"What % of its food does the Spotted Hyena hunt itself?",opts:["5%","25%","60%","95%"],a:3,exp:"Contrary to popular belief, hyenas hunt ~95% of their own food. It's lions who steal from them!"},
-        {q:"Why do Zebras migrate alongside Wildebeest?",opts:["Safety in numbers","Wildebeest lead to water","They eat different grass","They are the same species"],a:2,exp:"Zebras eat the tall tough grass, exposing the short grass that wildebeest prefer. A perfect partnership."},
-        {q:"What two seasons characterize the savanna?",opts:["Spring and Fall","Hot and Cold","Wet and Dry","Day and Night"],a:2,exp:"Wet and dry seasons control grass growth, water supply, and trigger massive migrations."},
-      ],
-      foodchain:[
-        {q:"What does the Lion primarily hunt?",opts:["Acacia leaves","Termites","Wildebeest and Zebras","Only Gazelles"],a:2,exp:""},
-        {q:"What is the Cheetah's preferred prey?",opts:["Lion","Elephant","Thomson's Gazelle","Wildebeest"],a:2,exp:""},
-        {q:"Which organism STARTS the savanna food chain?",opts:["Wildebeest","Lion","Savanna Grass","Cheetah"],a:2,exp:""},
-        {q:"What do Termites eat?",opts:["Wildebeest","Living grass","Dead wood and plant matter","Other insects"],a:2,exp:""},
+        {q:"Where is the African savanna found?",opts:["South America", "Europe", "Africa", "Australia"],a:2,exp:"The African savanna is mainly found in sub-Saharan Africa."},
+        {q:"What is the main PRODUCER in the African savanna?",opts:["Zebra", "Lion", "Grass", "Elephant"],a:2,exp:"Grass dominates the savanna, fueling the entire ecosystem."},
+        {q:"Which animal is the APEX PREDATOR of the savanna?",opts:["Zebra", "Gazelle", "Hyena", "Lion"],a:3,exp:"Lions are the apex predators — called 'kings of the savanna'."},
+        {q:"What does a zebra eat?",opts:["Meat", "Other zebras", "Grass and plants", "Lions"],a:2,exp:"Zebras are herbivores that eat grass and other vegetation."},
+        {q:"What type of animal is a hyena?",opts:["A herbivore", "A producer", "A scavenger and predator", "A decomposer"],a:2,exp:"Hyenas hunt 95% of their food AND scavenge — highly adaptable."},
+        {q:"What does a vulture eat?",opts:["Grass", "Dead animals", "Only insects", "Fruit"],a:1,exp:"Vultures are scavengers — they clean up by eating dead animals."},
+        {q:"Which is the CORRECT savanna food chain?",opts:["Lion \u2192 Grass \u2192 Zebra", "Grass \u2192 Zebra \u2192 Lion", "Zebra \u2192 Grass \u2192 Lion", "Lion \u2192 Zebra \u2192 Grass"],a:1,exp:"Energy flows from grass (producer) to zebra (primary) to lion (secondary)."},
+        {q:"What does a giraffe eat?",opts:["Zebras", "Lions", "Leaves from tall trees", "Fish"],a:2,exp:"Giraffes use their long necks to reach leaves at the tops of acacia trees."},
+        {q:"What is the role of the dung beetle in the savanna?",opts:["It is a top predator", "It is a decomposer that recycles nutrients", "It eats large animals", "It is a producer"],a:1,exp:"Dung beetles break down animal waste, recycling vital nutrients."},
+        {q:"What is migration?",opts:["Building a nest", "The seasonal movement of animals to find food and water", "Eating dead animals", "Making food from sunlight"],a:1,exp:"Over 1.5 million animals migrate across the Serengeti annually."},
+        {q:"A gazelle is eaten by a cheetah. The gazelle is the...",opts:["Predator", "Producer", "Apex predator", "Prey"],a:3,exp:"The gazelle is hunted — it is the prey in this relationship."},
+        {q:"What does 'apex predator' mean?",opts:["An animal that eats only plants", "The animal at the top of the food chain with no enemies", "A type of bird", "A very small animal"],a:1,exp:"Apex predators are at the top — nothing hunts them."},
+        {q:"What do elephants eat?",opts:["Only meat", "Grass, leaves, and bark", "Only insects", "Lions and hyenas"],a:1,exp:"Elephants eat up to 130kg of vegetation daily — they are herbivores."},
+        {q:"Which is a HERBIVORE in the African savanna?",opts:["Lion", "Cheetah", "Zebra", "Vulture"],a:2,exp:"Zebras eat only grass and plants — classic herbivores."},
+        {q:"What is the dry season?",opts:["When it rains a lot", "A long period of very little rain", "When animals migrate north", "When grass grows very fast"],a:1,exp:"The dry season triggers mass migrations as water sources dry up."},
+        {q:"In: Grass → Wildebeest → Lion, the wildebeest is a...",opts:["Top predator", "Producer", "Primary consumer", "Decomposer"],a:2,exp:"Wildebeest eats grass (producer) directly — it's a primary consumer."},
+        {q:"What is an acacia tree?",opts:["An underwater plant", "A thorny tree common in the savanna", "A type of grass", "A desert cactus"],a:1,exp:"Acacia trees are iconic — they provide food and shade for many species."},
+        {q:"What is a scavenger?",opts:["An animal that makes its own food", "An animal that only eats plants", "An animal that eats dead animals", "A small insect"],a:2,exp:"Scavengers like vultures and hyenas eat animals that are already dead."},
+        {q:"In: Grass → Gazelle → Cheetah, who is the SECONDARY CONSUMER?",opts:["Grass", "Gazelle", "Cheetah", "Sun"],a:2,exp:"The cheetah eats the gazelle (primary consumer) — it is secondary."},
+        {q:"Why is grass important in the savanna ecosystem?",opts:["It eats other animals", "It is the main producer and food source for herbivores", "It is a decomposer", "It is a predator"],a:1,exp:"Without grass, no herbivores could survive, and predators would disappear too."}
       ],
       identify:[
-        {clue:"I'm a keystone species. I uproot trees and create open habitat. I eat 130 kg a day.",answer:"African Elephant",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/African_Bush_Elephant.jpg/300px-African_Bush_Elephant.jpg",emoji:"🐘",opts:["African Elephant","Wildebeest","Lion","Acacia Tree"]},
+        {clue:"I am a keystone species. I uproot trees and create open habitat. I eat 130 kg a day.",answer:"African Elephant",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/African_Bush_Elephant.jpg/300px-African_Bush_Elephant.jpg",emoji:"🐘",opts:["African Elephant","Wildebeest","Lion","Acacia Tree"]},
         {clue:"I am the fastest land animal at 120 km/h. I must eat quickly before my kill is stolen.",answer:"Cheetah",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Cheetah_portrait.jpg/300px-Cheetah_portrait.jpg",emoji:"🐆",opts:["Cheetah","Lion","Spotted Hyena","Gazelle"]},
         {clue:"I am the only truly social big cat. My group coordinates hunts of very large prey.",answer:"Lion",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namibia.jpg/300px-Lion_waiting_in_Namibia.jpg",emoji:"🦁",opts:["Lion","Cheetah","Spotted Hyena","Leopard"]},
         {clue:"No two of us share the same pattern. I migrate with Wildebeest because I prefer different grass.",answer:"Zebra",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Plains_Zebra_Equus_quagga.jpg/300px-Plains_Zebra_Equus_quagga.jpg",emoji:"🦓",opts:["Zebra","Wildebeest","Gazelle","Elephant"]},
       ],
+      foodchain:[
+        {q:"What does the Lion primarily hunt?",opts:["Acacia leaves", "Termites", "Wildebeest and Zebras", "Only Gazelles"],a:2,exp:"Lions are social hunters targeting large herbivores."},
+        {q:"What is the Cheetah's preferred prey?",opts:["Lion", "Elephant", "Thomson's Gazelle", "Wildebeest"],a:2,exp:"Cheetahs use their speed to catch fast gazelles on open plains."},
+        {q:"Which organism STARTS the savanna food chain?",opts:["Wildebeest", "Lion", "Savanna Grass", "Cheetah"],a:2,exp:"All energy in the savanna comes from grass capturing sunlight."},
+        {q:"What do Termites eat?",opts:["Wildebeest", "Living grass", "Dead wood and plant matter", "Other insects"],a:2,exp:"Termites are decomposers breaking down dead organic material."},
+        {q:"Sun → Grass → Zebra → ???",opts:["Grass", "Sun", "Lion", "Cactus"],a:2,exp:"Lions hunt zebras — they are the apex predator in this chain."},
+        {q:"In: Grass → Wildebeest → Lion, what is the wildebeest's role?",opts:["Producer", "Secondary Consumer", "Primary Consumer", "Decomposer"],a:2,exp:"Wildebeest eats grass directly — it is a primary consumer."},
+        {q:"Sun → Grass → Gazelle → ???",opts:["Grass", "Cheetah", "Sun", "Elephant"],a:1,exp:"Cheetahs are the main predators of gazelles in the savanna."},
+        {q:"What eats dead animals in the savanna food web?",opts:["Lions only", "Grass", "Vultures and Hyenas", "Zebras"],a:2,exp:"Scavengers like vultures and hyenas clean up the savanna ecosystem."},
+        {q:"In: Grass → Elephant, the elephant is a...",opts:["Producer", "Decomposer", "Primary Consumer", "Apex Predator"],a:2,exp:"Elephants eat plants (grass, bark, leaves) — they are primary consumers."},
+        {q:"Arrange: Lion | Grass | Zebra | Cheetah — Grass→Zebra is correct. What eats zebra?",opts:["Cheetah", "Grass", "Sun", "Decomposer"],a:0,exp:"Both lions and cheetahs prey on zebras, but cheetahs prefer gazelles."}
+      ],
       hangman:[
-        {word:"MIGRATION",clue:"Massive seasonal movement of animals across the savanna"},
-        {word:"SAVANNA",clue:"African grassland with scattered trees"},
-        {word:"PREDATOR",clue:"Animal that hunts and kills other animals"},
+        {word:"SAVANNA",clue:"A flat grassland in Africa"},
+        {word:"ZEBRA",clue:"A striped herbivore"},
+        {word:"LION",clue:"The apex predator of the savanna"},
+        {word:"CHEETAH",clue:"The fastest land animal"},
+        {word:"LEOPARD",clue:"A spotted cat that hunts alone"},
+        {word:"HYENA",clue:"A scavenger and hunter"},
+        {word:"WILDEBEEST",clue:"Large herbivore that migrates"},
+        {word:"ELEPHANT",clue:"Largest land animal, keystone species"},
+        {word:"GIRAFFE",clue:"Tallest animal, eats from treetops"},
+        {word:"MIGRATION",clue:"Seasonal movement of animals for food"},
+        {word:"PREDATOR",clue:"Animal that hunts other animals"},
         {word:"HERBIVORE",clue:"Animal that eats only plants"},
-        {word:"CHEETAH",clue:"The fastest land animal in the world"},
+        {word:"SCAVENGER",clue:"Eats dead animals it did not kill"},
+        {word:"CARNIVORE",clue:"Eats only meat"},
+        {word:"ACACIA",clue:"Thorny tree common in the savanna"},
+        {word:"DECOMPOSER",clue:"Breaks down dead matter"},
+        {word:"PRODUCER",clue:"Makes food from sunlight"},
+        {word:"CONSUMER",clue:"Eats other organisms"},
+        {word:"ECOSYSTEM",clue:"Community of organisms and their environment"},
+        {word:"BIODIVERSITY",clue:"The variety of life in an ecosystem"}
       ],
       match:[
-        {pairs:[{term:"Cheetah",def:"Fastest land animal"},{term:"Elephant",def:"Uproots trees"},{term:"Hyena",def:"Hunts 95% of its food"},{term:"Zebra",def:"Unique stripe pattern"}]},
-        {pairs:[{term:"Producer",def:"Savanna Grass"},{term:"Decomposer",def:"Termite"},{term:"Primary Consumer",def:"Wildebeest"},{term:"Tertiary Consumer",def:"Lion"}]},
+        {pairs:[{term:"Savanna",def:"Flat grassy land with few trees in Africa"},{term:"Grass",def:"Main producer in the savanna"},{term:"Zebra",def:"Striped herbivore that eats grass"},{term:"Lion",def:"Apex predator, king of the savanna"}]},
+        {pairs:[{term:"Cheetah",def:"Fastest land animal"},{term:"Elephant",def:"Uproots trees, keystone species"},{term:"Hyena",def:"Hunts 95% of its own food"},{term:"Vulture",def:"Scavenger eating dead animals"}]},
+        {pairs:[{term:"Migration",def:"Seasonal movement to find food and water"},{term:"Scavenger",def:"Eats animals it did not kill"},{term:"Apex predator",def:"Top of food chain, no enemies"},{term:"Dry season",def:"Long period of very little rain"}]},
+        {pairs:[{term:"Acacia tree",def:"Thorny tree common in the savanna"},{term:"Dung beetle",def:"Decomposer recycling animal waste"},{term:"Giraffe",def:"Eats leaves from tall trees"},{term:"Wildebeest",def:"Migrating primary consumer"}]},
+        {pairs:[{term:"Producer",def:"Savanna Grass"},{term:"Decomposer",def:"Termite"},{term:"Primary Consumer",def:"Wildebeest"},{term:"Tertiary Consumer",def:"Lion"}]}
       ],
       unscramble:[
         {words:["elephants","are","a","keystone","species","that","shapes","the","landscape"],ans:"elephants are a keystone species that shapes the landscape",hint:"Ecological role of the elephant"},
         {words:["wet","and","dry","seasons","drive","the","migrations"],ans:"wet and dry seasons drive the migrations",hint:"Savanna seasonal cycles"},
+        {words:["the","lion","is","the","apex","predator","of","the","african","savanna"],ans:"the lion is the apex predator of the african savanna",hint:"Savanna food chain top"},
+      ],
+      truefalse:[
+        {statement:"The lion is a herbivore.",answer:false,correction:"Lions are carnivores — they eat other animals."},
+        {statement:"Grass is the main producer in the savanna.",answer:true,correction:""},
+        {statement:"A zebra eats grass.",answer:true,correction:""},
+        {statement:"Vultures hunt and kill their own prey.",answer:false,correction:"Vultures are scavengers — they eat animals already dead."},
+        {statement:"The cheetah is the fastest land animal.",answer:true,correction:""},
+        {statement:"Lions eat grass in the savanna.",answer:false,correction:"Lions are carnivores — they eat animals like zebras."},
+        {statement:"Migration means animals move to find food and water.",answer:true,correction:""},
+        {statement:"The hyena only eats plants.",answer:false,correction:"Hyenas eat meat and scavenge dead animals."},
+        {statement:"An apex predator has many natural enemies.",answer:false,correction:"Apex predators have NO natural enemies."},
+        {statement:"Giraffes eat leaves from tall trees.",answer:true,correction:""},
+        {statement:"Dung beetles are decomposers in the savanna.",answer:true,correction:""},
+        {statement:"In the chain Grass → Zebra → Lion, the zebra is the secondary consumer.",answer:false,correction:"The zebra is the PRIMARY consumer — it eats grass (producer)."},
+        {statement:"Elephants eat only meat.",answer:false,correction:"Elephants are herbivores eating grass, leaves, and bark."},
+        {statement:"The savanna has a dry season and a rainy season.",answer:true,correction:""},
+        {statement:"A gazelle is prey for a cheetah.",answer:true,correction:""},
+        {statement:"Grass gets its energy from the sun.",answer:true,correction:""},
+        {statement:"A scavenger kills other animals to eat them.",answer:false,correction:"Scavengers eat animals that are already dead."},
+        {statement:"The leopard is a carnivore.",answer:true,correction:""},
+        {statement:"Primary consumers eat other animals.",answer:false,correction:"Primary consumers eat plants — they are herbivores."},
+        {statement:"Biodiversity in the African savanna is very high.",answer:true,correction:""}
       ],
     }
   },
@@ -269,39 +452,100 @@ const ECOSYSTEMS = {
     ],
     challenges:{
       trivia:[
-        {q:"What % of Earth's oxygen is produced by phytoplankton?",opts:["10%","25%","50%","80%"],a:2,exp:"Phytoplankton produce over 50% of Earth's oxygen — more than all land forests combined!"},
-        {q:"In which ocean zone does photosynthesis occur?",opts:["Dark Zone","Twilight Zone","Sunlit Zone","Benthic Zone"],a:2,exp:"The Sunlit Zone (top ~200m) is where light penetrates and all photosynthesis occurs."},
-        {q:"What is the maximum speed of the Bluefin Tuna?",opts:["20 km/h","40 km/h","70 km/h","100 km/h"],a:2,exp:"The Bluefin Tuna can reach 70 km/h — one of the fastest fish in the ocean."},
-        {q:"Why are Orcas unique among marine predators?",opts:["They are the largest","They use coordinated group strategies","They only eat fish","They never attack"],a:1,exp:"Orcas use complex coordinated hunting strategies — the only cetaceans known to do so."},
-        {q:"Why is Krill so vital to the ocean?",opts:["It's the largest","It's the base of almost all ocean food chains","It produces oxygen","It regulates temperature"],a:1,exp:"Without Krill, whales, seals, and penguins would starve. It's the essential link in ocean food webs."},
-        {q:"How much of Earth's surface does the ocean cover?",opts:["50%","60%","71%","85%"],a:2,exp:"The ocean covers 71% of Earth and regulates global climate and temperature."},
-      ],
-      foodchain:[
-        {q:"What does the Orca eat?",opts:["Phytoplankton","Kelp","Seals and dolphins","Only Krill"],a:2,exp:""},
-        {q:"Which organism is at the BASE of the ocean food chain?",opts:["Tuna","Orca","Krill","Phytoplankton"],a:3,exp:""},
-        {q:"What does the Bluefin Tuna eat?",opts:["Krill","Phytoplankton","Sardines and squid","Bacteria"],a:2,exp:""},
-        {q:"Which trophic level does Krill occupy?",opts:["Producer","Primary Consumer","Secondary Consumer","Tertiary Consumer"],a:1,exp:""},
+        {q:"What covers more than 70% of Earth's surface?",opts:["Land", "Deserts", "The ocean", "Ice"],a:2,exp:"Oceans cover about 71% of Earth's surface — our blue planet."},
+        {q:"What are phytoplankton?",opts:["Large sea plants", "Tiny microscopic ocean plants", "Small fish", "Ocean bacteria"],a:1,exp:"Phytoplankton are microscopic and produce 50% of Earth's oxygen."},
+        {q:"What is the apex predator of the ocean?",opts:["Krill", "Tuna", "Great White Shark", "Seal"],a:2,exp:"The great white shark is at the very top of the ocean food chain."},
+        {q:"What do blue whales eat?",opts:["Large fish", "Seals", "Krill", "Sharks"],a:2,exp:"Blue whales eat tiny krill — billions of them every day."},
+        {q:"What is the role of zooplankton in the ocean food chain?",opts:["They are producers", "They eat phytoplankton", "They are apex predators", "They are decomposers"],a:1,exp:"Zooplankton are primary consumers eating phytoplankton."},
+        {q:"How deep is the deepest part of the ocean?",opts:["1,000m", "5,000m", "11,000m", "100m"],a:2,exp:"The Mariana Trench reaches nearly 11km deep — the deepest place on Earth."},
+        {q:"What is the Great Barrier Reef?",opts:["A type of whale", "The world's largest coral reef system", "An ocean trench", "A deep sea fish"],a:1,exp:"The Great Barrier Reef off Australia is the world's largest reef ecosystem."},
+        {q:"What do seals eat?",opts:["Seaweed only", "Krill only", "Fish", "Sharks"],a:2,exp:"Seals are carnivores that eat fish and squid."},
+        {q:"What is the main producer in the ocean?",opts:["Tuna", "Sharks", "Phytoplankton and algae", "Whales"],a:2,exp:"Phytoplankton capture sunlight and produce the base of the ocean food web."},
+        {q:"What happens in the deep ocean where there is no sunlight?",opts:["Nothing lives there", "Chemosynthesis provides energy", "Plants grow", "Fish make their own light"],a:1,exp:"Deep sea organisms use chemical energy instead of sunlight — chemosynthesis."},
+        {q:"Why is the ocean important for Earth's climate?",opts:["It has no effect", "It absorbs heat and CO\u2082", "It produces all oxygen", "It controls wind"],a:1,exp:"Oceans absorb 30% of CO₂ and 90% of excess heat from climate change."},
+        {q:"What do octopuses eat?",opts:["Seaweed", "Crabs, fish, and shellfish", "Only plankton", "Nothing"],a:1,exp:"Octopuses are carnivores hunting crabs, shrimp, and fish."},
+        {q:"What is bioluminescence?",opts:["Ocean pollution", "Light produced by living organisms", "Type of coral", "Sun reflecting on water"],a:1,exp:"Many deep sea creatures produce their own light to attract prey or mates."},
+        {q:"What is a marine food web?",opts:["A fishing net", "All ocean food chains connected together", "A type of coral", "A single food chain"],a:1,exp:"The marine food web connects every species through feeding relationships."},
+        {q:"Which ocean zone receives the most sunlight?",opts:["The deep zone", "The midnight zone", "The sunlight zone (epipelagic)", "The abyssal zone"],a:2,exp:"The top 200m (epipelagic zone) is where most ocean life and photosynthesis occurs."},
+        {q:"What is overfishing?",opts:["Fishing in winter", "Catching too many fish, depleting populations", "Fishing with nets", "Fishing for sport"],a:1,exp:"Overfishing removes species faster than they can reproduce, collapsing food webs."},
+        {q:"What is the energy pyramid in the ocean?",opts:["A coral shape", "Shows energy decreasing at each trophic level", "A type of fish", "An ocean mountain"],a:1,exp:"Only ~10% of energy transfers to each higher trophic level."},
+        {q:"What do krill eat?",opts:["Large fish", "Whales", "Phytoplankton", "Sharks"],a:2,exp:"Krill are primary consumers eating phytoplankton — critical link in ocean food webs."},
+        {q:"A tuna eats small fish. The tuna is a...",opts:["Producer", "Primary Consumer", "Secondary Consumer", "Decomposer"],a:2,exp:"Tuna eat primary consumers (small fish), making them secondary consumers."},
+        {q:"What is coral bleaching caused by?",opts:["Overfishing", "High ocean temperatures stressing coral", "Plastic pollution", "Sharks eating coral"],a:1,exp:"Rising temperatures cause coral to expel its zooxanthellae, losing color and food."}
       ],
       identify:[
-        {clue:"I am microscopic and produce over 50% of Earth's oxygen. Without me, almost all life would end.",answer:"Phytoplankton",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Phytoplankton_-_the_foundation_of_the_oceanic_food_chain.jpg/300px-Phytoplankton_-_the_foundation_of_the_oceanic_food_chain.jpg",emoji:"🔬",opts:["Phytoplankton","Marine Bacteria","Krill","Sardine"]},
-        {clue:"I am the apex predator of all oceans. I use coordinated family strategies to hunt.",answer:"Orca",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Killerwhale_jumping.jpg/300px-Killerwhale_jumping.jpg",emoji:"🐳",opts:["Orca","Great White Shark","Leopard Seal","Bluefin Tuna"]},
-        {clue:"I form underwater forests sheltering thousands of species. I am a giant algae.",answer:"Kelp Forest",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Kelp_Forest_at_Monterey_Bay_Aquarium.jpg/300px-Kelp_Forest_at_Monterey_Bay_Aquarium.jpg",emoji:"🌿",opts:["Kelp Forest","Phytoplankton","Sea Turtle","Sardine"]},
-        {clue:"I am tiny and look like a shrimp. Without me, whales, seals, and penguins would starve.",answer:"Krill",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Meganyctiphanes_norvegica2.jpg/300px-Meganyctiphanes_norvegica2.jpg",emoji:"🦐",opts:["Krill","Sardine","Jellyfish","Giant Squid"]},
+        {clue:"I am tiny and invisible to the eye, but I produce half of Earth's oxygen.",answer:"Phytoplankton",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/CSIRO_ScienceImage_8260_Phytoplankton_the_foundation_of_the_oceanic_food_chain.jpg/300px-CSIRO_ScienceImage_8260_Phytoplankton_the_foundation_of_the_oceanic_food_chain.jpg",emoji:"🔬",opts:["Phytoplankton","Krill","Zooplankton","Seaweed"]},
+        {clue:"I have 8 arms, 3 hearts, and blue blood. I can change color instantly.",answer:"Octopus",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Day_Octopus_%28Octopus_cyanea%29.jpg/300px-Day_Octopus_%28Octopus_cyanea%29.jpg",emoji:"🐙",opts:["Octopus","Squid","Jellyfish","Crab"]},
+        {clue:"I am the largest animal ever to live on Earth. I eat the smallest thing in the ocean.",answer:"Blue Whale",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Kongo_Blue_Whale.jpg/300px-Kongo_Blue_Whale.jpg",emoji:"🐋",opts:["Blue Whale","Great White Shark","Orca","Giant Squid"]},
+        {clue:"I have no brain or bones but I have killed more people than sharks. I drift with currents.",answer:"Jellyfish",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Lion%27s_mane_jellyfish_in_Gullmarn_fjord_at_Sämstad_2013.jpg/300px-Lion%27s_mane_jellyfish_in_Gullmarn_fjord_at_Sämstad_2013.jpg",emoji:"🪼",opts:["Jellyfish","Octopus","Sea Anemone","Coral"]},
+      ],
+      foodchain:[
+        {q:"Which organism forms the BASE of the ocean food chain?",opts:["Shark", "Seal", "Phytoplankton", "Tuna"],a:2,exp:"Phytoplankton are the ocean's primary producers — all energy starts here."},
+        {q:"Sun → Phytoplankton → Zooplankton → ???",opts:["Sun", "Phytoplankton", "Small fish", "Shark"],a:2,exp:"Small fish eat zooplankton — they are secondary consumers."},
+        {q:"What does the Great White Shark eat?",opts:["Seaweed", "Phytoplankton", "Fish and seals", "Krill only"],a:2,exp:"Great white sharks are apex predators eating large fish and marine mammals."},
+        {q:"In: Phytoplankton → Krill → Whale, the whale is a...",opts:["Producer", "Primary Consumer", "Secondary Consumer", "Decomposer"],a:2,exp:"The whale eats krill (primary consumer), making it a secondary consumer."},
+        {q:"Sun → Algae → Sea Urchin → ???",opts:["Algae", "Sun", "Moray Eel", "Phytoplankton"],a:2,exp:"Moray eels eat sea urchins and other invertebrates."},
+        {q:"What do blue whales eat to filter from the water?",opts:["Large fish", "Sharks", "Krill", "Seals"],a:2,exp:"Blue whales gulp thousands of tons of krill, filtering them with baleen."},
+        {q:"In the ocean food chain, where does energy FIRST enter?",opts:["From sharks", "From fish", "From phytoplankton via sunlight", "From decomposers"],a:2,exp:"Phytoplankton capture solar energy through photosynthesis — the starting point."},
+        {q:"Sun → Phytoplankton → Krill → Fish → ???",opts:["Phytoplankton", "Krill", "Sun", "Shark"],a:3,exp:"Sharks are apex predators eating large fish."},
+        {q:"What role do marine bacteria play in the ocean?",opts:["Apex predator", "Primary consumer", "Decomposer", "Producer"],a:2,exp:"Marine bacteria decompose dead organisms, recycling nutrients into the ocean."},
+        {q:"Arrange: Shark | Phytoplankton | Krill | Tuna — correct order?",opts:["Shark\u2192Tuna\u2192Krill\u2192Phytoplankton", "Phytoplankton\u2192Krill\u2192Tuna\u2192Shark", "Krill\u2192Phytoplankton\u2192Shark\u2192Tuna", "Tuna\u2192Shark\u2192Phytoplankton\u2192Krill"],a:1,exp:"Energy flows from producers (phytoplankton) up to apex predators (shark)."}
       ],
       hangman:[
-        {word:"PHYTOPLANKTON",clue:"Microscopic producers generating 50% of Earth's oxygen"},
-        {word:"BIOLUMINESCENCE",clue:"Light produced by organisms in the deep sea"},
-        {word:"ORCA",clue:"Apex predator that hunts using group strategies"},
-        {word:"PLANKTON",clue:"Microscopic organisms that drift in ocean currents"},
-        {word:"ECOSYSTEM",clue:"Community of organisms interacting with their environment"},
+        {word:"OCEAN",clue:"The largest ecosystem on Earth"},
+        {word:"SHARK",clue:"Apex predator of the sea"},
+        {word:"WHALE",clue:"The largest animal on Earth"},
+        {word:"KRILL",clue:"Tiny shrimp eaten by whales"},
+        {word:"TUNA",clue:"Fast-swimming secondary consumer"},
+        {word:"OCTOPUS",clue:"Eight-armed carnivore of the sea"},
+        {word:"PHYTOPLANKTON",clue:"Microscopic ocean producers"},
+        {word:"ZOOPLANKTON",clue:"Tiny animals eating phytoplankton"},
+        {word:"ALGAE",clue:"Plant-like ocean producer"},
+        {word:"CORAL",clue:"Animal that builds reef structures"},
+        {word:"MARINE",clue:"Relating to the ocean or sea"},
+        {word:"PREDATOR",clue:"Hunts other animals for food"},
+        {word:"PRODUCER",clue:"Makes food from sunlight"},
+        {word:"DECOMPOSER",clue:"Breaks down dead ocean matter"},
+        {word:"BIODIVERSITY",clue:"Variety of species in an ecosystem"},
+        {word:"PHOTOSYNTHESIS",clue:"How algae makes food from sunlight"},
+        {word:"MIGRATION",clue:"Seasonal movement of ocean species"},
+        {word:"ECOSYSTEM",clue:"Community of organisms and environment"},
+        {word:"ENERGY",clue:"What all organisms need to survive"},
+        {word:"TROPHIC",clue:"Relating to feeding levels in a food chain"}
       ],
       match:[
-        {pairs:[{term:"Phytoplankton",def:"Produces 50% of Earth's oxygen"},{term:"Krill",def:"Base of the ocean food chain"},{term:"Orca",def:"Hunts with group strategy"},{term:"Kelp Forest",def:"Forms underwater forests"}]},
-        {pairs:[{term:"Sunlit Zone",def:"Where photosynthesis occurs"},{term:"Decomposer",def:"Marine Bacteria"},{term:"Primary Consumer",def:"Eats producers"},{term:"Apex Predator",def:"No natural predators"}]},
+        {pairs:[{term:"Ocean",def:"Largest ecosystem on Earth"},{term:"Phytoplankton",def:"Microscopic ocean producers"},{term:"Zooplankton",def:"Tiny animals eating phytoplankton"},{term:"Algae",def:"Plant-like organism doing photosynthesis"}]},
+        {pairs:[{term:"Krill",def:"Small crustaceans eaten by whales"},{term:"Food web",def:"Many interconnected food chains"},{term:"Great white shark",def:"Apex predator of the ocean"},{term:"Seal",def:"Marine mammal, prey for sharks"}]},
+        {pairs:[{term:"Tuna",def:"Fast secondary consumer in the ocean"},{term:"Whale",def:"Largest ocean animal"},{term:"Octopus",def:"Eight-armed carnivore eating crabs"},{term:"Energy pyramid",def:"Shows energy decreasing at each level"}]},
+        {pairs:[{term:"Photosynthesis",def:"How ocean producers make food"},{term:"Trophic level",def:"Position in the food chain"},{term:"Apex predator",def:"Top of food chain, no enemies"},{term:"Marine",def:"Relating to the ocean or sea"}]},
+        {pairs:[{term:"Primary production",def:"Food creation by phytoplankton"},{term:"Biodiversity",def:"Variety of organisms in ecosystem"},{term:"Salt water",def:"Type of water in the ocean"},{term:"Decomposer",def:"Breaks down dead ocean matter"}]}
       ],
       unscramble:[
-        {words:["phytoplankton","produces","more","oxygen","than","all","land","forests","combined"],ans:"phytoplankton produces more oxygen than all land forests combined",hint:"Ocean oxygen production"},
-        {words:["orcas","use","coordinated","strategies","to","hunt","large","prey"],ans:"orcas use coordinated strategies to hunt large prey",hint:"Orca hunting behavior"},
+        {words:["phytoplankton","produce","half","of","all","the","oxygen","on","Earth"],ans:"phytoplankton produce half of all the oxygen on Earth",hint:"Ocean producers"},
+        {words:["the","ocean","covers","more","than","70","percent","of","Earth"],ans:"the ocean covers more than 70 percent of Earth",hint:"Ocean facts"},
+        {words:["energy","flows","from","phytoplankton","to","krill","to","whales"],ans:"energy flows from phytoplankton to krill to whales",hint:"Ocean food chain"},
+      ],
+      truefalse:[
+        {statement:"Phytoplankton are the main producers in the ocean.",answer:true,correction:""},
+        {statement:"The great white shark is the apex predator of the ocean.",answer:true,correction:""},
+        {statement:"Whales eat sharks for food.",answer:false,correction:"Whales (baleen) eat krill, not sharks."},
+        {statement:"Zooplankton are tiny ocean plants.",answer:false,correction:"Zooplankton are tiny animals that eat phytoplankton."},
+        {statement:"In a food chain, energy increases as you move up each level.",answer:false,correction:"Energy DECREASES — only ~10% passes to each higher level."},
+        {statement:"Krill are an important food source for whales and fish.",answer:true,correction:""},
+        {statement:"The ocean covers more than 70% of Earth's surface.",answer:true,correction:""},
+        {statement:"Seals are apex predators in the ocean.",answer:false,correction:"Seals are eaten by sharks — they are not apex predators."},
+        {statement:"A tuna is a secondary consumer in the ocean.",answer:true,correction:""},
+        {statement:"Coral bleaching is caused by rising ocean temperatures.",answer:true,correction:""},
+        {statement:"Marine means relating to fresh water.",answer:false,correction:"Marine means relating to the ocean or salt water."},
+        {statement:"Decomposers are not found in the ocean.",answer:false,correction:"They exist in every ecosystem, recycling nutrients."},
+        {statement:"All ocean organisms need direct sunlight to survive.",answer:false,correction:"Deep ocean organisms don't need sunlight — they use chemosynthesis."},
+        {statement:"Zooplankton are tiny animals.",answer:true,correction:""},
+        {statement:"A shark eats phytoplankton directly.",answer:false,correction:"Sharks eat fish and other animals, not phytoplankton."},
+        {statement:"Primary production in the ocean is done by phytoplankton and algae.",answer:true,correction:""},
+        {statement:"The ocean has the least biodiversity of all ecosystems.",answer:false,correction:"The ocean is rich in biodiversity — most life on Earth is aquatic."},
+        {statement:"In an energy pyramid, the base (producers) has the MOST energy.",answer:true,correction:""},
+        {statement:"Octopuses are herbivores.",answer:false,correction:"Octopuses are carnivores eating crabs, fish, and shellfish."},
+        {statement:"Overfishing can disrupt the entire ocean food web.",answer:true,correction:""}
       ],
     }
   },
@@ -408,18 +652,26 @@ const ECOSYSTEMS = {
     ],
     challenges:{
       trivia:[
-        {q:"Wetlands are sometimes called the 'kidneys of the Earth'. Why?",opts:["They pump water","They filter pollutants from water","They store blood","They produce oxygen"],a:1,exp:"Wetlands filter and clean water by trapping pollutants, sediments, and excess nutrients — just like kidneys filter blood."},
-        {q:"What % of freshwater species live in wetlands despite covering only 1% of Earth's surface?",opts:["5%","10%","25%","40%"],a:3,exp:"Wetlands cover 1% of Earth but host 40% of all freshwater species — they are biodiversity hotspots."},
-        {q:"What is the main threat to wetlands globally?",opts:["Floods","Drainage for agriculture and urban development","Tsunamis","Overfishing"],a:1,exp:"Over 50% of the world's wetlands have been drained for farming and cities since 1900."},
-        {q:"Why are wetlands critical for flood prevention?",opts:["They generate rain","They absorb and store floodwater like a sponge","They block rivers","They redirect water"],a:1,exp:"Wetlands can absorb enormous amounts of water during storms, reducing flooding downstream."},
-        {q:"What gas do wetlands store that is critical in the fight against climate change?",opts:["Oxygen","Nitrogen","Carbon","Methane"],a:2,exp:"Wetlands store up to 30% of all land carbon — destroying them releases huge amounts of CO₂."},
-        {q:"What is unique about an amphibian like the Green Tree Frog?",opts:["It only lives in water","It breathes through both lungs and skin","It eats only plants","It can fly"],a:1,exp:"Amphibians breathe through skin AND lungs — making them sensitive to pollution in both water and air."},
-      ],
-      foodchain:[
-        {q:"What does the American Alligator primarily eat?",opts:["Cattails","Fish and turtles","Insects only","Duckweed"],a:1,exp:""},
-        {q:"Which organism forms the BASE of the wetland food chain?",opts:["Osprey","Alligator","Cattail","Heron"],a:2,exp:""},
-        {q:"What does the Great Blue Heron eat?",opts:["Cattail seeds","Duckweed","Fish and frogs","Insects only"],a:2,exp:""},
-        {q:"What role does Marsh Bacteria play?",opts:["Apex predator","Primary consumer","Decomposer","Producer"],a:2,exp:""},
+        {q:"What is a wetland?",opts:["A dry, sandy place", "A low area where water covers soil, supporting many species", "A deep ocean trench", "A frozen tundra"],a:1,exp:"Wetlands are transition zones between land and water — incredibly biodiverse."},
+        {q:"What are wetlands called the 'kidneys of the Earth'?",opts:["They pump water", "They filter pollutants from water", "They store blood", "They produce oxygen"],a:1,exp:"Wetlands filter and clean water by trapping pollutants, just like kidneys filter blood."},
+        {q:"What % of freshwater species live in wetlands?",opts:["5%", "10%", "25%", "40%"],a:3,exp:"Wetlands cover 1% of Earth but host 40% of all freshwater species."},
+        {q:"What is the main threat to wetlands globally?",opts:["Floods", "Drainage for agriculture and urban development", "Tsunamis", "Overfishing"],a:1,exp:"Over 50% of wetlands have been drained for farming and cities since 1900."},
+        {q:"Why are wetlands critical for flood prevention?",opts:["They generate rain", "They absorb and store floodwater like a sponge", "They block rivers", "They redirect water"],a:1,exp:"Wetlands act as natural sponges, absorbing floodwaters and releasing slowly."},
+        {q:"What gas do wetlands store critical to fighting climate change?",opts:["Oxygen", "Nitrogen", "Carbon", "Methane"],a:2,exp:"Wetlands store up to 30% of all land carbon — draining them releases huge CO₂."},
+        {q:"What is unique about an amphibian like the Green Tree Frog?",opts:["It only lives in water", "It breathes through both lungs and skin", "It eats only plants", "It can fly"],a:1,exp:"Amphibians are uniquely sensitive to pollution since they breathe through their skin."},
+        {q:"What is a keystone species in the wetland?",opts:["Any small insect", "A species with a huge effect on the whole ecosystem", "The smallest organism", "A decomposer only"],a:1,exp:"Beavers are keystone species — their dams create entire wetland habitats."},
+        {q:"What is eutrophication?",opts:["A type of wetland bird", "When too many nutrients cause algae to choke the water", "A type of fish", "A flooding event"],a:1,exp:"Eutrophication (excess nutrients from agriculture) depletes oxygen, killing aquatic life."},
+        {q:"What do great blue herons eat?",opts:["Cattail seeds", "Only insects", "Fish, frogs, and small animals", "Duckweed only"],a:2,exp:"Herons are patient hunters, standing still for hours to strike at fish and frogs."},
+        {q:"What is bioaccumulation?",opts:["Animals getting bigger", "Buildup of harmful substances at higher trophic levels", "Type of plant growth", "Water recycling"],a:1,exp:"Toxins like mercury concentrate at higher levels — apex predators accumulate the most."},
+        {q:"What is dissolved oxygen in wetlands?",opts:["Oxygen in the air above", "Oxygen dissolved in water that aquatic life needs", "A type of plant", "Chemical used in farming"],a:1,exp:"Dissolved oxygen is vital — when it drops (eutrophication), fish die."},
+        {q:"What is a riparian zone?",opts:["A type of fish", "The area along river or wetland banks", "A deep lake", "A dry meadow"],a:1,exp:"Riparian zones are buffer areas where land and water ecosystems meet."},
+        {q:"Why are alligators important in wetland ecosystems?",opts:["They drain water", "Their 'gator holes' create water refuges for other species in dry season", "They eat all the fish", "They block water flow"],a:1,exp:"Alligator 'gator holes' provide critical water refuges for dozens of species."},
+        {q:"What is a macroinvertebrate?",opts:["A large vertebrate", "Small invertebrate visible to the eye like dragonfly larvae", "A type of water plant", "A microscopic organism"],a:1,exp:"Macroinvertebrates are indicators of water quality — their presence means clean water."},
+        {q:"What role does duckweed play in wetlands?",opts:["Apex predator", "Primary consumer", "Producer (floating water plant)", "Decomposer"],a:2,exp:"Duckweed is a tiny floating plant that produces oxygen and food for many species."},
+        {q:"Why are beaver dams important for wetland ecosystems?",opts:["They block fish", "They create ponds and wetland habitat for many species", "They dry out the land", "They eat other animals"],a:1,exp:"Beaver dams flood areas, creating rich wetland habitats from ordinary streams."},
+        {q:"What is the osprey's hunting strategy?",opts:["It waits patiently like a heron", "It dives feet-first at 60 km/h to catch fish", "It filters water for food", "It hunts at night"],a:1,exp:"Ospreys are spectacular divers — they plunge feet-first into water to catch fish."},
+        {q:"What does a nutrient cycle do in wetlands?",opts:["Creates floods", "Moves nutrients through producers, consumers, and decomposers", "Removes toxins", "Generates electricity"],a:1,exp:"Nutrient cycling keeps wetlands productive by constantly recycling essential elements."},
+        {q:"How do wetland plants help water quality?",opts:["They make water saltier", "Their roots filter and absorb pollutants from the water", "They add chemicals", "They block water flow"],a:1,exp:"Wetland plants (cattails, reeds) absorb excess nitrogen and phosphorus from water."}
       ],
       identify:[
         {clue:"I grow at the edge of water. My brown sausage-shaped heads provide food and shelter for many species.",answer:"Cattail",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Typha_latifolia%2C_Broadleaf_Cattail.jpg/300px-Typha_latifolia%2C_Broadleaf_Cattail.jpg",emoji:"🌿",opts:["Cattail","Duckweed","Marsh Bacteria","Crayfish"]},
@@ -427,24 +679,203 @@ const ECOSYSTEMS = {
         {clue:"I dive feet-first into the water at 60 km/h to catch fish. I am one of the world's most widespread birds.",answer:"Osprey",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Osprey_2012.jpg/300px-Osprey_2012.jpg",emoji:"🦅",opts:["Osprey","Great Blue Heron","Mink","American Alligator"]},
         {clue:"I am a mammal that can smell underwater by exhaling then inhaling. I build slides in mud just for fun.",answer:"River Otter",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/River_otter.jpg/300px-River_otter.jpg",emoji:"🦦",opts:["River Otter","Snapping Turtle","Mink","Crayfish"]},
       ],
+      foodchain:[
+        {q:"What does the American Alligator primarily eat?",opts:["Cattails", "Fish and turtles", "Insects only", "Duckweed"],a:1,exp:"Alligators are apex predators eating fish, turtles, and other large animals."},
+        {q:"Which organism forms the BASE of the wetland food chain?",opts:["Osprey", "Alligator", "Cattail", "Heron"],a:2,exp:"Cattails and aquatic plants are the primary producers of the wetland."},
+        {q:"What does the Great Blue Heron eat?",opts:["Cattail seeds", "Duckweed", "Fish and frogs", "Insects only"],a:2,exp:"Herons stand still for hours then strike with their long beaks at fish and frogs."},
+        {q:"What role does Marsh Bacteria play?",opts:["Apex predator", "Primary consumer", "Decomposer", "Producer"],a:2,exp:"Marsh bacteria decompose dead organic matter, recycling nutrients back into water."},
+        {q:"Sun → Duckweed → Mosquito Larva → ???",opts:["Duckweed", "Sun", "Green Tree Frog", "Alligator"],a:2,exp:"Frogs eat mosquito larvae — they are secondary consumers in this chain."},
+        {q:"In: Cattail → Crayfish → Otter, what is the crayfish's role?",opts:["Producer", "Secondary Consumer", "Primary Consumer", "Apex Predator"],a:2,exp:"Crayfish eats plants (cattails) directly — it is a primary consumer."},
+        {q:"Sun → Aquatic Plants → Tadpole → ???",opts:["Plants", "Sun", "Snapping Turtle", "Soil"],a:2,exp:"Snapping turtles eat tadpoles and other small aquatic animals."},
+        {q:"What is at the TOP of the wetland food chain?",opts:["Cattail", "Mosquito Larva", "Green Tree Frog", "American Alligator"],a:3,exp:"The American alligator is the apex predator of the freshwater wetland."},
+        {q:"What role does the osprey play in the wetland food chain?",opts:["Producer", "Primary Consumer", "Tertiary Consumer hunting fish", "Decomposer"],a:2,exp:"Ospreys eat fish (secondary consumers), placing them as tertiary consumers."},
+        {q:"In the wetland food web, what happens to dead organisms?",opts:["They disappear", "Decomposers like bacteria break them down", "Alligators eat them all", "They float away"],a:1,exp:"Decomposers are essential — they recycle nutrients that producers need to grow."}
+      ],
       hangman:[
-        {word:"WETLAND",clue:"Ecosystem where land and water overlap — a biodiversity hotspot"},
-        {word:"AMPHIBIAN",clue:"Animal that breathes through both skin and lungs"},
-        {word:"FILTRATION",clue:"The natural process by which wetlands clean polluted water"},
+        {word:"WETLAND",clue:"Ecosystem where land and water overlap"},
+        {word:"AMPHIBIAN",clue:"Animal breathing through both skin and lungs"},
+        {word:"FILTRATION",clue:"Process by which wetlands clean water"},
         {word:"SYMBIOSIS",clue:"Two species living together in mutual benefit"},
-        {word:"BIODIVERSITY",clue:"The variety of all living organisms in an ecosystem"},
-        {word:"DECOMPOSER",clue:"Organism that breaks down dead matter, recycling nutrients"},
+        {word:"BIODIVERSITY",clue:"Variety of all living organisms in ecosystem"},
+        {word:"DECOMPOSER",clue:"Organism breaking down dead matter"},
+        {word:"CATTAIL",clue:"Emergent plant with brown sausage-shaped head"},
+        {word:"ALLIGATOR",clue:"Ancient apex predator of the marsh"},
+        {word:"HERON",clue:"Large wading bird hunting fish"},
+        {word:"OSPREY",clue:"Bird that dives feet-first to catch fish"},
+        {word:"BEAVER",clue:"Dam-building keystone species"},
+        {word:"OTTER",clue:"Playful carnivorous mammal of the wetland"},
+        {word:"DUCKWEED",clue:"Tiny floating producer in wetlands"},
+        {word:"MACROINVERTEBRATE",clue:"Small but visible water invertebrate"},
+        {word:"EUTROPHICATION",clue:"Excess nutrients causing algae to choke water"},
+        {word:"NUTRIENT",clue:"Substance organisms need to grow"},
+        {word:"KEYSTONE",clue:"Species with huge effect on entire ecosystem"},
+        {word:"PRODUCER",clue:"Makes food from sunlight"},
+        {word:"CONSUMER",clue:"Eats other organisms"},
+        {word:"ECOSYSTEM",clue:"Community of organisms and environment"}
       ],
       match:[
-        {pairs:[{term:"Cattail",def:"Emergent wetland producer"},{term:"Osprey",def:"Dives at 60 km/h to fish"},{term:"Alligator",def:"Ancient apex predator"},{term:"Marsh Bacteria",def:"Decomposes organic matter"}]},
-        {pairs:[{term:"Wetland",def:"Filters water and prevents floods"},{term:"Amphibian",def:"Lives in water and on land"},{term:"Carbon storage",def:"Why wetlands fight climate change"},{term:"Mangrove roots",def:"Protect coasts from storms"}]},
+        {pairs:[{term:"Wetland",def:"Filters water and prevents floods"},{term:"Emergent plants",def:"Plants with roots in water, leaves above"},{term:"Amphibian",def:"Breathes through skin and lungs"},{term:"Keystone species",def:"Has huge effect on whole ecosystem"}]},
+        {pairs:[{term:"Cattail",def:"Emergent wetland producer"},{term:"Osprey",def:"Dives feet-first at 60 km/h to fish"},{term:"Alligator",def:"Ancient apex predator"},{term:"Marsh Bacteria",def:"Decomposes organic matter"}]},
+        {pairs:[{term:"Dragonfly",def:"Predatory insect living near water"},{term:"Great blue heron",def:"Large wading bird eating fish and frogs"},{term:"Beaver",def:"Builds dams creating wetland habitat"},{term:"Otter",def:"Carnivorous mammal swimming and eating fish"}]},
+        {pairs:[{term:"Eutrophication",def:"Excess nutrients reducing oxygen in water"},{term:"Bioaccumulation",def:"Buildup of toxins at higher trophic levels"},{term:"Dissolved oxygen",def:"Oxygen in water aquatic life needs"},{term:"Riparian zone",def:"Area along river and wetland banks"}]},
+        {pairs:[{term:"Carbon storage",def:"Why wetlands fight climate change"},{term:"Nutrient cycling",def:"Movement of nutrients through ecosystem"},{term:"Food web complexity",def:"Many overlapping feeding relationships"},{term:"Trophic cascade",def:"Losing key species disrupts whole web"}]}
       ],
       unscramble:[
         {words:["wetlands","filter","water","and","prevent","floods","and","store","carbon"],ans:"wetlands filter water and prevent floods and store carbon",hint:"Ecological services of wetlands"},
         {words:["amphibians","breathe","through","their","skin","and","lungs"],ans:"amphibians breathe through their skin and lungs",hint:"Amphibian biology"},
         {words:["over","50%","of","wetlands","have","been","destroyed","by","humans"],ans:"over 50% of wetlands have been destroyed by humans",hint:"Conservation crisis"},
       ],
+      truefalse:[
+        {statement:"Wetlands filter water and prevent floods.",answer:true,correction:""},
+        {statement:"Amphibians breathe through their skin and lungs.",answer:true,correction:""},
+        {statement:"Over 50% of wetlands have been destroyed by humans.",answer:true,correction:""},
+        {statement:"The alligator is the apex predator of the freshwater wetland.",answer:true,correction:""},
+        {statement:"Cattails are consumers in the wetland.",answer:false,correction:"Cattails are producers — they make food from sunlight."},
+        {statement:"Wetlands store carbon, helping fight climate change.",answer:true,correction:""},
+        {statement:"The osprey hunts by diving feet-first into water.",answer:true,correction:""},
+        {statement:"Eutrophication increases oxygen levels in wetland water.",answer:false,correction:"Eutrophication REDUCES oxygen, harming aquatic life."},
+        {statement:"Beavers are keystone species in wetland ecosystems.",answer:true,correction:""},
+        {statement:"Duckweed is a consumer in the wetland.",answer:false,correction:"Duckweed is a floating plant — it is a producer."},
+        {statement:"Bioaccumulation means toxins build up at higher trophic levels.",answer:true,correction:""},
+        {statement:"Marsh bacteria are not important in the wetland ecosystem.",answer:false,correction:"Marsh bacteria are vital decomposers recycling nutrients."},
+        {statement:"The Green Tree Frog only lives in water.",answer:false,correction:"Frogs are amphibians — they live both in water and on land."},
+        {statement:"Wetlands cover only 1% of Earth but host 40% of freshwater species.",answer:true,correction:""},
+        {statement:"The osprey is the apex predator of the wetland.",answer:false,correction:"The American Alligator is the apex predator."},
+        {statement:"Dissolved oxygen in water is important for aquatic animals.",answer:true,correction:""},
+        {statement:"Wetlands have low biodiversity compared to other ecosystems.",answer:false,correction:"Wetlands have VERY HIGH biodiversity for their small area."},
+        {statement:"Alligator holes provide water refuges for other species.",answer:true,correction:""},
+        {statement:"A riparian zone is found along river and wetland banks.",answer:true,correction:""},
+        {statement:"Nutrient cycling in wetlands is unimportant.",answer:false,correction:"Nutrient cycling keeps wetlands productive by recycling all elements."}
+      ],
     }
+  },
+  arctic:{
+    id:"arctic", name:"Arctic Tundra", emoji:"❄️", difficulty:5, diffLabel:"Hard",
+    boardSize:60, gridSize:8,
+    chapters:[
+      {start:0,  title:"The Beginning",         narrative:"In the beginning — endless ice, silence, and darkness below -40°C…",        element:"🌑"},
+      {start:6,  title:"First Light",            narrative:"A sliver of Arctic sun appears after months of polar night.",               element:"☀️"},
+      {start:12, title:"Permafrost Stirs",       narrative:"The frozen ground barely thaws — lichen and moss cling to rocky outcrops.", element:"🪨"},
+      {start:18, title:"Lichen Blooms",          narrative:"Tiny lichen patches spread across the tundra, feeding the first herds.",    element:"🌿"},
+      {start:24, title:"Caribou Migrate",        narrative:"Vast caribou herds thunder across the tundra in one of Earth's great journeys.", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Rangifer_tarandus_caribou.jpg/400px-Rangifer_tarandus_caribou.jpg",element:"🦌"},
+      {start:30, title:"Predators Appear",       narrative:"The Arctic fox, snowy owl, and wolf emerge to hunt in the frozen silence.", element:"🦊"},
+      {start:36, title:"Lemming Cycle",          narrative:"Lemming populations explode then crash — driving all predator fortunes.",   element:"🐭"},
+      {start:42, title:"Winter Darkness",        narrative:"The sun disappears for months. Only the strongest survive.",               element:"🌌"},
+      {start:48, title:"Polar Bear Reigns",      narrative:"The polar bear — apex predator of the Arctic — hunts seals on sea ice.", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Polar_Bear_-_Alaska_%28cropped%29.jpg/400px-Polar_Bear_-_Alaska_%28cropped%29.jpg",element:"🐻‍❄️"},
+      {start:54, title:"Ecosystem Complete",     narrative:"The Arctic tundra — fragile, ancient, and perfectly balanced by the Creator's hand.", element:"🌍"},
+    ],
+    color:"#7dd3fc", glow:"#bae6fd",
+    bg:"linear-gradient(160deg,#0c1a2e 0%,#0f3460 40%,#1e5f8c 65%,#0c1a2e 100%)",
+    organisms:[
+      {id:"lichen",   name:"Arctic Lichen",      emoji:"🌿",  role:"Producer"},
+      {id:"bacteria", name:"Tundra Bacteria",    emoji:"🦠",  role:"Decomposer"},
+      {id:"lemming",  name:"Lemming",            emoji:"🐭",  role:"Primary Consumer"},
+      {id:"hare",     name:"Arctic Hare",        emoji:"🐇",  role:"Primary Consumer"},
+      {id:"caribou",  name:"Caribou",            emoji:"🦌",  role:"Primary Consumer"},
+      {id:"muskox",   name:"Musk Ox",            emoji:"🦬",  role:"Primary Consumer"},
+      {id:"fox",      name:"Arctic Fox",         emoji:"🦊",  role:"Secondary Consumer"},
+      {id:"owl",      name:"Snowy Owl",          emoji:"🦉",  role:"Secondary Consumer"},
+      {id:"wolf",     name:"Arctic Wolf",        emoji:"🐺",  role:"Tertiary Consumer"},
+      {id:"polarbear",name:"Polar Bear",         emoji:"🐻‍❄️", role:"Apex Predator"},
+    ],
+    challenges:{
+      trivia:[
+        {q:"What is the Arctic tundra?",opts:["A hot, dry place", "A cold, treeless ecosystem with frozen ground", "A tropical rainforest", "An ocean ecosystem"],a:1,exp:"The Arctic tundra is defined by extreme cold, permafrost, and no trees."},
+        {q:"What is permafrost?",opts:["A type of ice storm", "Permanently frozen ground below the tundra", "Very cold water", "A type of arctic plant"],a:1,exp:"Permafrost is ground that stays frozen year-round, limiting plant root depth."},
+        {q:"What is the main producer in the Arctic tundra?",opts:["Polar bear", "Lemming", "Lichen and low-growing plants", "Arctic fox"],a:2,exp:"Lichen, moss, and arctic grass capture the limited solar energy available."},
+        {q:"What does the polar bear eat?",opts:["Lichen", "Arctic plants", "Seals and fish", "Lemmings only"],a:2,exp:"Polar bears hunt seals as their primary food — apex predators of the Arctic."},
+        {q:"What adaptation do Arctic animals use to stay warm?",opts:["They migrate south", "Thick fur, fat layers, and insulation", "They sleep all winter", "They eat more plants"],a:1,exp:"Thick fur, blubber, and feathers insulate against temperatures below -40°C."},
+        {q:"What is camouflage in the Arctic?",opts:["A type of food", "White fur/feathers to blend with snow", "Building a nest", "Swimming in cold water"],a:1,exp:"Arctic fox, snowy owl, and arctic hare turn white in winter to blend with snow."},
+        {q:"What is hibernation?",opts:["Seasonal migration", "A long deep sleep during winter", "Swimming in cold water", "Building a snow den"],a:1,exp:"Some tundra animals hibernate to survive the extreme winter with no food."},
+        {q:"What is migration in the tundra?",opts:["Building a den", "Eating more food", "Seasonal movement to warmer areas for food", "Turning white in winter"],a:2,exp:"Caribou migrate up to 5,000km annually — one of the longest migrations."},
+        {q:"Why is the Arctic tundra called a 'fragile ecosystem'?",opts:["It is very small", "Slow recovery from damage \u2014 cold slows all processes", "It has no animals", "It always floods"],a:1,exp:"Cold temperatures slow decomposition and growth, making recovery from damage very slow."},
+        {q:"What eats lemmings in the tundra?",opts:["Lichen", "Caribou", "Arctic fox and snowy owl", "Musk ox"],a:2,exp:"Lemmings are the key prey — many predators (fox, owl, wolf) depend on them."},
+        {q:"What is a trophic cascade?",opts:["An arctic waterfall", "When removing one species changes the whole food web", "A type of migration", "Food rotting in winter"],a:1,exp:"Remove the polar bear and seal populations explode, crashing fish populations."},
+        {q:"What does the snowy owl eat?",opts:["Lichen and moss", "Berries", "Lemmings and small mammals", "Fish only"],a:2,exp:"Snowy owls are specialist predators of lemmings in the Arctic tundra."},
+        {q:"How do caribou adapt to find food in winter?",opts:["They hibernate", "They eat snow", "They migrate south and dig through snow for lichen", "They hunt other animals"],a:2,exp:"Caribou hooves act like snowshoes and shovels, digging through snow to find lichen."},
+        {q:"What does 'food scarcity' mean in the tundra?",opts:["Too much food", "Very little food available, especially in winter", "Animals not eating enough", "Food spoiling quickly"],a:1,exp:"In winter, snow covers all plants — many animals must migrate or hibernate."},
+        {q:"What is the role of lichen in the Arctic food web?",opts:["Apex predator", "Primary producer at the base of the food web", "Decomposer", "Secondary consumer"],a:1,exp:"Lichen grows on rocks and is the primary food source for caribou and lemmings."},
+        {q:"Which Arctic animal is known for massive population cycles?",opts:["Polar bear", "Musk ox", "Lemming", "Caribou"],a:2,exp:"Lemming populations boom and crash every 3-4 years, affecting all predators."},
+        {q:"What does the Arctic fox eat?",opts:["Only plants", "Lemmings, hares, and birds", "Only fish", "Polar bears"],a:1,exp:"Arctic foxes are opportunistic predators eating small mammals and birds."},
+        {q:"What is the energy source for all Arctic tundra food chains?",opts:["Heat from the ground", "Chemical reactions in ice", "The sun through photosynthesis", "Warm ocean currents"],a:2,exp:"Despite short summers, lichen and plants capture solar energy to start all chains."},
+        {q:"Why are Arctic ecosystems especially vulnerable to climate change?",opts:["They are very large", "They are warming twice as fast as the rest of the planet", "They have too many animals", "They receive too much rain"],a:1,exp:"The Arctic warms 2-4x faster than global average, melting permafrost and sea ice."},
+        {q:"What does a musk ox eat?",opts:["Other animals", "Fish and seals", "Grass, sedges, and lichen", "Polar bears"],a:2,exp:"Musk oxen are herbivores that dig through snow to eat Arctic plants."}
+      ],
+      identify:[
+        {clue:"I am white in winter, brownish in summer. I hunt lemmings under the snow.",answer:"Arctic Fox",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Vulpes_lagopus_in_its_winter_coat.jpg/300px-Vulpes_lagopus_in_its_winter_coat.jpg",emoji:"🦊",opts:["Arctic Fox","Snowy Owl","Polar Bear","Arctic Hare"]},
+        {clue:"I am the apex predator of the Arctic. I can smell a seal through 1 meter of ice.",answer:"Polar Bear",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Polar_Bear_-_Alaska_%28cropped%29.jpg/300px-Polar_Bear_-_Alaska_%28cropped%29.jpg",emoji:"🐻‍❄️",opts:["Polar Bear","Arctic Fox","Snowy Owl","Walrus"]},
+        {clue:"I migrate up to 5,000 km. My hooves act like snowshoes and shovels to find lichen.",answer:"Caribou",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Rangifer_tarandus_caribou.jpg/300px-Rangifer_tarandus_caribou.jpg",emoji:"🦌",opts:["Caribou","Musk Ox","Arctic Hare","Lemming"]},
+        {clue:"I am pure white and silent. I hunt lemmings in the Arctic day and night.",answer:"Snowy Owl",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Snowy_Owl_%28240866707%29.jpeg/300px-Snowy_Owl_%28240866707%29.jpeg",emoji:"🦉",opts:["Snowy Owl","Arctic Fox","Polar Bear","Caribou"]},
+      ],
+      foodchain:[
+        {q:"Sun → Lichen → Lemming → ???",opts:["Lichen", "Sun", "Arctic Fox", "Musk Ox"],a:2,exp:"Arctic foxes are the main predators of lemmings."},
+        {q:"Which organism forms the BASE of the Arctic tundra food chain?",opts:["Polar Bear", "Lemming", "Lichen/Grass", "Arctic Fox"],a:2,exp:"Lichen and tundra grasses are the primary producers capturing solar energy."},
+        {q:"What does the Polar Bear eat?",opts:["Lichen and grass", "Only lemmings", "Seals and fish", "Arctic foxes"],a:2,exp:"Polar bears are apex predators hunting seals on Arctic sea ice."},
+        {q:"Sun → Lichen → Lemming → Arctic Fox → ???",opts:["Lichen", "Sun", "Polar Bear", "Caribou"],a:2,exp:"Polar bears sit at the very top of the Arctic food chain."},
+        {q:"In: Lichen → Lemming → Snowy Owl, what is the PRODUCER?",opts:["Sun", "Lemming", "Lichen", "Snowy Owl"],a:2,exp:"Lichen makes its own food from sunlight — it is the producer."},
+        {q:"Sun → Grass → Caribou → ???",opts:["Grass", "Caribou", "Wolf", "Lichen"],a:2,exp:"Wolves and polar bears are the main predators of caribou."},
+        {q:"What role does the Snowy Owl play in the tundra food web?",opts:["Producer", "Primary Consumer", "Secondary Consumer \u2014 eats lemmings", "Decomposer"],a:2,exp:"Snowy owls eat lemmings (primary consumers), making them secondary consumers."},
+        {q:"What happens in the tundra food chain when lemming populations crash?",opts:["Nothing changes", "Predators like foxes and owls also decline", "Plants disappear", "Polar bears multiply"],a:1,exp:"Lemming population cycles cause boom-bust cycles in their predators."},
+        {q:"Sun → Lichen → Arctic Hare → ???",opts:["Lichen", "Sun", "Arctic Fox", "Musk Ox"],a:2,exp:"Arctic foxes hunt Arctic hares along with lemmings and birds."},
+        {q:"In the tundra, which level has the MOST energy?",opts:["Polar Bear", "Arctic Fox", "Lemming", "Lichen/Producers"],a:3,exp:"Producers always have the most energy — only 10% passes to each higher level."}
+      ],
+      hangman:[
+        {word:"TUNDRA",clue:"Cold treeless ecosystem with frozen ground"},
+        {word:"PERMAFROST",clue:"Permanently frozen ground under the tundra"},
+        {word:"LICHEN",clue:"Organism growing on rocks, key producer in tundra"},
+        {word:"LEMMING",clue:"Small rodent, key prey in the tundra"},
+        {word:"CARIBOU",clue:"Deer-like animal that migrates across the tundra"},
+        {word:"POLARFOX",clue:"Arctic predator with white winter camouflage"},
+        {word:"SNOWYOWL",clue:"White bird of prey that hunts lemmings"},
+        {word:"POLARBEAR",clue:"Apex predator of the Arctic"},
+        {word:"MUSKOX",clue:"Large herbivore with very thick fur"},
+        {word:"INSULATION",clue:"Body feature keeping heat inside in the cold"},
+        {word:"HIBERNATION",clue:"Long deep sleep during winter when food is scarce"},
+        {word:"CAMOUFLAGE",clue:"Colors that help animals blend into their environment"},
+        {word:"MIGRATION",clue:"Seasonal movement to find food or warmer climates"},
+        {word:"ADAPTATION",clue:"Feature helping Arctic animals survive extreme cold"},
+        {word:"PREDATOR",clue:"Hunts other animals for food"},
+        {word:"HERBIVORE",clue:"Eats only plants"},
+        {word:"CARNIVORE",clue:"Eats only meat"},
+        {word:"ECOSYSTEM",clue:"Community of organisms and their environment"},
+        {word:"PRODUCER",clue:"Makes food from sunlight"},
+        {word:"CONSUMER",clue:"Eats other organisms"}
+      ],
+      match:[
+        {pairs:[{term:"Arctic Tundra",def:"Cold treeless ecosystem with permafrost"},{term:"Permafrost",def:"Permanently frozen ground under the surface"},{term:"Lichen",def:"Primary producer growing on rocks"},{term:"Lemming",def:"Key prey animal in the tundra"}]},
+        {pairs:[{term:"Arctic hare",def:"Herbivore prey for foxes and owls"},{term:"Arctic fox",def:"Predator eating lemmings and hares"},{term:"Snowy owl",def:"White bird of prey hunting lemmings"},{term:"Polar bear",def:"Apex predator eating seals and fish"}]},
+        {pairs:[{term:"Insulation",def:"Body feature keeping heat inside"},{term:"Hibernation",def:"Long sleep during winter"},{term:"Camouflage",def:"Colors blending into environment"},{term:"Migration",def:"Seasonal movement to find food"}]},
+        {pairs:[{term:"Food scarcity",def:"Very little food available in winter"},{term:"Trophic cascade",def:"Removing one species changes whole web"},{term:"Primary producer",def:"Makes food from sunlight in tundra"},{term:"Energy transfer",def:"Movement of energy through food chain"}]},
+        {pairs:[{term:"Caribou",def:"Migrates across tundra eating lichen"},{term:"Musk ox",def:"Large herbivore with thick fur"},{term:"Adaptation",def:"Feature helping survive extreme cold"},{term:"Food web",def:"All feeding relationships in tundra"}]}
+      ],
+      unscramble:[
+        {words:["the","arctic","tundra","has","permafrost","and","very","cold","temperatures"],ans:"the arctic tundra has permafrost and very cold temperatures",hint:"Arctic tundra definition"},
+        {words:["polar","bears","hunt","seals","on","arctic","sea","ice"],ans:"polar bears hunt seals on arctic sea ice",hint:"Arctic apex predator"},
+        {words:["caribou","migrate","thousands","of","kilometers","to","find","food"],ans:"caribou migrate thousands of kilometers to find food",hint:"Arctic migration"},
+      ],
+      truefalse:[
+        {statement:"The Arctic tundra is a cold, treeless ecosystem.",answer:true,correction:""},
+        {statement:"Permafrost is permanently frozen ground.",answer:true,correction:""},
+        {statement:"Lichen is a consumer in the tundra.",answer:false,correction:"Lichen is a producer — it makes food from sunlight."},
+        {statement:"The polar bear is the apex predator of the Arctic.",answer:true,correction:""},
+        {statement:"Lemmings eat meat and fish.",answer:false,correction:"Lemmings eat plants and lichen — they are herbivores."},
+        {statement:"Camouflage helps animals blend into their environment.",answer:true,correction:""},
+        {statement:"Caribou migrate to find food.",answer:true,correction:""},
+        {statement:"In winter, some tundra animals hibernate.",answer:true,correction:""},
+        {statement:"The Arctic fox is a herbivore.",answer:false,correction:"The Arctic fox is a carnivore/omnivore eating lemmings and birds."},
+        {statement:"In the tundra food chain, energy decreases as you go up.",answer:true,correction:""},
+        {statement:"Snowy owls hunt lemmings.",answer:true,correction:""},
+        {statement:"Musk oxen eat polar bears.",answer:false,correction:"Musk oxen are herbivores — they eat grass and lichen."},
+        {statement:"The Arctic tundra receives a lot of rain all year.",answer:false,correction:"The tundra receives very little precipitation — it is almost a cold desert."},
+        {statement:"Insulation helps animals stay warm in the cold.",answer:true,correction:""},
+        {statement:"In the food chain, lichen is eaten by lemmings.",answer:true,correction:""},
+        {statement:"The polar bear eats lichen directly.",answer:false,correction:"Polar bears eat seals and fish, not plants."},
+        {statement:"A trophic cascade happens when one species is removed from a food web.",answer:true,correction:""},
+        {statement:"Hibernation is the same as migration.",answer:false,correction:"Hibernation is sleeping; migration is moving to another place."},
+        {statement:"The Arctic fox has thick fur to survive the cold.",answer:true,correction:""},
+        {statement:"Producers in the tundra get energy from the sun.",answer:true,correction:""}
+      ],
+    },
   },
   coralreef:{
     id:"coralreef", name:"Coral Reef", emoji:"🪸", difficulty:7, diffLabel:"Expert",
@@ -477,45 +908,104 @@ const ECOSYSTEMS = {
       {id:"grouper",       name:"Grouper",               emoji:"🐟", role:"Secondary Consumer"},
       {id:"turtle",        name:"Green Sea Turtle",      emoji:"🐢", role:"Secondary Consumer"},
       {id:"reefshark",     name:"Reef Shark",            emoji:"🦈", role:"Tertiary Consumer"},
-      {id:"barracuda",     name:"Barracuda",             emoji:"🐟", role:"Tertiary Consumer"},
+      {id:"barracuda",     name:"Barracuda",             emoji:"🐠", role:"Tertiary Consumer"},
     ],
     challenges:{
       trivia:[
-        {q:"Coral reefs cover less than 1% of the ocean floor, yet they support what fraction of all marine species?",opts:["5%","15%","25%","50%"],a:2,exp:"Coral reefs host 25% of all marine species despite covering less than 1% of ocean area — the highest biodiversity density on Earth."},
-        {q:"What is coral bleaching caused by?",opts:["Overfishing","Ocean warming and acidification stressing the coral","Plastic pollution","Hurricane damage"],a:1,exp:"When water is too warm, coral expels its zooxanthellae algae — losing its color and food source. Without intervention, it dies."},
-        {q:"What is the symbiotic relationship between clownfish and sea anemones?",opts:["The anemone eats the clownfish","The clownfish hides in anemone tentacles for protection; the fish drives away threats","They compete for food","They have no relationship"],a:1,exp:"Clownfish are immune to anemone stings — they live safely in the tentacles and in return chase away butterfly fish that eat the anemone."},
-        {q:"Why is the Parrotfish vital to coral reef health?",opts:["It eats sharks","It grazes on algae that would smother coral, producing reef sand as waste","It builds coral","It digs channels"],a:1,exp:"Parrotfish bite living coral to eat the algae inside. Their digestion produces the white sand beaches of tropical islands!"},
-        {q:"What provides energy for coral reef zooxanthellae?",opts:["Chemical reactions","Moonlight","Sunlight through photosynthesis","Warm water temperature"],a:2,exp:"Zooxanthellae are photosynthetic algae that live inside coral tissue — they convert sunlight into sugars that feed the coral."},
-        {q:"What percentage of coral reefs could be lost by 2050 if warming continues?",opts:["10%","30%","70%","90%"],a:3,exp:"Scientists warn that 90% of coral reefs may be lost by 2050 if global temperatures rise 1.5°C above pre-industrial levels."},
-      ],
-      foodchain:[
-        {q:"What does the Reef Shark primarily eat?",opts:["Seagrass","Zooxanthellae","Fish and cephalopods","Sea urchins only"],a:2,exp:""},
-        {q:"Which organism forms the BASE of the coral reef food chain?",opts:["Barracuda","Reef Shark","Parrotfish","Zooxanthellae"],a:3,exp:""},
-        {q:"What does the Crown-of-Thorns Starfish eat?",opts:["Fish","Small shrimp","Coral polyps","Seagrass"],a:2,exp:""},
-        {q:"What trophic level does the Sea Urchin occupy?",opts:["Producer","Primary Consumer","Secondary Consumer","Apex Predator"],a:1,exp:""},
+        {q:"Coral reefs cover less than 1% of ocean floor but support what fraction of marine species?",opts:["5%", "15%", "25%", "50%"],a:2,exp:"Coral reefs host 25% of all marine species — highest biodiversity density on Earth."},
+        {q:"What is coral bleaching caused by?",opts:["Overfishing", "Ocean warming and acidification stressing the coral", "Plastic pollution", "Hurricane damage"],a:1,exp:"High temperatures cause coral to expel zooxanthellae — losing color and food source."},
+        {q:"What is the symbiosis between clownfish and sea anemones?",opts:["The anemone eats the clownfish", "Clownfish hides in anemone tentacles; fish drives away threats", "They compete for food", "They have no relationship"],a:1,exp:"Mutualism: clownfish get protection, anemones get defense and nutrients."},
+        {q:"Why is the Parrotfish vital to coral reef health?",opts:["It eats sharks", "It grazes on algae that would smother coral, producing reef sand", "It builds coral", "It digs channels"],a:1,exp:"Parrotfish bite coral to eat algae — their waste creates tropical white sand beaches!"},
+        {q:"What provides energy for coral reef zooxanthellae?",opts:["Chemical reactions", "Moonlight", "Sunlight through photosynthesis", "Warm water temperature"],a:2,exp:"Zooxanthellae are photosynthetic algae converting sunlight to sugars for coral."},
+        {q:"What percentage of coral reefs could be lost by 2050?",opts:["10%", "30%", "70%", "90%"],a:3,exp:"Scientists warn 90% of reefs may die if temperatures rise 1.5°C above pre-industrial levels."},
+        {q:"What is mutualism?",opts:["One species benefits, other is harmed", "Both species benefit from the relationship", "Neither species benefits", "One species is unaffected"],a:1,exp:"Mutualism = both species benefit. Example: clownfish and sea anemone."},
+        {q:"What do sea urchins eat in the coral reef?",opts:["Fish", "Sharks", "Algae on rocks and coral", "Other sea urchins"],a:2,exp:"Sea urchins are important grazers controlling algae growth on the reef."},
+        {q:"What is coral bleaching's effect on the ecosystem?",opts:["It improves the reef", "Coral loses food, turns white, and can die", "It has no effect", "It helps fish"],a:1,exp:"Without zooxanthellae, coral starves. Mass bleaching events cause reef collapse."},
+        {q:"What is the role of the Crown-of-Thorns starfish?",opts:["Primary producer", "Apex predator", "Primary consumer eating coral polyps", "Decomposer"],a:2,exp:"Crown-of-thorns eat coral polyps — outbreaks can destroy large reef sections."},
+        {q:"Why is ocean acidification harmful to coral reefs?",opts:["It makes water too warm", "It dissolves calcium carbonate that coral skeletons are made of", "It reduces sunlight", "It increases algae too much"],a:1,exp:"Acidic water dissolves coral skeletons faster than they can be built."},
+        {q:"What is detritivore in the coral reef?",opts:["A top predator", "An organism eating dead organic matter", "A primary producer", "An apex carnivore"],a:1,exp:"Detritivores like sea cucumbers clean up dead matter, recycling nutrients."},
+        {q:"Why are sharks important for coral reef health?",opts:["They eat coral", "They keep fish populations balanced, preventing overgrazing", "They produce oxygen", "They build coral"],a:1,exp:"Sharks control fish populations — without them, herbivores can overgraze algae."},
+        {q:"What does seagrass provide in the coral reef ecosystem?",opts:["Nothing", "Nursery habitat for fish and food for turtles and dugongs", "It blocks sunlight", "It produces toxins"],a:1,exp:"Seagrass beds are nurseries for reef fish and vital food for sea turtles."},
+        {q:"What is a trophic cascade in coral reefs?",opts:["A waterfall", "When removing one species (like sharks) disrupts the whole ecosystem", "A type of coral", "Fish swimming together"],a:1,exp:"Removing sharks causes prey fish to explode, overgrazing algae, and destroying coral."},
+        {q:"What role do marine bacteria play in the coral reef?",opts:["Apex predator", "Primary consumer", "Decomposer recycling nutrients", "Producer"],a:2,exp:"Marine bacteria decompose dead organisms, releasing nutrients back into the reef."},
+        {q:"What is the relationship between coral polyps and zooxanthellae?",opts:["Predator-prey", "Mutualistic symbiosis \u2014 both benefit", "Competition", "Parasitism"],a:1,exp:"Coral provides shelter; zooxanthellae provide 90% of coral's food via photosynthesis."},
+        {q:"What threatens sea turtles in the coral reef ecosystem?",opts:["Other turtles", "Overfishing, plastic pollution, and habitat loss", "More seagrass", "Cleaner water"],a:1,exp:"Sea turtles face fishing bycatch, plastic ingestion, and nesting beach destruction."},
+        {q:"A reef shark eats fish. The reef shark is a...",opts:["Producer", "Primary Consumer", "Secondary Consumer", "Tertiary Consumer/Apex"],a:3,exp:"The reef shark eats secondary consumers, placing it at the apex of the food chain."},
+        {q:"What is the main danger to coral reefs from climate change?",opts:["More hurricanes only", "Ocean warming causing mass bleaching events", "Colder temperatures", "More sunlight"],a:1,exp:"Rising temperatures cause mass bleaching — 50% of the world's coral has already died."}
       ],
       identify:[
         {clue:"I live inside coral tissue and feed it through photosynthesis. Without me, coral bleaches and dies.",answer:"Zooxanthellae",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Coral_reef_at_palmyra.jpg/300px-Coral_reef_at_palmyra.jpg",emoji:"🔬",opts:["Zooxanthellae","Marine Bacteria","Seagrass","Sea Urchin"]},
         {clue:"I am immune to anemone stings. I live inside their tentacles in a famous symbiotic partnership.",answer:"Clownfish",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Amphiprion_ocellaris_%28Clown_anemonefish%29_in_Entacmaea_quadricolor_%28Bubble_anemone%29.jpg/300px-Amphiprion_ocellaris_%28Clown_anemonefish%29_in_Entacmaea_quadricolor_%28Bubble_anemone%29.jpg",emoji:"🐠",opts:["Clownfish","Parrotfish","Grouper","Moray Eel"]},
         {clue:"I eat living coral and produce the white sand of tropical beaches as waste.",answer:"Parrotfish",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Sparisoma_cretense_01.jpg/300px-Sparisoma_cretense_01.jpg",emoji:"🐡",opts:["Parrotfish","Sea Urchin","Crown-of-Thorns Starfish","Clownfish"]},
-        {clue:"I have been navigating ocean currents for 100 million years. I eat jellyfish and seagrass.",answer:"Green Sea Turtle",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Chelonia_mydas_is_going_for_the_air.jpg/300px-Chelonia_mydas_is_going_for_the_air.jpg",emoji:"🐢",opts:["Green Sea Turtle","Grouper","Reef Shark","Moray Eel"]},
+        {clue:"I am an apex predator. I keep reef fish populations balanced. Without me, the reef collapses.",answer:"Reef Shark",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/White_shark.jpg/300px-White_shark.jpg",emoji:"🦈",opts:["Reef Shark","Barracuda","Moray Eel","Grouper"]},
+      ],
+      foodchain:[
+        {q:"What does the Reef Shark primarily eat?",opts:["Seagrass", "Zooxanthellae", "Fish and cephalopods", "Sea urchins only"],a:2,exp:"Reef sharks are apex predators eating large fish and squid."},
+        {q:"Which organism forms the BASE of the coral reef food chain?",opts:["Barracuda", "Reef Shark", "Parrotfish", "Zooxanthellae"],a:3,exp:"Zooxanthellae (and algae) are the primary producers — all energy starts here."},
+        {q:"What does the Crown-of-Thorns Starfish eat?",opts:["Fish", "Small shrimp", "Coral polyps", "Seagrass"],a:2,exp:"Crown-of-thorns starfish eat coral polyps — outbreaks devastate reefs."},
+        {q:"What trophic level does the Sea Urchin occupy?",opts:["Producer", "Primary Consumer", "Secondary Consumer", "Apex Predator"],a:1,exp:"Sea urchins eat algae directly — they are primary consumers."},
+        {q:"Sun → Zooxanthellae → Coral → Parrotfish → ???",opts:["Zooxanthellae", "Sun", "Reef Shark", "Coral"],a:2,exp:"Reef sharks eat parrotfish and other large reef fish."},
+        {q:"In: Algae → Sea Urchin → Moray Eel → Reef Shark, what is the sea urchin?",opts:["Producer", "Primary Consumer", "Secondary Consumer", "Apex Predator"],a:1,exp:"The sea urchin eats algae (producer) directly — it is a primary consumer."},
+        {q:"What do Green Sea Turtles eat?",opts:["Fish", "Sharks", "Seagrass and algae", "Coral polyps"],a:2,exp:"Green sea turtles are herbivores grazing on seagrass and algae."},
+        {q:"In the coral reef food web, what happens when sharks are overfished?",opts:["Nothing changes", "Fish populations explode, overgrazing algae, destroying coral", "Coral grows faster", "More plankton appears"],a:1,exp:"Removing apex predators causes trophic cascade — the whole reef can collapse."},
+        {q:"What role do decomposers play in the coral reef?",opts:["Top predators", "Recycle nutrients from dead organisms back into reef", "Primary producers", "Primary consumers"],a:1,exp:"Marine bacteria and detritivores keep the nutrient cycle running in the reef."},
+        {q:"Arrange: Reef Shark | Algae | Sea Urchin | Moray Eel — correct order?",opts:["Reef Shark\u2192Moray Eel\u2192Sea Urchin\u2192Algae", "Algae\u2192Sea Urchin\u2192Moray Eel\u2192Reef Shark", "Sea Urchin\u2192Algae\u2192Reef Shark\u2192Moray Eel", "Moray Eel\u2192Reef Shark\u2192Algae\u2192Sea Urchin"],a:1,exp:"Energy flows from producers (algae) to apex predators (reef shark)."}
       ],
       hangman:[
-        {word:"SYMBIOSIS",clue:"Two species living together in mutual benefit — like clownfish and anemones"},
-        {word:"BLEACHING",clue:"What happens to coral when ocean water becomes too warm"},
-        {word:"ZOOXANTHELLAE",clue:"Microscopic algae living inside coral that provide it with food"},
-        {word:"BIODIVERSITY",clue:"Coral reefs have the highest marine _____ density on Earth"},
-        {word:"PHOTOSYNTHESIS",clue:"Process by which zooxanthellae convert sunlight into food"},
-        {word:"MUTUALISM",clue:"Both species benefit — the most evolved form of symbiosis"},
+        {word:"CORAL",clue:"Animal building the reef structure"},
+        {word:"ZOOXANTHELLAE",clue:"Algae living inside coral providing food"},
+        {word:"BLEACHING",clue:"When coral loses its color and food source"},
+        {word:"MUTUALISM",clue:"Both species benefit from the relationship"},
+        {word:"PARROTFISH",clue:"Eats coral algae, produces white reef sand"},
+        {word:"CLOWNFISH",clue:"Immune to anemone stings, famous symbiosis"},
+        {word:"URCHIN",clue:"Spiny echinoderm grazing on algae"},
+        {word:"SEAGRASS",clue:"Underwater plant providing nursery habitat"},
+        {word:"SYMBIOSIS",clue:"Two species living together in close relationship"},
+        {word:"BIODIVERSITY",clue:"Variety of life, highest in coral reefs"},
+        {word:"ACIDIFICATION",clue:"Ocean becoming more acidic, harming coral"},
+        {word:"TROPHIC",clue:"Relating to feeding levels"},
+        {word:"PREDATOR",clue:"Hunts other animals for food"},
+        {word:"PRODUCER",clue:"Makes food from sunlight"},
+        {word:"CONSUMER",clue:"Eats other organisms"},
+        {word:"DECOMPOSER",clue:"Breaks down dead reef matter"},
+        {word:"SHARK",clue:"Apex predator of the coral reef"},
+        {word:"TURTLE",clue:"Ancient reptile controlling seagrass and jellyfish"},
+        {word:"ECOSYSTEM",clue:"Community of organisms and environment"},
+        {word:"PHOTOSYNTHESIS",clue:"How zooxanthellae make food inside coral"}
       ],
       match:[
-        {pairs:[{term:"Zooxanthellae",def:"Feeds coral through photosynthesis"},{term:"Clownfish",def:"Lives in anemone tentacles"},{term:"Parrotfish",def:"Creates reef sand as waste"},{term:"Reef Shark",def:"Apex predator of the reef"}]},
-        {pairs:[{term:"Bleaching",def:"Loss of zooxanthellae from heat"},{term:"Symbiosis",def:"Two species benefiting each other"},{term:"Sea Urchin",def:"Grazes algae to protect coral"},{term:"Barracuda",def:"Fast ambush predator"}]},
+        {pairs:[{term:"Zooxanthellae",def:"Algae inside coral doing photosynthesis"},{term:"Coral bleaching",def:"Coral losing color and food in warm water"},{term:"Parrotfish",def:"Grazes algae, produces reef sand"},{term:"Clownfish",def:"Lives in anemone, famous mutualism"}]},
+        {pairs:[{term:"Mutualism",def:"Both species benefit from relationship"},{term:"Sea urchin",def:"Spiny grazer controlling algae"},{term:"Reef shark",def:"Apex predator keeping balance"},{term:"Crown-of-Thorns",def:"Starfish eating coral polyps"}]},
+        {pairs:[{term:"Seagrass",def:"Nursery habitat and food for turtles"},{term:"Marine bacteria",def:"Decomposes dead matter in reef"},{term:"Moray eel",def:"Secondary consumer hiding in coral"},{term:"Grouper",def:"Secondary consumer hunting reef fish"}]},
+        {pairs:[{term:"Trophic cascade",def:"Removing sharks disrupts whole reef"},{term:"Ocean acidification",def:"Dissolves coral skeletons"},{term:"Detritivore",def:"Eats dead organic matter"},{term:"Symbiosis",def:"Close relationship between two species"}]},
+        {pairs:[{term:"Primary production",def:"Food made by zooxanthellae and algae"},{term:"Biodiversity hotspot",def:"25% of marine species in 1% of ocean"},{term:"Keystone species",def:"Species whose removal disrupts whole web"},{term:"Energy pyramid",def:"Shows energy decreasing at higher levels"}]}
       ],
       unscramble:[
-        {words:["coral","reefs","support","25%","of","all","marine","species"],ans:"coral reefs support 25% of all marine species",hint:"Reef biodiversity"},
-        {words:["zooxanthellae","provide","food","to","coral","through","photosynthesis"],ans:"zooxanthellae provide food to coral through photosynthesis",hint:"Coral symbiosis"},
-        {words:["rising","temperatures","cause","coral","bleaching","and","reef","death"],ans:"rising temperatures cause coral bleaching and reef death",hint:"Climate threat"},
+        {words:["coral","reefs","support","25%","of","all","marine","species"],ans:"coral reefs support 25% of all marine species",hint:"Coral reef biodiversity"},
+        {words:["zooxanthellae","provide","energy","to","coral","through","photosynthesis"],ans:"zooxanthellae provide energy to coral through photosynthesis",hint:"Coral symbiosis"},
+        {words:["rising","temperatures","cause","coral","bleaching","and","reef","death"],ans:"rising temperatures cause coral bleaching and reef death",hint:"Climate change threat"},
+      ],
+      truefalse:[
+        {statement:"Coral reefs are among the most biodiverse ecosystems on Earth.",answer:true,correction:""},
+        {statement:"Coral bleaching is caused by low ocean temperatures.",answer:false,correction:"Bleaching is caused by HIGH temperatures stressing the coral."},
+        {statement:"Zooxanthellae provide energy to coral through photosynthesis.",answer:true,correction:""},
+        {statement:"The reef shark is the apex predator of the coral reef.",answer:true,correction:""},
+        {statement:"Parrotfish eat coral and algae, helping keep the reef clean.",answer:true,correction:""},
+        {statement:"Ocean acidification helps coral reefs grow faster.",answer:false,correction:"It harms coral by dissolving calcium carbonate skeletons."},
+        {statement:"Mutualism means only one species benefits from the relationship.",answer:false,correction:"In mutualism, BOTH species benefit."},
+        {statement:"The relationship between clownfish and sea anemone is mutualism.",answer:true,correction:""},
+        {statement:"A detritivore is a top predator in the coral reef.",answer:false,correction:"Detritivores eat dead organic matter — they are not predators."},
+        {statement:"Removing sharks from the reef has no effect on other species.",answer:false,correction:"It causes a trophic cascade, destabilizing the whole ecosystem."},
+        {statement:"Coral reefs thrive in warm, nutrient-rich waters.",answer:false,correction:"They thrive in warm but nutrient-POOR waters."},
+        {statement:"A moray eel is typically a secondary consumer.",answer:true,correction:""},
+        {statement:"Sea turtles play no important role in the coral reef ecosystem.",answer:false,correction:"They control jellyfish and seagrass populations."},
+        {statement:"Primary production in the reef is done by zooxanthellae and algae.",answer:true,correction:""},
+        {statement:"Nitrogen cycles through organisms and the environment in the reef.",answer:true,correction:""},
+        {statement:"A food web shows only one food chain.",answer:false,correction:"A food web shows many interconnected food chains."},
+        {statement:"Coral polyps are plants.",answer:false,correction:"Coral polyps are tiny animals."},
+        {statement:"The symbiosis between zooxanthellae and coral benefits both.",answer:true,correction:""},
+        {statement:"Coral reef food webs are simple and easy to understand.",answer:false,correction:"They are extremely complex — thousands of species interact."},
+        {statement:"Overfishing apex predators can destabilize the entire coral reef ecosystem.",answer:true,correction:""}
       ],
     }
   }
@@ -1114,14 +1604,10 @@ function SetupScreen({ onStart }) {
   };
   const canProceed = step===0?eco:step===1?numTeams>=2:teams.every(t=>t.players.filter(p=>p.trim()).length>0);
 
-  const particles = useMemo(() => Array.from({length:40}, () => ({
-    left: Math.random()*100, top: Math.random()*100, delay: Math.random()*4, dur: 2+Math.random()*3
-  })), []);
-
   return (
     <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",padding:"40px 20px",position:"relative",overflow:"hidden"}}>
-      {particles.map((p,i)=>(
-        <div key={i} style={{position:"absolute",left:`${p.left}%`,top:`${p.top}%`,width:2,height:2,borderRadius:"50%",background:"#fff",animation:`twinkle ${p.dur}s ease-in-out ${p.delay}s infinite`,opacity:0.3,pointerEvents:"none"}} />
+      {Array.from({length:40}).map((_,i)=>(
+        <div key={i} style={{position:"absolute",left:`${Math.random()*100}%`,top:`${Math.random()*100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",animation:`twinkle ${2+Math.random()*3}s ease-in-out ${Math.random()*4}s infinite`,opacity:0.3,pointerEvents:"none"}} />
       ))}
       <div style={{textAlign:"center",marginBottom:36,animation:"fadeUp 0.7s ease"}}>
         <div style={{fontSize:56,marginBottom:8,animation:"float 3s ease-in-out infinite",filter:"drop-shadow(0 0 20px rgba(34,197,94,0.5))"}}>🌍</div>
@@ -1221,6 +1707,54 @@ function SetupScreen({ onStart }) {
   );
 }
 
+// ── SPINNER ────────────────────────────────────────
+function SpinnerScreen({ teams, onDone }) {
+  const [spinning, setSpinning] = useState(false);
+  const [deg, setDeg] = useState(0);
+  const [winner, setWinner] = useState(null);
+  const n = teams.length;
+  const spin = () => {
+    if(spinning||winner!==null)return; setSpinning(true);
+    const winIdx=Math.floor(Math.random()*n);
+    const sd=360/n;
+    const totalRot=deg+1800+(360-(winIdx*sd+sd/2))-(deg%360);
+    setDeg(totalRot);
+    setTimeout(()=>{setSpinning(false);setWinner(winIdx);},4200);
+  };
+  const conicParts=teams.map((t,i)=>`${TEAM_COLORS[t.colorIdx].bg} ${(i/n)*100}% ${((i+1)/n)*100}%`).join(", ");
+  return (
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 30%,#0d1a0e,#020407)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:20}}>
+      <div style={{fontSize:12,color:"#4ade80",letterSpacing:"0.3em",marginBottom:12}}>SPIN ORDER</div>
+      <h2 style={{fontFamily:"'Cinzel',serif",fontSize:26,color:"#fff",marginBottom:4}}>Who goes first?</h2>
+      <p style={{color:"rgba(255,255,255,0.4)",fontSize:13,marginBottom:40}}>Spin to decide who goes first</p>
+      <div style={{position:"relative",marginBottom:40}}>
+        <div style={{position:"absolute",top:-18,left:"50%",transform:"translateX(-50%)",zIndex:10,fontSize:28}}>▼</div>
+        <div style={{width:300,height:300,borderRadius:"50%",background:`conic-gradient(${conicParts})`,transform:`rotate(${deg}deg)`,transition:spinning?"transform 4.2s cubic-bezier(0.17,0.67,0.12,1)":"none",border:"4px solid rgba(255,255,255,0.2)",position:"relative"}}>
+          {teams.map((t,i)=>{
+            const angle=(i/n+0.5/n)*360-90,rad=angle*Math.PI/180;
+            return(<div key={i} style={{position:"absolute",left:150+110*Math.cos(rad),top:150+110*Math.sin(rad),transform:"translate(-50%,-50%)",textAlign:"center",pointerEvents:"none"}}>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:10,fontWeight:700,color:"#fff",textShadow:"0 1px 4px rgba(0,0,0,0.8)",whiteSpace:"nowrap"}}>{t.name}</div>
+            </div>);
+          })}
+        </div>
+        <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:50,height:50,borderRadius:"50%",background:"#0a0f1a",border:"3px solid rgba(255,255,255,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,zIndex:5}}>🌍</div>
+      </div>
+      {winner!==null?(
+        <div style={{textAlign:"center",animation:"popIn 0.6s ease"}}>
+          <div style={{fontSize:18,color:"rgba(255,255,255,0.6)",marginBottom:8}}>The first team is…!</div>
+          <div style={{fontFamily:"'Cinzel',serif",fontSize:32,color:TEAM_COLORS[teams[winner].colorIdx].light,fontWeight:700}}>{teams[winner].name}</div>
+          <div style={{color:"rgba(255,255,255,0.5)",fontSize:13,marginTop:8}}>{teams[winner].players.join(" · ")}</div>
+          <button onClick={()=>onDone(winner)} style={{marginTop:24,padding:"14px 40px",background:"linear-gradient(135deg,#16a34a,#15803d)",border:"none",borderRadius:12,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:14,cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 6px 25px rgba(22,163,74,0.5)"}}>Start the game! →</button>
+        </div>
+      ):(
+        <button onClick={spin} disabled={spinning} style={{padding:"16px 50px",background:spinning?"rgba(255,255,255,0.05)":"linear-gradient(135deg,#7c3aed,#6d28d9)",border:"none",borderRadius:14,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:15,cursor:spinning?"not-allowed":"pointer",letterSpacing:"0.12em",boxShadow:spinning?"none":"0 8px 30px rgba(124,58,237,0.5)"}}>
+          {spinning?"Spinning…":"⚡ SPIN"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ── CHALLENGE COMPONENTS ───────────────────────────
 function TriviaChallenge({ data, onResult }) {
   const [sel,setSel]=useState(null);
@@ -1276,6 +1810,42 @@ function IdentifyChallenge({ data, onResult }) {
           return <button key={i} onClick={()=>submit(opt)} style={{background:bg,border,borderRadius:12,padding:"13px 15px",color,fontFamily:"'Libre Baskerville',serif",fontSize:14,cursor:answered?"default":"pointer"}}>{opt}</button>;
         })}
       </div>
+    </div>
+  );
+}
+
+function TrueFalseChallenge({ data, onResult }) {
+  const [sel,setSel]=useState(null);
+  const [answered,setAnswered]=useState(false);
+  const submit=val=>{
+    if(answered)return;
+    setSel(val);setAnswered(true);
+    const correct=val===data.answer;
+    setTimeout(()=>onResult(correct),1400);
+  };
+  const isTrue=sel===true,isFalse=sel===false;
+  const showTrue=answered&&data.answer===true,showFalse=answered&&data.answer===false;
+  return(
+    <div>
+      <p style={{fontSize:16,color:"#fff",lineHeight:1.6,fontFamily:"'Libre Baskerville',serif",marginBottom:22,textAlign:"center",padding:"0 8px"}}>{data.statement}</p>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
+        <button onClick={()=>submit(true)} style={{
+          padding:"22px 10px",borderRadius:14,fontSize:22,fontFamily:"'Cinzel',serif",fontWeight:700,cursor:answered?"default":"pointer",transition:"all 0.2s",
+          background:answered?(data.answer===true?"rgba(22,163,74,0.3)":(sel===true?"rgba(239,68,68,0.2)":"rgba(255,255,255,0.05)")):"rgba(22,163,74,0.12)",
+          border:answered?(data.answer===true?"2px solid #22c55e":(sel===true?"2px solid #ef4444":"1px solid rgba(255,255,255,0.1)")):"2px solid rgba(22,163,74,0.4)",
+          color:answered?(data.answer===true?"#4ade80":(sel===true?"#f87171":"rgba(255,255,255,0.4)")):"#4ade80",
+          transform:sel===true&&!answered?"scale(1.04)":"scale(1)",
+        }}>✅ TRUE</button>
+        <button onClick={()=>submit(false)} style={{
+          padding:"22px 10px",borderRadius:14,fontSize:22,fontFamily:"'Cinzel',serif",fontWeight:700,cursor:answered?"default":"pointer",transition:"all 0.2s",
+          background:answered?(data.answer===false?"rgba(22,163,74,0.3)":(sel===false?"rgba(239,68,68,0.2)":"rgba(255,255,255,0.05)")):"rgba(239,68,68,0.12)",
+          border:answered?(data.answer===false?"2px solid #22c55e":(sel===false?"2px solid #ef4444":"1px solid rgba(255,255,255,0.1)")):"2px solid rgba(239,68,68,0.4)",
+          color:answered?(data.answer===false?"#4ade80":(sel===false?"#f87171":"rgba(255,255,255,0.4)")):"#f87171",
+          transform:sel===false&&!answered?"scale(1.04)":"scale(1)",
+        }}>❌ FALSE</button>
+      </div>
+      {answered&&data.correction&&!data.answer&&<div style={{padding:"11px 16px",background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:10,fontSize:13,color:"rgba(252,165,165,0.9)",lineHeight:1.6}}>🔎 {data.correction}</div>}
+      {answered&&data.answer&&<div style={{padding:"11px 16px",background:"rgba(22,163,74,0.1)",border:"1px solid rgba(22,163,74,0.3)",borderRadius:10,fontSize:13,color:"rgba(134,239,172,0.9)",lineHeight:1.6}}>✓ That's correct!</div>}
     </div>
   );
 }
@@ -1390,6 +1960,7 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult }) {
     if(cell.type==="hangman")return pick(c.hangman);
     if(cell.type==="match")return pick(c.match);
     if(cell.type==="unscramble")return pick(c.unscramble);
+    if(cell.type==="truefalse")return pick(c.truefalse);
     return null;
   });
   const [result,setResult]=useState(null);
@@ -1433,6 +2004,7 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult }) {
         {cell.type==="hangman"&&<HangmanChallenge data={challenge} onResult={setResult} />}
         {cell.type==="match"&&<MatchChallenge data={challenge} onResult={setResult} />}
         {cell.type==="unscramble"&&<UnscrambleChallenge data={challenge} onResult={setResult} />}
+        {cell.type==="truefalse"&&<TrueFalseChallenge data={challenge} onResult={setResult} />}
       </div>
     </div>
   );
@@ -1553,7 +2125,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     const cell=activeCell;if(!cell){nextTurn();return;}
     if(cell.fx==="advance")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],position:Math.min(u[curIdx].position+cell.val,N_BOARD-1)};return u;});
     else if(cell.fx==="back")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],position:Math.max(0,u[curIdx].position-cell.val)};return u;});
-    else if(cell.fx==="skip"){const skipTarget=(curIdx+1)%teams.length;setActiveCell(null);nextTurn(skipTarget);return;}
+    else if(cell.fx==="skip")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],skipNext:true};return u;});
     else if(cell.fx==="free"){const uncol=getUncollected(teams[curIdx]);if(uncol.length>0){const org=pick(uncol);setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,org]};return u;});}}
     else if(cell.fx==="steal"){const rich=[...teams].filter((_,i)=>i!==curIdx).sort((a,b)=>b.organisms.length-a.organisms.length)[0];if(rich&&rich.organisms.length>0){const st=rich.organisms[rich.organisms.length-1];setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,st]};u[rich.id]={...u[rich.id],organisms:u[rich.id].organisms.filter(o=>o.id!==st.id)};return u;});}}
     else if(cell.fx==="double")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],doubleNext:true};return u;});
@@ -1569,12 +2141,10 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     setPendingOrg(null);setActiveCell(null);nextTurn();
   };
 
-  const nextTurn=(skipIdx=null)=>{
+  const nextTurn=()=>{
     setPhase("idle");setDiceVal(null);setTurn(t=>t+1);
     let next=(curIdx+1)%teams.length;
-    // skipIdx: index of the team that should be skipped this round
-    if(skipIdx!==null&&next===skipIdx){next=(next+1)%teams.length;}
-    else if(skipIdx===null&&teams[next]?.skipNext){setTeams(p=>{const u=[...p];u[next]={...u[next],skipNext:false};return u;});next=(next+1)%teams.length;}
+    if(teams[next]?.skipNext){setTeams(p=>{const u=[...p];u[next]={...u[next],skipNext:false};return u;});next=(next+1)%teams.length;}
     setCurIdx(next);
   };
 
@@ -1731,14 +2301,10 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
 function VictoryScreen({ teams, ecosystem, winner, onRestart }) {
   const eco=ECOSYSTEMS[ecosystem.id];
   const sorted=[...teams].sort((a,b)=>b.organisms.length-a.organisms.length);
-  const confetti = useMemo(() => Array.from({length:30}, () => ({
-    left: Math.random()*100, top: Math.random()*100,
-    size: Math.random()*20+10, delay: Math.random()*4, dur: 2+Math.random()*3
-  })), []);
   return(
     <div style={{minHeight:"100vh",background:eco.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:24,position:"relative",overflow:"hidden"}}>
-      {confetti.map((p,i)=>(
-        <div key={i} style={{position:"absolute",left:`${p.left}%`,top:`${p.top}%`,fontSize:p.size,opacity:0.2,animation:`float ${p.dur}s ease-in-out ${p.delay}s infinite`,pointerEvents:"none"}}>{["🎉","⭐","🌟","✨","🏆"][i%5]}</div>
+      {Array.from({length:30}).map((_,i)=>(
+        <div key={i} style={{position:"absolute",left:`${Math.random()*100}%`,top:`${Math.random()*100}%`,fontSize:Math.random()*20+10,opacity:0.2,animation:`float ${2+Math.random()*3}s ease-in-out ${Math.random()*4}s infinite`,pointerEvents:"none"}}>{["🎉","⭐","🌟","✨","🏆"][i%5]}</div>
       ))}
       <div style={{fontSize:10,letterSpacing:"0.4em",color:eco.color,marginBottom:10}}>JUEGO TERMINADO</div>
       <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:28,color:"#fff",textShadow:`0 0 40px ${eco.color}66`,marginBottom:8,textAlign:"center"}}>{sorted[0].name} Wins!</h1>
