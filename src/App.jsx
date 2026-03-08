@@ -33,12 +33,12 @@ function generateBoard(size) {
   let wcI = 0;
   const b = [{type:"start"}];
   for (let i = 1; i < size - 1; i++) {
-    const posInChapter = (i - 1) % 6;
-    if (posInChapter === 5) {
+    const posInChapter = (i - 1) % 7;
+    if (posInChapter === 6) {
       const wc = wcSeq[wcI % wcSeq.length]; wcI++;
       b.push({type:"wildcard", fx:wc.fx, val:wc.val});
     } else {
-      b.push({type: chPat[(i - 1) % chPat.length]});
+      b.push({type: chPat[posInChapter]});
     }
   }
   b.push({type:"center"});
@@ -477,7 +477,7 @@ const ECOSYSTEMS = {
       {id:"grouper",       name:"Grouper",               emoji:"🐟", role:"Secondary Consumer"},
       {id:"turtle",        name:"Green Sea Turtle",      emoji:"🐢", role:"Secondary Consumer"},
       {id:"reefshark",     name:"Reef Shark",            emoji:"🦈", role:"Tertiary Consumer"},
-      {id:"barracuda",     name:"Barracuda",             emoji:"🐠", role:"Tertiary Consumer"},
+      {id:"barracuda",     name:"Barracuda",             emoji:"🐟", role:"Tertiary Consumer"},
     ],
     challenges:{
       trivia:[
@@ -1114,10 +1114,14 @@ function SetupScreen({ onStart }) {
   };
   const canProceed = step===0?eco:step===1?numTeams>=2:teams.every(t=>t.players.filter(p=>p.trim()).length>0);
 
+  const particles = useMemo(() => Array.from({length:40}, () => ({
+    left: Math.random()*100, top: Math.random()*100, delay: Math.random()*4, dur: 2+Math.random()*3
+  })), []);
+
   return (
     <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",padding:"40px 20px",position:"relative",overflow:"hidden"}}>
-      {Array.from({length:40}).map((_,i)=>(
-        <div key={i} style={{position:"absolute",left:`${Math.random()*100}%`,top:`${Math.random()*100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",animation:`twinkle ${2+Math.random()*3}s ease-in-out ${Math.random()*4}s infinite`,opacity:0.3,pointerEvents:"none"}} />
+      {particles.map((p,i)=>(
+        <div key={i} style={{position:"absolute",left:`${p.left}%`,top:`${p.top}%`,width:2,height:2,borderRadius:"50%",background:"#fff",animation:`twinkle ${p.dur}s ease-in-out ${p.delay}s infinite`,opacity:0.3,pointerEvents:"none"}} />
       ))}
       <div style={{textAlign:"center",marginBottom:36,animation:"fadeUp 0.7s ease"}}>
         <div style={{fontSize:56,marginBottom:8,animation:"float 3s ease-in-out infinite",filter:"drop-shadow(0 0 20px rgba(34,197,94,0.5))"}}>🌍</div>
@@ -1213,54 +1217,6 @@ function SetupScreen({ onStart }) {
           {step===2?"🚀 Launch Game!":"Next →"}
         </button>
       </div>
-    </div>
-  );
-}
-
-// ── SPINNER ────────────────────────────────────────
-function SpinnerScreen({ teams, onDone }) {
-  const [spinning, setSpinning] = useState(false);
-  const [deg, setDeg] = useState(0);
-  const [winner, setWinner] = useState(null);
-  const n = teams.length;
-  const spin = () => {
-    if(spinning||winner!==null)return; setSpinning(true);
-    const winIdx=Math.floor(Math.random()*n);
-    const sd=360/n;
-    const totalRot=deg+1800+(360-(winIdx*sd+sd/2))-(deg%360);
-    setDeg(totalRot);
-    setTimeout(()=>{setSpinning(false);setWinner(winIdx);},4200);
-  };
-  const conicParts=teams.map((t,i)=>`${TEAM_COLORS[t.colorIdx].bg} ${(i/n)*100}% ${((i+1)/n)*100}%`).join(", ");
-  return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 30%,#0d1a0e,#020407)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:20}}>
-      <div style={{fontSize:12,color:"#4ade80",letterSpacing:"0.3em",marginBottom:12}}>SPIN ORDER</div>
-      <h2 style={{fontFamily:"'Cinzel',serif",fontSize:26,color:"#fff",marginBottom:4}}>Who goes first?</h2>
-      <p style={{color:"rgba(255,255,255,0.4)",fontSize:13,marginBottom:40}}>Spin to decide who goes first</p>
-      <div style={{position:"relative",marginBottom:40}}>
-        <div style={{position:"absolute",top:-18,left:"50%",transform:"translateX(-50%)",zIndex:10,fontSize:28}}>▼</div>
-        <div style={{width:300,height:300,borderRadius:"50%",background:`conic-gradient(${conicParts})`,transform:`rotate(${deg}deg)`,transition:spinning?"transform 4.2s cubic-bezier(0.17,0.67,0.12,1)":"none",border:"4px solid rgba(255,255,255,0.2)",position:"relative"}}>
-          {teams.map((t,i)=>{
-            const angle=(i/n+0.5/n)*360-90,rad=angle*Math.PI/180;
-            return(<div key={i} style={{position:"absolute",left:150+110*Math.cos(rad),top:150+110*Math.sin(rad),transform:"translate(-50%,-50%)",textAlign:"center",pointerEvents:"none"}}>
-              <div style={{fontFamily:"'Cinzel',serif",fontSize:10,fontWeight:700,color:"#fff",textShadow:"0 1px 4px rgba(0,0,0,0.8)",whiteSpace:"nowrap"}}>{t.name}</div>
-            </div>);
-          })}
-        </div>
-        <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:50,height:50,borderRadius:"50%",background:"#0a0f1a",border:"3px solid rgba(255,255,255,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,zIndex:5}}>🌍</div>
-      </div>
-      {winner!==null?(
-        <div style={{textAlign:"center",animation:"popIn 0.6s ease"}}>
-          <div style={{fontSize:18,color:"rgba(255,255,255,0.6)",marginBottom:8}}>The first team is…!</div>
-          <div style={{fontFamily:"'Cinzel',serif",fontSize:32,color:TEAM_COLORS[teams[winner].colorIdx].light,fontWeight:700}}>{teams[winner].name}</div>
-          <div style={{color:"rgba(255,255,255,0.5)",fontSize:13,marginTop:8}}>{teams[winner].players.join(" · ")}</div>
-          <button onClick={()=>onDone(winner)} style={{marginTop:24,padding:"14px 40px",background:"linear-gradient(135deg,#16a34a,#15803d)",border:"none",borderRadius:12,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:14,cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 6px 25px rgba(22,163,74,0.5)"}}>Start the game! →</button>
-        </div>
-      ):(
-        <button onClick={spin} disabled={spinning} style={{padding:"16px 50px",background:spinning?"rgba(255,255,255,0.05)":"linear-gradient(135deg,#7c3aed,#6d28d9)",border:"none",borderRadius:14,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:15,cursor:spinning?"not-allowed":"pointer",letterSpacing:"0.12em",boxShadow:spinning?"none":"0 8px 30px rgba(124,58,237,0.5)"}}>
-          {spinning?"Spinning…":"⚡ SPIN"}
-        </button>
-      )}
     </div>
   );
 }
@@ -1597,7 +1553,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     const cell=activeCell;if(!cell){nextTurn();return;}
     if(cell.fx==="advance")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],position:Math.min(u[curIdx].position+cell.val,N_BOARD-1)};return u;});
     else if(cell.fx==="back")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],position:Math.max(0,u[curIdx].position-cell.val)};return u;});
-    else if(cell.fx==="skip")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],skipNext:true};return u;});
+    else if(cell.fx==="skip"){const skipTarget=(curIdx+1)%teams.length;setActiveCell(null);nextTurn(skipTarget);return;}
     else if(cell.fx==="free"){const uncol=getUncollected(teams[curIdx]);if(uncol.length>0){const org=pick(uncol);setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,org]};return u;});}}
     else if(cell.fx==="steal"){const rich=[...teams].filter((_,i)=>i!==curIdx).sort((a,b)=>b.organisms.length-a.organisms.length)[0];if(rich&&rich.organisms.length>0){const st=rich.organisms[rich.organisms.length-1];setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,st]};u[rich.id]={...u[rich.id],organisms:u[rich.id].organisms.filter(o=>o.id!==st.id)};return u;});}}
     else if(cell.fx==="double")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],doubleNext:true};return u;});
@@ -1613,10 +1569,12 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     setPendingOrg(null);setActiveCell(null);nextTurn();
   };
 
-  const nextTurn=()=>{
+  const nextTurn=(skipIdx=null)=>{
     setPhase("idle");setDiceVal(null);setTurn(t=>t+1);
     let next=(curIdx+1)%teams.length;
-    if(teams[next]?.skipNext){setTeams(p=>{const u=[...p];u[next]={...u[next],skipNext:false};return u;});next=(next+1)%teams.length;}
+    // skipIdx: index of the team that should be skipped this round
+    if(skipIdx!==null&&next===skipIdx){next=(next+1)%teams.length;}
+    else if(skipIdx===null&&teams[next]?.skipNext){setTeams(p=>{const u=[...p];u[next]={...u[next],skipNext:false};return u;});next=(next+1)%teams.length;}
     setCurIdx(next);
   };
 
@@ -1773,10 +1731,14 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
 function VictoryScreen({ teams, ecosystem, winner, onRestart }) {
   const eco=ECOSYSTEMS[ecosystem.id];
   const sorted=[...teams].sort((a,b)=>b.organisms.length-a.organisms.length);
+  const confetti = useMemo(() => Array.from({length:30}, () => ({
+    left: Math.random()*100, top: Math.random()*100,
+    size: Math.random()*20+10, delay: Math.random()*4, dur: 2+Math.random()*3
+  })), []);
   return(
     <div style={{minHeight:"100vh",background:eco.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:24,position:"relative",overflow:"hidden"}}>
-      {Array.from({length:30}).map((_,i)=>(
-        <div key={i} style={{position:"absolute",left:`${Math.random()*100}%`,top:`${Math.random()*100}%`,fontSize:Math.random()*20+10,opacity:0.2,animation:`float ${2+Math.random()*3}s ease-in-out ${Math.random()*4}s infinite`,pointerEvents:"none"}}>{["🎉","⭐","🌟","✨","🏆"][i%5]}</div>
+      {confetti.map((p,i)=>(
+        <div key={i} style={{position:"absolute",left:`${p.left}%`,top:`${p.top}%`,fontSize:p.size,opacity:0.2,animation:`float ${p.dur}s ease-in-out ${p.delay}s infinite`,pointerEvents:"none"}}>{["🎉","⭐","🌟","✨","🏆"][i%5]}</div>
       ))}
       <div style={{fontSize:10,letterSpacing:"0.4em",color:eco.color,marginBottom:10}}>JUEGO TERMINADO</div>
       <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:28,color:"#fff",textShadow:`0 0 40px ${eco.color}66`,marginBottom:8,textAlign:"center"}}>{sorted[0].name} Wins!</h1>
