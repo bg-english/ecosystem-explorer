@@ -19,6 +19,7 @@ const CT = {
   match:      { icon: "🔗", color: "#34d399",  bg: "#001a10", label: "MATCH",       hue: 155 },
   unscramble: { icon: "🧩", color: "#fbbf24",  bg: "#141000", label: "UNSCRAMBLE",    hue: 45  },
   truefalse:  { icon: "✅", color: "#a3e635",  bg: "#0f1a00", label: "TRUE / FALSE",  hue: 80  },
+  foodweb:    { icon: "🕸️", color: "#fb923c",  bg: "#1a0800", label: "FOOD WEB",     hue: 30  },
   wildcard:   { icon: "⚡", color: "#e879f9",  bg: "#180028", label: "WILDCARD",    hue: 290 },
 };
 
@@ -80,7 +81,7 @@ const ROLES = [
     howToPlay:"On ✅ True/False squares, The Witness declares TRUE or FALSE in 20 seconds. If FALSE, they must give the correct version in 30 more seconds for full points.",
   },
   {
-    id:"builder", name:"The Builder", emoji:"🏗️", minTeam:6,
+    id:"builder", name:"The Builder", emoji:"🏗️", minTeam:3,
     biblical:"Nehemiah", ref:"Nehemiah 2:18",
     scripture:'"Rise up and build, for the hand of God is good upon us."',
     challenge:"foodweb", challengeLabel:"Food Web Construction", challengeIcon:"🕸️",
@@ -100,8 +101,8 @@ const CHALLENGE_ROLE = {
 
 // Dynamic board generator — length varies by ecosystem (multiples of 6)
 function generateBoard(size) {
-  // 8-tile chapter: trivia, identify, foodchain, hangman, match, unscramble, truefalse, then wildcard
-  const chPat = ["trivia","identify","foodchain","hangman","match","unscramble","truefalse"];
+  // 9-tile chapter: trivia, identify, foodchain, hangman, match, unscramble, truefalse, foodweb, wildcard
+  const chPat = ["trivia","identify","foodchain","hangman","match","unscramble","truefalse","foodweb"];
   const wcSeq = [
     {fx:"advance",val:2},{fx:"back",val:2},{fx:"skip",val:1},{fx:"free",val:1},
     {fx:"steal",val:1},{fx:"double",val:1},{fx:"advance",val:3},{fx:"back",val:3},
@@ -110,12 +111,12 @@ function generateBoard(size) {
   let wcI = 0;
   const b = [{type:"start"}];
   for (let i = 1; i < size - 1; i++) {
-    const posInChapter = (i - 1) % 8;
-    if (posInChapter === 7) {
+    const posInChapter = (i - 1) % 9;
+    if (posInChapter === 8) {
       const wc = wcSeq[wcI % wcSeq.length]; wcI++;
       b.push({type:"wildcard", fx:wc.fx, val:wc.val});
     } else {
-      b.push({type: chPat[posInChapter % chPat.length]});
+      b.push({type: chPat[posInChapter]});
     }
   }
   b.push({type:"center"});
@@ -2433,6 +2434,209 @@ function UnscrambleChallenge({ data, onResult }) {
   );
 }
 
+// ── FOOD WEB CHALLENGE ─────────────────────────────
+function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
+  const eco = ECOSYSTEMS[ecosystem.id];
+  const TROPHIC = [
+    { label:"Producer",           icon:"🌿", color:"#4ade80", desc:"Makes its own food from sunlight" },
+    { label:"Primary Consumer",   icon:"🐛", color:"#fbbf24", desc:"Eats producers directly" },
+    { label:"Secondary Consumer", icon:"🦎", color:"#fb923c", desc:"Eats primary consumers" },
+    { label:"Tertiary Consumer",  icon:"🦅", color:"#f87171", desc:"Top predator" },
+    { label:"Decomposer",         icon:"🦠", color:"#a78bfa", desc:"Breaks down dead organic matter" },
+  ];
+
+  const [shuffledOrgs] = useState(() => shuffle([...eco.organisms]));
+  const [placements, setPlacements] = useState({});
+  const [selected, setSelected] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(90);
+  const [submitted, setSubmitted] = useState(false);
+  const [resultInfo, setResultInfo] = useState(null);
+
+  const placementsRef = useRef({});
+  const submittedRef = useRef(false);
+
+  const doSubmit = (pl) => {
+    if (submittedRef.current) return;
+    submittedRef.current = true;
+    setSubmitted(true);
+    setSelected(null);
+    const finalPl = pl !== undefined ? pl : placementsRef.current;
+    const correct = eco.organisms.filter(o => finalPl[o.id] === o.role).length;
+    const total = eco.organisms.length;
+    const pct = correct / total;
+    const won = pct >= 0.5;
+    setResultInfo({ correct, total, pct, won });
+    setTimeout(() => onResult(won), 2500);
+  };
+
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setTimeLeft(t => {
+        if (t <= 1) { clearInterval(iv); doSubmit(placementsRef.current); return 0; }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(iv);
+  }, []);
+
+  const updatePlacement = (orgId, levelLabel) => {
+    const newPl = { ...placementsRef.current, [orgId]: levelLabel };
+    placementsRef.current = newPl;
+    setPlacements(newPl);
+    setSelected(null);
+  };
+
+  const removePlacement = (orgId) => {
+    if (submitted) return;
+    const newPl = { ...placementsRef.current };
+    delete newPl[orgId];
+    placementsRef.current = newPl;
+    setPlacements(newPl);
+  };
+
+  const unplaced = shuffledOrgs.filter(o => !placements[o.id]);
+  const allPlaced = unplaced.length === 0;
+
+  return (
+    <div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12,gap:10}}>
+        <p style={{fontSize:12,color:"rgba(255,255,255,0.5)",lineHeight:1.4,margin:0}}>
+          {isRestoration
+            ? "🌱 Restore the Garden — place each organism in its correct trophic level"
+            : "Select an organism → tap its trophic level to place it · Click placed organisms to remove"}
+        </p>
+        <div style={{fontFamily:"'Cinzel',serif",fontSize:20,fontWeight:700,flexShrink:0,color:timeLeft<=20?"#f87171":"#fb923c",animation:timeLeft<=20?"chaosFloat 0.7s ease-in-out infinite":"none"}}>
+          ⏱ {timeLeft}s
+        </div>
+      </div>
+
+      {!submitted && (
+        <div style={{marginBottom:12}}>
+          <div style={{fontSize:10,letterSpacing:"0.2em",color:"rgba(255,255,255,0.35)",marginBottom:6}}>
+            ORGANISMS TO PLACE ({unplaced.length} remaining)
+          </div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6,minHeight:36}}>
+            {unplaced.map(org=>(
+              <button key={org.id} onClick={()=>setSelected(prev=>prev===org.id?null:org.id)} style={{
+                padding:"6px 11px",borderRadius:10,cursor:"pointer",
+                background:selected===org.id?"rgba(251,146,60,0.28)":"rgba(255,255,255,0.07)",
+                border:"1.5px solid "+(selected===org.id?"#fb923c":"rgba(255,255,255,0.12)"),
+                color:"#fff",fontSize:13,
+                transform:selected===org.id?"scale(1.06)":"scale(1)",
+                transition:"all 0.15s",
+                display:"flex",alignItems:"center",gap:6,
+                boxShadow:selected===org.id?"0 0 10px rgba(251,146,60,0.35)":"none",
+              }}>
+                <span>{org.emoji}</span>
+                <span style={{fontFamily:"'Cinzel',serif",fontSize:10,color:selected===org.id?"#fdba74":"rgba(255,255,255,0.75)"}}>{org.name}</span>
+              </button>
+            ))}
+            {allPlaced&&<span style={{fontSize:12,color:"#4ade80",animation:"popIn 0.4s ease",display:"flex",alignItems:"center",gap:5}}>✓ All placed! Submit when ready.</span>}
+          </div>
+        </div>
+      )}
+
+      <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:14}}>
+        {TROPHIC.map(level=>{
+          const orgsHere = eco.organisms.filter(o=>placements[o.id]===level.label);
+          const isClickable = !!selected && !submitted;
+          return(
+            <div key={level.label} onClick={()=>{if(isClickable&&selected)updatePlacement(selected,level.label);}}
+              style={{
+                background:isClickable?level.color+"10":"rgba(0,0,0,0.2)",
+                border:"1.5px solid "+(isClickable?level.color+"55":"rgba(255,255,255,0.08)"),
+                borderRadius:10,padding:"8px 12px",
+                cursor:isClickable?"pointer":"default",
+                transition:"all 0.18s",
+                display:"flex",alignItems:"center",gap:10,
+                minHeight:42,
+                boxShadow:isClickable?"0 0 8px "+level.color+"22":"none",
+              }}>
+              <div style={{display:"flex",alignItems:"center",gap:6,minWidth:175,flexShrink:0}}>
+                <span style={{fontSize:15}}>{level.icon}</span>
+                <div>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:10,color:level.color,fontWeight:700,letterSpacing:"0.05em"}}>{level.label}</div>
+                  <div style={{fontSize:9,color:"rgba(255,255,255,0.28)"}}>{level.desc}</div>
+                </div>
+              </div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:5,flex:1}}>
+                {orgsHere.map(org=>{
+                  const correct=submitted&&org.role===level.label;
+                  const wrong=submitted&&org.role!==level.label;
+                  return(
+                    <div key={org.id} onClick={e=>{e.stopPropagation();removePlacement(org.id);}} style={{
+                      padding:"4px 8px",borderRadius:7,
+                      background:correct?"rgba(34,197,94,0.22)":wrong?"rgba(239,68,68,0.22)":"rgba(255,255,255,0.1)",
+                      border:"1px solid "+(correct?"rgba(34,197,94,0.33)":wrong?"rgba(239,68,68,0.33)":"rgba(255,255,255,0.18)"),
+                      fontSize:12,color:"#fff",
+                      cursor:submitted?"default":"pointer",
+                      display:"flex",alignItems:"center",gap:4,
+                      animation:"popIn 0.3s ease",
+                    }}>
+                      <span>{org.emoji}</span>
+                      <span style={{fontSize:10,fontFamily:"'Cinzel',serif",color:correct?"#4ade80":wrong?"#f87171":"rgba(255,255,255,0.8)"}}>{org.name}</span>
+                      {correct&&<span style={{color:"#4ade80",fontSize:11}}>✓</span>}
+                      {wrong&&<span style={{color:"#f87171",fontSize:11}}>✗</span>}
+                      {!submitted&&<span style={{color:"rgba(255,255,255,0.2)",fontSize:9,marginLeft:1}}>×</span>}
+                    </div>
+                  );
+                })}
+                {orgsHere.length===0&&isClickable&&(
+                  <span style={{fontSize:11,color:"rgba(255,255,255,0.18)",fontStyle:"italic"}}>← place here</span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {submitted && eco.organisms.filter(o=>placements[o.id]!==o.role).length>0 && (
+        <div style={{marginBottom:10,display:"flex",flexWrap:"wrap",gap:5}}>
+          <div style={{width:"100%",fontSize:9,letterSpacing:"0.15em",color:"rgba(255,255,255,0.3)",marginBottom:3}}>CORRECTIONS</div>
+          {eco.organisms.filter(o=>placements[o.id]!==o.role).map(o=>(
+            <div key={o.id} style={{fontSize:11,color:"rgba(255,200,100,0.85)",background:"rgba(255,150,0,0.1)",border:"1px solid rgba(255,150,0,0.25)",borderRadius:7,padding:"3px 8px"}}>
+              {o.emoji} {o.name} → <span style={{color:"#fb923c",fontWeight:700}}>{o.role}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {resultInfo && (
+        <div style={{
+          textAlign:"center",padding:"12px 16px",marginBottom:10,
+          background:resultInfo.won?"rgba(34,197,94,0.1)":"rgba(239,68,68,0.1)",
+          border:"1.5px solid "+(resultInfo.won?"rgba(34,197,94,0.33)":"rgba(239,68,68,0.33)"),
+          borderRadius:10,animation:"popIn 0.5s ease",
+        }}>
+          <div style={{fontFamily:"'Cinzel',serif",fontSize:13,color:resultInfo.won?"#4ade80":"#f87171",fontWeight:700,marginBottom:6}}>
+            {resultInfo.won
+              ? ("🌿 "+resultInfo.correct+"/"+resultInfo.total+" correct — "+(isRestoration?"Garden Restored!":"Web Complete!"))
+              : ("🥀 "+resultInfo.correct+"/"+resultInfo.total+" correct — "+(isRestoration?"Garden Still Struggling":"Web Needs Work"))}
+          </div>
+          <div style={{width:"100%",height:5,background:"rgba(255,255,255,0.08)",borderRadius:3,overflow:"hidden"}}>
+            <div style={{height:"100%",width:Math.round(resultInfo.pct*100)+"%",background:resultInfo.won?"#4ade80":"#f87171",borderRadius:3,transition:"width 1.2s ease"}} />
+          </div>
+        </div>
+      )}
+
+      {!submitted && (
+        <button onClick={()=>doSubmit()} style={{
+          width:"100%",padding:"12px",
+          background:allPlaced?"linear-gradient(135deg,#fb923c,#ea580c)":"rgba(255,255,255,0.05)",
+          border:"none",borderRadius:10,
+          color:allPlaced?"#fff":"rgba(255,255,255,0.3)",
+          fontFamily:"'Cinzel',serif",fontSize:13,fontWeight:700,letterSpacing:"0.1em",
+          cursor:allPlaced?"pointer":"not-allowed",
+          boxShadow:allPlaced?"0 4px 20px rgba(251,146,60,0.4)":"none",
+          transition:"all 0.2s",
+        }}>
+          🕸️ {allPlaced?"Submit Food Web":"Place All Organisms to Submit"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ── CHALLENGE MODAL ────────────────────────────────
 function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, challenge }) {
   const eco=ECOSYSTEMS[ecosystem.id];
@@ -2489,6 +2693,7 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
         {cell.type==="match"&&<MatchChallenge data={challenge} onResult={setResult} />}
         {cell.type==="unscramble"&&<UnscrambleChallenge data={challenge} onResult={setResult} />}
         {cell.type==="truefalse"&&<TrueFalseChallenge data={challenge} onResult={setResult} />}
+        {cell.type==="foodweb"&&<FoodWebChallenge ecosystem={ecosystem} onResult={setResult} />}
       </div>
     </div>
   );
@@ -2568,6 +2773,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const [revealedChapters, setRevealedChapters] = useState(new Set([0]));
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [totalAnswers,   setTotalAnswers]   = useState(0);
+  const [restorationModal, setRestorationModal] = useState(false);
   const curTeam=teams[curIdx];
   const tc=TEAM_COLORS[curTeam?.colorIdx||0];
 
@@ -2627,7 +2833,16 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
       if(cell.type==="center"){setPhase("center");}
       else if(cell.type==="wildcard"){setActiveCell(cell);setPhase("wildcard");}
       else if(cell.type==="start"){nextTurn();}
-      else{const uncol=getUncollected(teams[curIdx]);setPendingOrg(uncol.length>0?pick(uncol):null);setActiveChallenge(pickFresh(cell.type));setActiveCell(cell);setPhase("challenge");}
+      else{
+          // foodweb: fall back to trivia if The Builder is not assigned on this team
+          let effectiveCell=cell;
+          if(cell.type==="foodweb"&&!(teams[curIdx].roleAssignments||{}).builder){effectiveCell={...cell,type:"trivia"};}
+          const uncol=getUncollected(teams[curIdx]);
+          setPendingOrg(uncol.length>0?pick(uncol):null);
+          setActiveChallenge(effectiveCell.type==="foodweb"?null:pickFresh(effectiveCell.type));
+          setActiveCell(effectiveCell);
+          setPhase("challenge");
+        }
     },500);
   };
 
@@ -2718,10 +2933,20 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
             <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.75rem",color:"#fca5a5",fontWeight:700,letterSpacing:"0.08em"}}>ECOSYSTEM COLLAPSE</span>
             <span style={{fontSize:"0.72rem",color:"rgba(255,200,200,0.65)",marginLeft:"0.75rem"}}>{healthStatus.msg}</span>
           </div>
-          <div style={{background:"rgba(251,146,60,0.15)",border:"1px solid rgba(251,146,60,0.4)",borderRadius:"0.55rem",padding:"0.2rem 0.65rem",display:"flex",alignItems:"center",gap:"0.4rem"}}>
-            <span style={{fontSize:"0.95rem"}}>🏗️</span>
-            <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.65rem",color:"#fb923c",fontWeight:700}}>The Builder must restore the Garden</span>
-          </div>
+          {(()=>{const builderPlayer=(curTeam?.roleAssignments||{}).builder;return builderPlayer?(
+            <button onClick={()=>setRestorationModal(true)} style={{background:"linear-gradient(135deg,rgba(251,146,60,0.3),rgba(234,88,12,0.3))",border:"1.5px solid rgba(251,146,60,0.55)",borderRadius:"0.6rem",padding:"0.3rem 0.85rem",display:"flex",alignItems:"center",gap:"0.5rem",cursor:"pointer",animation:"popIn 0.4s ease"}}>
+              <span style={{fontSize:"1rem"}}>🏗️</span>
+              <div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.62rem",color:"#fb923c",fontWeight:700,letterSpacing:"0.06em"}}>RESTORE THE GARDEN</div>
+                <div style={{fontSize:"0.58rem",color:"rgba(253,186,116,0.7)"}}>{builderPlayer} · The Builder</div>
+              </div>
+            </button>
+          ):(
+            <div style={{background:"rgba(251,146,60,0.12)",border:"1px solid rgba(251,146,60,0.3)",borderRadius:"0.55rem",padding:"0.2rem 0.65rem",display:"flex",alignItems:"center",gap:"0.4rem"}}>
+              <span style={{fontSize:"0.95rem"}}>🏗️</span>
+              <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.65rem",color:"#fb923c",fontWeight:700}}>Need The Builder (assign in roles screen)</span>
+            </div>
+          );})()}
         </div>
       )}
 
@@ -2838,6 +3063,40 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
 
       {phase==="challenge"&&activeCell&&<ChallengeModal cell={activeCell} ecosystem={ecosystem} team={curTeam} pendingOrganism={pendingOrg} onResult={handleChallengeResult} challenge={activeChallenge} />}
       {phase==="wildcard"&&activeCell&&<WildcardModal cell={activeCell} onDone={handleWildcardDone} />}
+
+      {/* ── RESTORATION MODAL ── */}
+      {restorationModal&&(
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200,padding:"1.5rem"}}>
+          <div style={{background:"#0a0f1a",border:"2px solid rgba(251,146,60,0.45)",borderRadius:"1.3rem",padding:"1.8rem",maxWidth:"48rem",width:"100%",boxShadow:"0 0 60px rgba(251,146,60,0.2)",maxHeight:"90vh",overflowY:"auto"}}>
+            {/* Header */}
+            <div style={{display:"flex",alignItems:"center",gap:"0.9rem",marginBottom:"1.2rem"}}>
+              <div style={{width:"3rem",height:"3rem",borderRadius:"0.8rem",background:"#1a0800",border:"2px solid rgba(251,146,60,0.4)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.4rem"}}>🕸️</div>
+              <div style={{flex:1}}>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"1rem",color:"#fb923c",letterSpacing:"0.1em",fontWeight:700}}>GARDEN RESTORATION</div>
+                <div style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.45)"}}>The Builder · Nehemiah 2:18 — "Rise up and build"</div>
+              </div>
+              <div style={{background:"rgba(251,146,60,0.12)",border:"1px solid rgba(251,146,60,0.35)",borderRadius:"0.7rem",padding:"0.3rem 0.7rem",display:"flex",alignItems:"center",gap:7}}>
+                <span style={{fontSize:18}}>🏗️</span>
+                <div>
+                  <div style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em"}}>GUARDIAN</div>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.72rem",color:"#fb923c",fontWeight:700}}>The Builder</div>
+                  <div style={{fontSize:"0.68rem",color:"rgba(255,255,255,0.6)",marginTop:1}}>👤 {(curTeam?.roleAssignments||{}).builder}</div>
+                </div>
+              </div>
+            </div>
+            <FoodWebChallenge ecosystem={ecosystem} isRestoration={true} onResult={(won)=>{
+              setRestorationModal(false);
+              if(won){
+                // Restore health to ~65% Stable by adding bonus correct answers
+                setCorrectAnswers(prev=>Math.max(prev,Math.round(totalAnswers*0.66)));
+                // Also give the team a bonus organism as reward
+                const uncol=getUncollected(curTeam);
+                if(uncol.length>0){const org=pick(uncol);setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,org]};return u;});}
+              }
+            }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
