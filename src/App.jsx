@@ -99,6 +99,134 @@ const CHALLENGE_ROLE = {
   trivia:"keeper", truefalse:"witness", foodweb:"builder",
 };
 
+// ── SOUND EFFECTS (Web Audio API — no external files) ──
+const SFX = (() => {
+  let _ctx = null;
+  let _enabled = true;
+
+  const ctx = () => {
+    if (!_ctx) _ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (_ctx.state === "suspended") _ctx.resume();
+    return _ctx;
+  };
+
+  // Generic oscillator with exponential decay
+  const osc = (ac, freq, type, gain, start, dur, freqEnd) => {
+    const o = ac.createOscillator();
+    const g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type = type;
+    o.frequency.setValueAtTime(freq, start);
+    if (freqEnd) o.frequency.exponentialRampToValueAtTime(freqEnd, start + dur);
+    g.gain.setValueAtTime(gain, start);
+    g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+    o.start(start); o.stop(start + dur + 0.02);
+  };
+
+  // White-noise burst (for dice thud)
+  const noise = (ac, gain, start, dur) => {
+    const buf = ac.createBuffer(1, Math.ceil(ac.sampleRate * dur), ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 4);
+    const src = ac.createBufferSource();
+    src.buffer = buf;
+    const g = ac.createGain(); g.gain.setValueAtTime(gain, start);
+    src.connect(g); g.connect(ac.destination);
+    src.start(start);
+  };
+
+  return {
+    setEnabled(v) { _enabled = v; },
+
+    // 🎲 Single tick during dice roll animation
+    tick() {
+      if (!_enabled) return;
+      try {
+        const ac = ctx(), t = ac.currentTime;
+        osc(ac, 180 + Math.random() * 320, "square", 0.04, t, 0.03);
+      } catch(e) {}
+    },
+
+    // 🎲 Dice lands
+    diceResult() {
+      if (!_enabled) return;
+      try {
+        const ac = ctx(), t = ac.currentTime;
+        noise(ac, 0.28, t, 0.08);
+        osc(ac, 280, "sine", 0.18, t + 0.04, 0.28);
+      } catch(e) {}
+    },
+
+    // ✅ Correct answer
+    correct() {
+      if (!_enabled) return;
+      try {
+        const ac = ctx(), t = ac.currentTime;
+        [523, 659, 784].forEach((f, i) => osc(ac, f, "sine", 0.13, t + i * 0.1, 0.45));
+      } catch(e) {}
+    },
+
+    // ❌ Wrong answer
+    incorrect() {
+      if (!_enabled) return;
+      try {
+        const ac = ctx(), t = ac.currentTime;
+        osc(ac, 220, "sawtooth", 0.1, t, 0.16);
+        osc(ac, 175, "sawtooth", 0.08, t + 0.14, 0.3);
+      } catch(e) {}
+    },
+
+    // 🕸️ FoodWeb challenge won
+    foodweb() {
+      if (!_enabled) return;
+      try {
+        const ac = ctx(), t = ac.currentTime;
+        [392, 523, 659, 784, 1047].forEach((f, i) => osc(ac, f, "sine", 0.12, t + i * 0.08, 0.5));
+      } catch(e) {}
+    },
+
+    // 🌟 WOW Facts modal opens
+    wow() {
+      if (!_enabled) return;
+      try {
+        const ac = ctx(), t = ac.currentTime;
+        [1047, 1319, 1568, 2093].forEach((f, i) => osc(ac, f, "sine", 0.07, t + i * 0.13, 0.7));
+      } catch(e) {}
+    },
+
+    // ⚡ Wildcard
+    wildcard() {
+      if (!_enabled) return;
+      try {
+        const ac = ctx(), t = ac.currentTime;
+        osc(ac, 880, "sawtooth", 0.13, t, 0.35, 220);
+        osc(ac, 440, "square", 0.06, t + 0.1, 0.25, 110);
+      } catch(e) {}
+    },
+
+    // 🏆 Victory
+    victory() {
+      if (!_enabled) return;
+      try {
+        const ac = ctx(), t = ac.currentTime;
+        const mel = [523, 659, 784, 659, 784, 1047, 1047];
+        mel.forEach((f, i) => osc(ac, f, "sine", 0.14, t + i * 0.13, i === mel.length - 1 ? 1.0 : 0.4));
+      } catch(e) {}
+    },
+
+    // 🥀 Ecosystem Collapse warning
+    collapse() {
+      if (!_enabled) return;
+      try {
+        const ac = ctx(), t = ac.currentTime;
+        osc(ac, 130, "sawtooth", 0.11, t, 0.55);
+        osc(ac, 104, "sawtooth", 0.09, t + 0.18, 0.7);
+        osc(ac, 82,  "sine",     0.14, t + 0.45, 1.1);
+      } catch(e) {}
+    },
+  };
+})();
+
 // ── WOW FACTS (7 science+faith pairs per ecosystem) ────
 const WOW_FACTS = {
   desert: [
@@ -2801,6 +2929,8 @@ function WowFactsModal({ fact, ecosystem, context, onDone }) {
   const [phase, setPhase] = useState("in"); // "in" | "ready"
   useEffect(() => {
     const t = setTimeout(() => setPhase("ready"), 800);
+    if (context === "victory") SFX.victory();
+    else SFX.wow();
     return () => clearTimeout(t);
   }, []);
 
@@ -2956,6 +3086,17 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
   const ct=CT[cell.type];
   const [result,setResult]=useState(null);
 
+  // Fire sound as soon as result is known (before the result screen renders)
+  useEffect(()=>{
+    if(result===null) return;
+    if(result){
+      if(cell.type==="foodweb") SFX.foodweb();
+      else SFX.correct();
+    } else {
+      SFX.incorrect();
+    }
+  },[result]);
+
   if(result!==null){
     const org=pendingOrganism;
     return(
@@ -3014,6 +3155,7 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
 
 // ── WILDCARD MODAL ─────────────────────────────────
 function WildcardModal({ cell, onDone }) {
+  useEffect(()=>{ SFX.wildcard(); },[]);
   const effects={advance:{icon:"⏩",title:"Move Forward!",desc:`Move forward ${cell.val} extra spaces`,color:"#4ade80"},back:{icon:"⏪",title:"Move Back!",desc:`Go back ${cell.val} spaces`,color:"#f87171"},skip:{icon:"⏭️",title:"Lose a Turn!",desc:"You skip your next turn",color:"#fbbf24"},free:{icon:"🎁",title:"Free Organism!",desc:"You get an organism without a challenge!",color:"#c084fc"},steal:{icon:"🦅",title:"Steal an Organism!",desc:"Take an organism from the team with the most",color:"#fb923c"},double:{icon:"✨",title:"Double Reward!",desc:"Your next correct answer counts as 2",color:"#38bdf8"}};
   const fx=effects[cell.fx]||{icon:"⚡",title:"Wildcard",desc:"Special effect",color:"#e879f9"};
   return(
@@ -3189,6 +3331,8 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const [collapseEmergency, setCollapseEmergency] = useState(null);
   // collapseEmergency: { queue:[teamIdx,...], qIdx:int, trigIdx:int, alertShown:bool } | null
   const [ecosystemDestroyed, setEcosystemDestroyed] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const toggleMute = () => { const next = !muted; setMuted(next); SFX.setEnabled(!next); };
   const wasCollapsedRef  = useRef(false);
   const collapseCountRef = useRef(0);
   const wowCallbackRef   = useRef(null);
@@ -3215,6 +3359,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
       const newCount = collapseCountRef.current + 1;
       collapseCountRef.current = newCount;
       setCollapseCount(newCount);
+      SFX.collapse();
       if(newCount > 2){
         setEcosystemDestroyed(true);
         return;
@@ -3266,8 +3411,9 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     setRolling(true);setPhase("rolling");
     let ticks=0;
     const iv=setInterval(()=>{
+      SFX.tick();
       setDiceVal(Math.floor(Math.random()*6)+1);ticks++;
-      if(ticks>10){clearInterval(iv);const v=Math.floor(Math.random()*6)+1;setDiceVal(v);setRolling(false);setTimeout(()=>moveTeam(v),300);}
+      if(ticks>10){clearInterval(iv);const v=Math.floor(Math.random()*6)+1;setDiceVal(v);setRolling(false);SFX.diceResult();setTimeout(()=>moveTeam(v),300);}
     },100);
   };
 
@@ -3387,6 +3533,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
           <span style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.35)"}}>playing</span>
         </div>
         <button onClick={onEnd} style={{padding:"0.35rem 0.9rem",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"0.5rem",color:"rgba(255,255,255,0.5)",fontFamily:"'Cinzel',serif",fontSize:"0.75rem",cursor:"pointer"}}>Exit</button>
+        <button onClick={toggleMute} title={muted?"Unmute sounds":"Mute sounds"} style={{padding:"0.35rem 0.65rem",background:muted?"rgba(239,68,68,0.12)":"rgba(255,255,255,0.06)",border:`1px solid ${muted?"rgba(239,68,68,0.3)":"rgba(255,255,255,0.1)"}`,borderRadius:"0.5rem",color:muted?"#f87171":"rgba(255,255,255,0.5)",fontSize:"0.85rem",cursor:"pointer",transition:"all 0.2s"}}>{muted?"🔇":"🔊"}</button>
       </div>
 
       {/* ── COLLAPSE BANNER ── */}
