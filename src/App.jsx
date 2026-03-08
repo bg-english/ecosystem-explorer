@@ -2567,8 +2567,20 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const [narrativePopup, setNarrativePopup] = useState(null);
   const [revealedChapters, setRevealedChapters] = useState(new Set([0]));
   const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [totalAnswers,   setTotalAnswers]   = useState(0);
   const curTeam=teams[curIdx];
   const tc=TEAM_COLORS[curTeam?.colorIdx||0];
+
+  // ── Ecosystem Health ─────────────────────────────────
+  const healthPct = totalAnswers === 0 ? 100 : Math.round((correctAnswers / totalAnswers) * 100);
+  const healthStatus = healthPct >= 80
+    ? { label:"Thriving",  icon:"🌟", color:"#4ade80", msg:"The Garden is flourishing. The gourd is growing.",        state:"thriving"  }
+    : healthPct >= 60
+    ? { label:"Stable",    icon:"🌿", color:"#86efac", msg:"The Garden holds on. But the gourd needs care.",          state:"stable"    }
+    : healthPct >= 40
+    ? { label:"Stressed",  icon:"⚠️", color:"#fbbf24", msg:"The gourds are withering. The chains are breaking.",      state:"stressed"  }
+    : { label:"Collapsed", icon:"🥀", color:"#f87171", msg:"The Garden has lost its guardian. The Builder must rise.", state:"collapsed" };
+  const isCollapsed = healthStatus.state === "collapsed";
 
   // ── Non-repeating question queues (one shuffled deck per challenge type) ──
   const queues = useRef({});
@@ -2631,6 +2643,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   };
 
   const handleChallengeResult=(won,org)=>{
+    setTotalAnswers(c=>c+1);
     if(won&&org){
       setCorrectAnswers(c=>c+1);
       const isDouble=teams[curIdx].doubleNext;
@@ -2658,18 +2671,37 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   return(
     <div style={{height:"100vh",background:eco.bg,fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",overflow:"hidden"}}>
       {/* Top bar */}
-      <div style={{background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"0.7rem 1.4rem",display:"flex",alignItems:"center",gap:"1rem",flexShrink:0}}>
+      <div style={{background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${isCollapsed?"rgba(239,68,68,0.35)":"rgba(255,255,255,0.06)"}`,padding:"0.7rem 1.4rem",display:"flex",alignItems:"center",gap:"1rem",flexShrink:0,transition:"border-color 0.5s"}}>
         <span style={{fontSize:"1.6rem"}}>{eco.emoji}</span>
         <div>
           <div style={{fontFamily:"'Cinzel',serif",fontSize:"1rem",color:"#fff",fontWeight:700}}>{eco.name}</div>
           <div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.4)",letterSpacing:"0.1em"}}>Turn {turn} · Square {curTeam?.position+1}/{N_BOARD}</div>
         </div>
         {/* Revealed elements strip */}
-        <div style={{display:"flex",gap:"0.35rem",marginLeft:"0.9rem",flexWrap:"wrap",maxWidth:"16rem"}}>
+        <div style={{display:"flex",gap:"0.35rem",marginLeft:"0.9rem",flexWrap:"wrap",maxWidth:"10rem"}}>
           {revealedElements.map((ch,i)=>(
             <span key={i} title={ch.title} style={{fontSize:"1.2rem",animation:"popIn 0.4s ease",filter:`drop-shadow(0 0 6px ${eco.glow})`}}>{ch.element}</span>
           ))}
         </div>
+
+        {/* ── ECOSYSTEM HEALTH WIDGET ── */}
+        {totalAnswers > 0 && (
+          <div title={healthStatus.msg} style={{display:"flex",alignItems:"center",gap:"0.55rem",background:`${healthStatus.color}10`,border:`1px solid ${healthStatus.color}35`,borderRadius:"0.75rem",padding:"0.3rem 0.75rem",flexShrink:0,transition:"all 0.6s ease",boxShadow:isCollapsed?`0 0 14px rgba(239,68,68,0.35)`:"none"}}>
+            <span style={{fontSize:"1.1rem",animation:isCollapsed?"chaosFloat 1.5s ease-in-out infinite":"none"}}>{healthStatus.icon}</span>
+            <div>
+              <div style={{display:"flex",alignItems:"center",gap:"0.45rem"}}>
+                <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.68rem",color:healthStatus.color,fontWeight:700,letterSpacing:"0.08em"}}>{healthStatus.label}</span>
+                <span style={{fontSize:"0.68rem",color:"rgba(255,255,255,0.45)"}}>{healthPct}%</span>
+              </div>
+              {/* Health bar */}
+              <div style={{width:"5.5rem",height:"0.28rem",background:"rgba(255,255,255,0.08)",borderRadius:"0.2rem",marginTop:"0.2rem",overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${healthPct}%`,background:`linear-gradient(90deg,${healthPct<40?"#ef4444":healthPct<60?"#fbbf24":"#4ade80"},${healthStatus.color})`,borderRadius:"0.2rem",transition:"width 0.8s ease, background 0.8s ease"}} />
+              </div>
+            </div>
+            <span style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.25)"}}>{correctAnswers}/{totalAnswers}</span>
+          </div>
+        )}
+
         <div style={{marginLeft:"auto",display:"flex",gap:"0.6rem",alignItems:"center"}}>
           <div style={{width:"0.7rem",height:"0.7rem",borderRadius:"50%",background:tc.bg,boxShadow:`0 0 8px ${tc.bg}`}} />
           <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.9rem",color:tc.light}}>{curTeam?.name}</span>
@@ -2677,6 +2709,21 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
         </div>
         <button onClick={onEnd} style={{padding:"0.35rem 0.9rem",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"0.5rem",color:"rgba(255,255,255,0.5)",fontFamily:"'Cinzel',serif",fontSize:"0.75rem",cursor:"pointer"}}>Exit</button>
       </div>
+
+      {/* ── COLLAPSE BANNER ── */}
+      {isCollapsed && (
+        <div style={{background:"linear-gradient(90deg,rgba(127,29,29,0.9),rgba(69,10,10,0.9))",borderBottom:"1px solid rgba(239,68,68,0.4)",padding:"0.5rem 1.4rem",display:"flex",alignItems:"center",gap:"0.7rem",animation:"fadeUp 0.5s ease",flexShrink:0}}>
+          <span style={{fontSize:"1.3rem",animation:"chaosFloat 1.2s ease-in-out infinite"}}>🥀</span>
+          <div style={{flex:1}}>
+            <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.75rem",color:"#fca5a5",fontWeight:700,letterSpacing:"0.08em"}}>ECOSYSTEM COLLAPSE</span>
+            <span style={{fontSize:"0.72rem",color:"rgba(255,200,200,0.65)",marginLeft:"0.75rem"}}>{healthStatus.msg}</span>
+          </div>
+          <div style={{background:"rgba(251,146,60,0.15)",border:"1px solid rgba(251,146,60,0.4)",borderRadius:"0.55rem",padding:"0.2rem 0.65rem",display:"flex",alignItems:"center",gap:"0.4rem"}}>
+            <span style={{fontSize:"0.95rem"}}>🏗️</span>
+            <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.65rem",color:"#fb923c",fontWeight:700}}>The Builder must restore the Garden</span>
+          </div>
+        </div>
+      )}
 
       {/* Chapter narrative popup */}
       {narrativePopup&&(
