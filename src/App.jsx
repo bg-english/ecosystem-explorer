@@ -22,6 +22,82 @@ const CT = {
   wildcard:   { icon: "⚡", color: "#e879f9",  bg: "#180028", label: "WILDCARD",    hue: 290 },
 };
 
+// ── GUARDIAN ROLES ──────────────────────────────────
+const ROLES = [
+  {
+    id:"seer", name:"The Seer", emoji:"👁️", minTeam:5,
+    biblical:"The Prophet Daniel", ref:"Daniel 1:17",
+    scripture:'"God gave them knowledge and understanding in all kinds of literature and learning."',
+    challenge:"foodchain", challengeLabel:"Food Chain", challengeIcon:"🍽️",
+    virtue:"Understanding — seeing the connections others miss",
+    sciRole:"Systems Ecologist",
+    color:"#38bdf8",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Daniel_Hermitage.jpg/300px-Daniel_Hermitage.jpg",
+    howToPlay:"When the team lands on a 🍽️ Food Chain square, everyone may discuss for 45 seconds — but The Seer gives the final answer. Their authority is earned through understanding, not position.",
+  },
+  {
+    id:"namer", name:"The Namer", emoji:"📖", minTeam:5,
+    biblical:"Adam in the Garden", ref:"Genesis 2:19",
+    scripture:'"Whatever the man called each living creature, that was its name."',
+    challenge:"match", challengeLabel:"Matching", challengeIcon:"🔗",
+    virtue:"Attention — truly seeing what is there",
+    sciRole:"Taxonomist / Botanist",
+    color:"#c084fc",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Sistine_Chapel_ceiling%2C_Michelangelo%27s_%27The_Creation_of_Adam%27.jpg/400px-Sistine_Chapel_ceiling%2C_Michelangelo%27s_%27The_Creation_of_Adam%27.jpg",
+    howToPlay:"On 🔗 Matching squares, The Namer answers independently — no team discussion. 30 seconds. If incorrect, one second attempt for 5 points.",
+  },
+  {
+    id:"seeker", name:"The Seeker", emoji:"🔍", minTeam:5,
+    biblical:"The Wise Men (The Magi)", ref:"Matthew 2:1–2",
+    scripture:'"We saw his star and have come to worship him."',
+    challenge:"unscramble", challengeLabel:"Unscramble", challengeIcon:"🧩",
+    virtue:"Faith — trusting the answer exists",
+    sciRole:"Field Naturalist / Explorer",
+    color:"#fbbf24",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Adoracion_de_los_Reyes_Magos_%28Velazquez%29.jpg/400px-Adoracion_de_los_Reyes_Magos_%28Velazquez%29.jpg",
+    howToPlay:"On 🧩 Unscramble squares, The Seeker works alone for 45 seconds. They may ask ONE teammate for a single letter hint — but using it reduces the score to half.",
+  },
+  {
+    id:"keeper", name:"The Keeper", emoji:"🛡️", minTeam:5,
+    biblical:"Noah", ref:"Genesis 6:19",
+    scripture:'"Bring into the ark two of all living creatures to keep them alive with you."',
+    challenge:"trivia", challengeLabel:"Multiple Choice", challengeIcon:"❓",
+    virtue:"Discernment — choosing wisely under pressure",
+    sciRole:"Conservation Ecologist",
+    color:"#34d399",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/The_Deluge_-_Francis_Danby.jpg/400px-The_Deluge_-_Francis_Danby.jpg",
+    howToPlay:"On ❓ Multiple Choice squares, the team consults for 30 seconds — then The Keeper commits to a final answer. No changing minds after the Keeper speaks.",
+  },
+  {
+    id:"witness", name:"The Witness", emoji:"⚖️", minTeam:5,
+    biblical:"King Solomon", ref:"1 Kings 3:9",
+    scripture:'"Give your servant a discerning heart to distinguish between right and wrong."',
+    challenge:"truefalse", challengeLabel:"True or False", challengeIcon:"✅",
+    virtue:"Courage — naming falsehood and speaking truth",
+    sciRole:"Science Communicator / Ethicist",
+    color:"#a3e635",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Tissot_Solomon.jpg/300px-Tissot_Solomon.jpg",
+    howToPlay:"On ✅ True/False squares, The Witness declares TRUE or FALSE in 20 seconds. If FALSE, they must give the correct version in 30 more seconds for full points.",
+  },
+  {
+    id:"builder", name:"The Builder", emoji:"🏗️", minTeam:6,
+    biblical:"Nehemiah", ref:"Nehemiah 2:18",
+    scripture:'"Rise up and build, for the hand of God is good upon us."',
+    challenge:"foodweb", challengeLabel:"Food Web Construction", challengeIcon:"🕸️",
+    virtue:"Perseverance — rebuilding what is broken",
+    sciRole:"Food Web Architect",
+    color:"#fb923c",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Nehemia_1860_Holman.jpg/300px-Nehemia_1860_Holman.jpg",
+    howToPlay:"On 🕸️ Food Web squares, The Builder arranges organisms into correct trophic levels within 90 seconds. If the ecosystem Collapses — only The Builder can restore it.",
+  },
+];
+
+// Maps challenge type → role id (for badge display in challenges)
+const CHALLENGE_ROLE = {
+  foodchain:"seer", match:"namer", unscramble:"seeker",
+  trivia:"keeper", truefalse:"witness", foodweb:"builder",
+};
+
 // Dynamic board generator — length varies by ecosystem (multiples of 6)
 function generateBoard(size) {
   // 8-tile chapter: trivia, identify, foodchain, hangman, match, unscramble, truefalse, then wildcard
@@ -1584,7 +1660,416 @@ function GenesisScreen({ teams, onStart }) {
   );
 }
 
-// ── SETUP SCREEN ────────────────────────────────────
+// ── ROLES SCREEN ────────────────────────────────────
+function RolesScreen({ teams, onDone }) {
+  const maxSize = Math.max(...teams.map(t=>(t.players||[]).filter(p=>p.trim()).length), 5);
+  const activeRoles = ROLES.filter(r=>r.minTeam<=maxSize);
+  // idx: -1=intro, 0..n-1=role cards, n=summary, n+1=assign
+  const SUMMARY_IDX = activeRoles.length;
+  const ASSIGN_IDX  = activeRoles.length + 1;
+  const [idx, setIdx] = useState(-1);
+  const isIntro   = idx === -1;
+  const isSummary = idx === SUMMARY_IDX;
+  const isAssign  = idx === ASSIGN_IDX;
+  const role      = (!isIntro && !isSummary && !isAssign) ? activeRoles[idx] : null;
+
+  // assignments[teamId][roleId] = playerName
+  const [assignments, setAssignments] = useState(()=>{
+    const a={};
+    teams.forEach(t=>{a[t.id]={};});
+    return a;
+  });
+  const [activeTeamTab, setActiveTeamTab] = useState(teams[0]?.id??0);
+
+  const setAssignment=(teamId,roleId,player)=>{
+    setAssignments(prev=>({...prev,[teamId]:{...prev[teamId],[roleId]:player}}));
+  };
+
+  const [showError, setShowError] = useState(false);
+  const [errorTeams, setErrorTeams] = useState([]);
+
+  const teamIsComplete = (t) =>
+    activeRoles.every(r => (assignments[t.id]||{})[r.id]?.trim());
+
+  const incompleteTeams = teams.filter(t => !teamIsComplete(t));
+
+  const handleDone=()=>{
+    if(incompleteTeams.length > 0){
+      setErrorTeams(incompleteTeams.map(t=>t.name));
+      setShowError(true);
+      setActiveTeamTab(incompleteTeams[0].id);
+      return;
+    }
+    const updatedTeams=teams.map(t=>({...t,roleAssignments:assignments[t.id]||{}}));
+    onDone(updatedTeams);
+  };
+
+  const teamForTab = teams.find(t=>t.id===activeTeamTab)||teams[0];
+  const teamPlayers = (teamForTab?.players||[]).filter(p=>p.trim());
+  const teamAssignments = assignments[teamForTab?.id]||{};
+
+  return (
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",position:"relative",overflow:"hidden"}}>
+      {Array.from({length:30}).map((_,i)=>(
+        <div key={i} style={{position:"absolute",left:`${(i*37)%100}%`,top:`${(i*53)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.2,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none"}} />
+      ))}
+
+      {/* ── INTRO ── */}
+      {isIntro&&(
+        <div style={{textAlign:"center",maxWidth:640,animation:"fadeUp 0.7s ease"}}>
+          <div style={{fontSize:52,marginBottom:12,animation:"float 3s ease-in-out infinite",filter:"drop-shadow(0 0 20px rgba(74,222,128,0.5))"}}>⚜️</div>
+          <div style={{fontSize:11,color:"#4ade80",letterSpacing:"0.3em",marginBottom:8}}>GUARDIANS OF THE GARDEN</div>
+          <h2 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:22,color:"#fff",marginBottom:16,textShadow:"0 0 30px rgba(74,222,128,0.4)"}}>The Guardian Roles</h2>
+          <p style={{color:"rgba(255,255,255,0.6)",fontSize:14,lineHeight:1.8,marginBottom:14}}>
+            Each Guardian carries a unique mission — inspired by a figure from Scripture — and owns a specific type of challenge on the board.
+          </p>
+          <div style={{background:"rgba(253,224,71,0.06)",border:"1px solid rgba(253,224,71,0.2)",borderRadius:14,padding:"14px 18px",marginBottom:28,display:"flex",alignItems:"flex-start",gap:12}}>
+            <span style={{fontSize:22,flexShrink:0}}>🎖️</span>
+            <p style={{color:"rgba(255,255,255,0.65)",fontSize:13,lineHeight:1.7,margin:0,textAlign:"left"}}>
+              Your teacher will give each student a <strong style={{color:"#fde047"}}>Guardian Medal</strong> with their role.<br/>
+              As each role is presented, listen carefully for yours. You will own that challenge type for the entire game.
+            </p>
+          </div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center",marginBottom:32}}>
+            {activeRoles.map(r=>(
+              <div key={r.id} style={{background:`${r.color}15`,border:`1px solid ${r.color}40`,borderRadius:10,padding:"8px 14px",display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:18}}>{r.emoji}</span>
+                <span style={{fontFamily:"'Cinzel',serif",fontSize:11,color:r.color}}>{r.name}</span>
+              </div>
+            ))}
+          </div>
+          <button onClick={()=>setIdx(0)} style={{padding:"13px 40px",background:"linear-gradient(135deg,#16a34a,#15803d)",border:"none",borderRadius:12,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 6px 20px rgba(22,163,74,0.4)"}}>
+            Meet the Guardians →
+          </button>
+        </div>
+      )}
+
+      {/* ── ROLE CARD ── */}
+      {role&&(
+        <div style={{width:"100%",maxWidth:920,animation:"fadeUp 0.45s ease"}}>
+          <div style={{display:"flex",gap:6,justifyContent:"center",marginBottom:18}}>
+            {activeRoles.map((_,i)=>(
+              <div key={i} onClick={()=>setIdx(i)}
+                style={{height:8,borderRadius:4,background:i===idx?activeRoles[i].color:i<idx?"rgba(255,255,255,0.18)":"rgba(255,255,255,0.06)",width:i===idx?28:8,transition:"all 0.3s",cursor:"pointer"}} />
+            ))}
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"300px 1fr",gap:0,background:"rgba(0,0,0,0.45)",border:`2px solid ${role.color}30`,borderRadius:20,overflow:"hidden",boxShadow:`0 0 60px ${role.color}15`}}>
+            <div style={{position:"relative",minHeight:460}}>
+              <img src={role.img} alt={role.biblical}
+                onError={e=>{e.target.style.display="none";const fb=e.target.parentNode.querySelector(".img-fallback");if(fb)fb.style.display="flex";}}
+                style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top center",filter:"brightness(0.82) saturate(1.15)",display:"block"}} />
+              <div className="img-fallback" style={{display:"none",position:"absolute",inset:0,background:`radial-gradient(ellipse at center,${role.color}25,#000)`,alignItems:"center",justifyContent:"center",fontSize:90}}>{role.emoji}</div>
+              <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,transparent 55%,rgba(0,0,0,0.6) 100%)"}} />
+              <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,0.75) 0%,transparent 40%)"}} />
+              <div style={{position:"absolute",bottom:18,left:16,right:8}}>
+                <div style={{fontSize:9,color:"rgba(255,255,255,0.45)",letterSpacing:"0.25em",marginBottom:3}}>INSPIRED BY</div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:14,color:"#fff",fontWeight:700,textShadow:"0 1px 6px rgba(0,0,0,0.9)"}}>{role.biblical}</div>
+                <div style={{fontSize:11,color:role.color,fontStyle:"italic",marginTop:3}}>{role.ref}</div>
+              </div>
+            </div>
+            <div style={{padding:"28px 26px 24px 22px",display:"flex",flexDirection:"column",gap:16}}>
+              <div>
+                <div style={{fontSize:9,color:"rgba(255,255,255,0.3)",letterSpacing:"0.28em",marginBottom:6}}>GUARDIAN {idx+1} OF {activeRoles.length}</div>
+                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:5}}>
+                  <span style={{fontSize:38,filter:`drop-shadow(0 0 12px ${role.color}88)`}}>{role.emoji}</span>
+                  <div>
+                    <h2 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:20,color:role.color,margin:0,textShadow:`0 0 20px ${role.color}55`}}>{role.name}</h2>
+                    <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",letterSpacing:"0.18em",marginTop:3}}>{role.sciRole.toUpperCase()}</div>
+                  </div>
+                </div>
+              </div>
+              <div style={{background:"rgba(255,255,255,0.03)",borderLeft:`3px solid ${role.color}70`,borderRadius:"0 10px 10px 0",padding:"12px 16px"}}>
+                <p style={{fontStyle:"italic",color:"rgba(255,245,200,0.88)",fontSize:13,lineHeight:1.75,margin:0}}>{role.scripture}</p>
+                <p style={{fontSize:11,color:role.color,margin:"7px 0 0",letterSpacing:"0.08em"}}>— {role.ref}</p>
+              </div>
+              <div style={{background:`${role.color}10`,border:`1.5px solid ${role.color}28`,borderRadius:14,padding:"14px 16px"}}>
+                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+                  <span style={{fontSize:22}}>{role.challengeIcon}</span>
+                  <div>
+                    <div style={{fontSize:9,color:"rgba(255,255,255,0.38)",letterSpacing:"0.2em"}}>THIS GUARDIAN OWNS</div>
+                    <div style={{fontFamily:"'Cinzel',serif",fontSize:15,color:role.color,fontWeight:700}}>{role.challengeLabel}</div>
+                  </div>
+                </div>
+                <p style={{color:"rgba(255,255,255,0.7)",fontSize:12,lineHeight:1.65,margin:0}}>{role.howToPlay}</p>
+              </div>
+              <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+                <span style={{fontSize:16,flexShrink:0,marginTop:1}}>🌱</span>
+                <div>
+                  <div style={{fontSize:9,color:"rgba(255,255,255,0.32)",letterSpacing:"0.2em",marginBottom:3}}>VIRTUE TO DEVELOP</div>
+                  <div style={{fontSize:13,color:"rgba(255,255,255,0.8)",fontStyle:"italic"}}>{role.virtue}</div>
+                </div>
+              </div>
+              {role.minTeam>5&&(
+                <div style={{background:"rgba(253,224,71,0.07)",border:"1px solid rgba(253,224,71,0.18)",borderRadius:10,padding:"8px 13px",display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:14}}>🔓</span>
+                  <span style={{fontSize:11,color:"#fde047"}}>Unlocked in teams of <strong>{role.minTeam}+</strong> students</span>
+                </div>
+              )}
+            </div>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",marginTop:14}}>
+            <button onClick={()=>setIdx(i=>i-1)} style={{padding:"11px 24px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,color:"rgba(255,255,255,0.55)",fontFamily:"'Cinzel',serif",fontSize:12,cursor:"pointer"}}>← Back</button>
+            <button onClick={()=>setIdx(i=>i+1)} style={{padding:"11px 30px",background:`linear-gradient(135deg,${role.color}99,${role.color}66)`,border:`1px solid ${role.color}44`,borderRadius:10,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:12,cursor:"pointer",letterSpacing:"0.08em",boxShadow:`0 4px 16px ${role.color}33`}}>
+              {idx<activeRoles.length-1?"Next Guardian →":"See Summary →"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── SUMMARY ── */}
+      {isSummary&&(
+        <div style={{width:"100%",maxWidth:820,animation:"fadeUp 0.5s ease"}}>
+          <div style={{textAlign:"center",marginBottom:22}}>
+            <div style={{fontSize:9,color:"#4ade80",letterSpacing:"0.3em",marginBottom:6}}>ALL GUARDIANS</div>
+            <h3 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:"#fff",margin:0,textShadow:"0 0 20px rgba(74,222,128,0.3)"}}>Guardian Summary</h3>
+            <p style={{color:"rgba(255,255,255,0.4)",fontSize:12,marginTop:6}}>Tap any card to review a role before assigning</p>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:10,marginBottom:24}}>
+            {activeRoles.map((r,i)=>(
+              <div key={r.id} onClick={()=>setIdx(i)}
+                style={{background:`${r.color}0d`,border:`1.5px solid ${r.color}30`,borderRadius:14,padding:"14px 16px",cursor:"pointer",transition:"all 0.2s",display:"flex",gap:12,alignItems:"center"}}>
+                <span style={{fontSize:30,flexShrink:0,filter:`drop-shadow(0 0 8px ${r.color}66)`}}>{r.emoji}</span>
+                <div>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:12,color:r.color,fontWeight:700}}>{r.name}</div>
+                  <div style={{fontSize:11,color:"rgba(255,255,255,0.42)",marginTop:2}}>{r.challengeIcon} {r.challengeLabel}</div>
+                  <div style={{fontSize:10,color:"rgba(255,255,255,0.28)",marginTop:1,fontStyle:"italic"}}>{r.biblical}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{textAlign:"center"}}>
+            <button onClick={()=>setIdx(ASSIGN_IDX)} style={{padding:"14px 48px",background:"linear-gradient(135deg,#7c3aed,#6d28d9)",border:"none",borderRadius:14,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:14,cursor:"pointer",letterSpacing:"0.12em",boxShadow:"0 8px 30px rgba(124,58,237,0.5)"}}>
+              Assign Players to Roles →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── ASSIGN ── */}
+      {isAssign&&(
+        <div style={{width:"100%",maxWidth:860,animation:"fadeUp 0.5s ease"}}>
+          <div style={{textAlign:"center",marginBottom:20}}>
+            <div style={{fontSize:9,color:"#a78bfa",letterSpacing:"0.3em",marginBottom:6}}>STEP: ASSIGN GUARDIANS</div>
+            <h3 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:"#fff",margin:0}}>Who is each Guardian?</h3>
+            <p style={{color:"rgba(255,255,255,0.4)",fontSize:12,marginTop:6}}>Assign one player per role for each team</p>
+          </div>
+
+          {/* Team tabs */}
+          {teams.length>1&&(
+            <div style={{display:"flex",gap:6,justifyContent:"center",flexWrap:"wrap",marginBottom:18}}>
+              {teams.map(t=>{
+                const tc=TEAM_COLORS[t.colorIdx];
+                const isActive=t.id===activeTeamTab;
+                return(
+                  <button key={t.id} onClick={()=>setActiveTeamTab(t.id)}
+                    style={{padding:"8px 18px",background:isActive?`${tc.bg}33`:"rgba(255,255,255,0.04)",border:`2px solid ${isActive?tc.bg:"rgba(255,255,255,0.1)"}`,borderRadius:10,color:isActive?tc.light:"rgba(255,255,255,0.5)",fontFamily:"'Cinzel',serif",fontSize:11,cursor:"pointer",transition:"all 0.2s",fontWeight:isActive?700:400}}>
+                    <span style={{marginRight:6}}>●</span>{t.name}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Role assignment grid */}
+          <div style={{background:"rgba(0,0,0,0.35)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:18,padding:"20px 18px",marginBottom:20}}>
+            {teamPlayers.length===0?(
+              <p style={{textAlign:"center",color:"rgba(255,255,255,0.3)",fontSize:13}}>No players registered for this team.</p>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                {activeRoles.map(r=>{
+                  const assigned=teamAssignments[r.id]||"";
+                  return(
+                    <div key={r.id} style={{display:"grid",gridTemplateColumns:"44px 1fr 1fr",gap:12,alignItems:"center",background:assigned?`${r.color}0d`:"rgba(255,255,255,0.02)",border:`1.5px solid ${assigned?r.color+"40":"rgba(255,255,255,0.06)"}`,borderRadius:12,padding:"10px 14px",transition:"all 0.25s"}}>
+                      {/* Role */}
+                      <span style={{fontSize:26,textAlign:"center",filter:assigned?`drop-shadow(0 0 8px ${r.color}88)`:"none"}}>{r.emoji}</span>
+                      <div>
+                        <div style={{fontFamily:"'Cinzel',serif",fontSize:12,color:assigned?r.color:"rgba(255,255,255,0.6)",fontWeight:700}}>{r.name}</div>
+                        <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:1}}>{r.challengeIcon} {r.challengeLabel}</div>
+                      </div>
+                      {/* Player selector */}
+                      <select
+                        value={assigned}
+                        onChange={e=>setAssignment(teamForTab.id,r.id,e.target.value)}
+                        style={{background:"rgba(0,0,0,0.5)",border:`1.5px solid ${assigned?r.color+"55":"rgba(255,255,255,0.12)"}`,borderRadius:9,padding:"8px 10px",color:assigned?"#fff":"rgba(255,255,255,0.4)",fontFamily:"'Cinzel',serif",fontSize:12,cursor:"pointer",outline:"none",width:"100%"}}>
+                        <option value="">— Select player —</option>
+                        {teamPlayers.map(p=>(
+                          <option key={p} value={p}>{p}</option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Error notification */}
+          {showError&&(
+            <div style={{background:"rgba(239,68,68,0.12)",border:"1.5px solid rgba(239,68,68,0.5)",borderRadius:14,padding:"14px 18px",marginBottom:16,animation:"popIn 0.35s ease",display:"flex",gap:12,alignItems:"flex-start"}}>
+              <span style={{fontSize:22,flexShrink:0}}>⚠️</span>
+              <div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:13,color:"#f87171",fontWeight:700,marginBottom:4}}>All roles must be assigned before starting</div>
+                <div style={{fontSize:12,color:"rgba(255,255,255,0.6)",lineHeight:1.6}}>
+                  {errorTeams.length===1
+                    ? <><strong style={{color:"#fca5a5"}}>{errorTeams[0]}</strong> still has unassigned roles. Please complete the assignment above.</>
+                    : <>The following teams still have unassigned roles: <strong style={{color:"#fca5a5"}}>{errorTeams.join(", ")}</strong>. Use the tabs above to complete each team.</>
+                  }
+                </div>
+                <div style={{marginTop:8,display:"flex",gap:6,flexWrap:"wrap"}}>
+                  {teams.map(t=>{
+                    const complete=teamIsComplete(t);
+                    const tc=TEAM_COLORS[t.colorIdx];
+                    return(
+                      <div key={t.id} onClick={()=>{setActiveTeamTab(t.id);setShowError(false);}}
+                        style={{display:"flex",alignItems:"center",gap:5,background:complete?"rgba(34,197,94,0.12)":"rgba(239,68,68,0.1)",border:`1px solid ${complete?"rgba(34,197,94,0.4)":"rgba(239,68,68,0.35)"}`,borderRadius:8,padding:"4px 10px",cursor:"pointer",fontSize:11,color:complete?"#4ade80":"#f87171"}}>
+                        <span>{complete?"✓":"✗"}</span>
+                        <span style={{fontFamily:"'Cinzel',serif",color:complete?"#4ade80":tc.light}}>{t.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <button onClick={()=>{setIdx(SUMMARY_IDX);setShowError(false);}} style={{padding:"11px 24px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,color:"rgba(255,255,255,0.5)",fontFamily:"'Cinzel',serif",fontSize:12,cursor:"pointer"}}>← Back</button>
+            <button onClick={handleDone} style={{padding:"13px 44px",background:"linear-gradient(135deg,#16a34a,#15803d)",border:"none",borderRadius:12,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 6px 24px rgba(22,163,74,0.45)"}}>
+              🚀 Begin the Adventure
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+// ── WELCOME SCREEN ──────────────────────────────────
+function WelcomeScreen({ onEnter }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(()=>{ const t=setTimeout(()=>setVisible(true),120); return()=>clearTimeout(t); },[]);
+  return (
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 30%,#071a0e 0%,#020407 65%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:"32px 20px",position:"relative",overflow:"hidden"}}>
+      {Array.from({length:50}).map((_,i)=>(
+        <div key={i} style={{position:"absolute",left:`${(i*43+7)%100}%`,top:`${(i*61+11)%100}%`,width:i%5===0?3:2,height:i%5===0?3:2,borderRadius:"50%",background:"#fff",opacity:i%3===0?0.35:0.15,animation:`twinkle ${2+i%4}s ease-in-out ${i%5}s infinite`,pointerEvents:"none"}} />
+      ))}
+      <div style={{position:"absolute",top:0,left:0,right:0,height:"3px",background:"linear-gradient(90deg,transparent,rgba(74,222,128,0.4),rgba(253,224,71,0.3),transparent)"}} />
+      <div style={{position:"absolute",bottom:0,left:0,right:0,height:"3px",background:"linear-gradient(90deg,transparent,rgba(74,222,128,0.4),rgba(253,224,71,0.3),transparent)"}} />
+      <div style={{textAlign:"center",maxWidth:600,opacity:visible?1:0,transition:"opacity 1.2s ease"}}>
+        <div style={{marginBottom:36,padding:"18px 22px",background:"rgba(253,224,71,0.05)",border:"1px solid rgba(253,224,71,0.18)",borderRadius:16,maxWidth:480,margin:"0 auto 36px"}}>
+          <p style={{fontStyle:"italic",color:"rgba(255,245,200,0.82)",fontSize:13,lineHeight:1.85,margin:0}}>
+            "Then the Lord God provided a gourd and made it grow up over Jonah to give shade over his head and to deliver him from his discomfort. And Jonah was very glad about the gourd."
+          </p>
+          <p style={{fontSize:11,color:"rgba(253,224,71,0.7)",marginTop:10,letterSpacing:"0.1em"}}>— Jonah 4:6</p>
+        </div>
+        <div style={{fontSize:44,marginBottom:10,animation:"float 4s ease-in-out infinite",filter:"drop-shadow(0 0 28px rgba(74,222,128,0.55))"}}>🌿</div>
+        <div style={{fontSize:10,color:"#4ade80",letterSpacing:"0.4em",marginBottom:10}}>7TH GRADE SCIENCE · ECOSYSTEMS</div>
+        <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"clamp(20px,3.5vw,32px)",color:"#fff",letterSpacing:"0.06em",textShadow:"0 0 40px rgba(74,222,128,0.45)",marginBottom:10,lineHeight:1.3}}>
+          GUARDIANS<br/>OF THE GARDEN
+        </h1>
+        <div style={{width:60,height:2,background:"linear-gradient(90deg,transparent,#4ade80,transparent)",margin:"16px auto 20px"}} />
+        <p style={{color:"rgba(255,255,255,0.45)",fontSize:13,lineHeight:1.8,marginBottom:36,maxWidth:400,margin:"0 auto 36px"}}>
+          Every organism is a gourd — placed by God with deliberate purpose, sustaining life in ways we don't notice until it's gone.
+        </p>
+        <button onClick={onEnter} style={{padding:"15px 52px",background:"linear-gradient(135deg,#16a34a,#15803d)",border:"none",borderRadius:14,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:14,cursor:"pointer",letterSpacing:"0.12em",boxShadow:"0 8px 36px rgba(22,163,74,0.55)"}}>
+          Enter the Garden →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── NARRATIVE SCREEN ─────────────────────────────────
+function NarrativeScreen({ onDone }) {
+  const [step, setStep] = useState(0);
+  const STORY = [
+    {t:"In the beginning, God looked at everything He had made — and it was very good.",b:true},
+    {t:"Deserts, rainforests, oceans, savannas — each one a living masterpiece. Not random. Not accidental. Each organism placed with precision: producers capturing sunlight, consumers transferring energy, decomposers returning life to the soil. Every food chain a sentence in God's language. Every ecosystem a chapter of His story."},
+    {t:"But something has gone wrong.",b:true},
+    {t:"The gourds are withering.",i:true},
+    {t:"Seven ecosystems across the Earth are under threat — not just from pollution or climate change, but from something deeper: the loss of wonder. The moment humans stopped seeing creation as sacred, they stopped protecting it."},
+    {t:"You have been chosen as Guardians of the Garden.",b:true},
+    {t:"Your mission is not just scientific. It is moral. It is spiritual. To restore each ecosystem, your team must do two things: understand the science deeply enough to see how it works, and grow enough as human beings to deserve the responsibility of caring for it."},
+    {t:"Because God is watching, just as He watched Jonah. And He is asking the same question He asked then:",i:true},
+    {t:"Should I not be concerned about this ecosystem — where thousands of creatures live, who cannot save themselves without a Guardian?",b:true,i:true},
+  ];
+  const TABLE = [
+    {science:"Every organism occupies a trophic level and has a function in energy flow.",bridge:"Remove one organism → the whole chain collapses.",spirit:"Every person, every act of stewardship, every moral choice — matters to the whole."},
+    {science:"Producers capture energy. Without them, no life is possible.",bridge:"The gourd was a producer. Its absence devastated Jonah.",spirit:"Small, quiet acts of goodness — like the gourd — are often the most powerful."},
+    {science:"Biodiversity makes ecosystems resilient. Less diversity = more fragility.",bridge:"One withered plant changed Jonah's entire experience of the world.",spirit:"Our moral and spiritual health directly affects the world around us — always."},
+  ];
+  return (
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 40% 20%,#071a0e,#020407 70%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"28px 20px",position:"relative",overflow:"hidden"}}>
+      {Array.from({length:30}).map((_,i)=>(
+        <div key={i} style={{position:"absolute",left:`${(i*37)%100}%`,top:`${(i*61)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.15,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none"}} />
+      ))}
+      <div style={{display:"flex",gap:8,marginBottom:22,alignItems:"center"}}>
+        {["The Story","The Why"].map((label,i)=>(
+          <div key={i} style={{display:"flex",alignItems:"center",gap:8}}>
+            <div onClick={()=>{ if(i<step) setStep(i); }} style={{display:"flex",alignItems:"center",gap:6,cursor:i<step?"pointer":"default",opacity:i<=step?1:0.4,transition:"all 0.3s"}}>
+              <div style={{width:26,height:26,borderRadius:"50%",background:i<=step?"#22c55e":"rgba(255,255,255,0.08)",border:`2px solid ${i<=step?"#22c55e":"rgba(255,255,255,0.15)"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:i<=step?"#fff":"rgba(255,255,255,0.3)",fontFamily:"'Cinzel',serif"}}>{i+1}</div>
+              <span style={{fontSize:11,color:i<=step?"#86efac":"rgba(255,255,255,0.3)",letterSpacing:"0.1em",fontFamily:"'Cinzel',serif"}}>{label}</span>
+            </div>
+            {i<1&&<div style={{width:28,height:1,background:"rgba(255,255,255,0.1)"}} />}
+          </div>
+        ))}
+      </div>
+      {step===0&&(
+        <div style={{maxWidth:640,width:"100%",animation:"slowFade 0.6s ease"}}>
+          <div style={{textAlign:"center",marginBottom:20}}>
+            <div style={{fontSize:11,color:"#4ade80",letterSpacing:"0.3em",marginBottom:6}}>THE OPENING NARRATIVE</div>
+            <h2 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:"#fff",marginBottom:0}}>The Garden is in Danger</h2>
+          </div>
+          <div style={{background:"rgba(0,0,0,0.4)",border:"1px solid rgba(74,222,128,0.15)",borderRadius:20,padding:"24px 26px",maxHeight:"52vh",overflowY:"auto",marginBottom:18}}>
+            {STORY.map((p,i)=>(
+              <p key={i} style={{color:p.b&&p.i?"rgba(255,245,200,0.95)":p.b?"#fff":p.i?"rgba(255,245,200,0.82)":"rgba(255,255,255,0.72)",fontSize:p.b&&!p.i?15:13,fontWeight:p.b?700:400,fontStyle:p.i?"italic":"normal",lineHeight:1.85,marginBottom:14}}>{p.t}</p>
+            ))}
+          </div>
+          <div style={{textAlign:"right"}}>
+            <button onClick={()=>setStep(1)} style={{padding:"12px 36px",background:"linear-gradient(135deg,#16a34a,#15803d)",border:"none",borderRadius:12,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 6px 20px rgba(22,163,74,0.4)"}}>The Why →</button>
+          </div>
+        </div>
+      )}
+      {step===1&&(
+        <div style={{maxWidth:860,width:"100%",animation:"slowFade 0.6s ease"}}>
+          <div style={{textAlign:"center",marginBottom:18}}>
+            <div style={{fontSize:11,color:"#fbbf24",letterSpacing:"0.3em",marginBottom:6}}>WHY THIS GAME EXISTS</div>
+            <h2 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:"#fff",marginBottom:8}}>The Gourd of Jonah</h2>
+            <p style={{color:"rgba(255,255,255,0.45)",fontSize:12,maxWidth:500,margin:"0 auto",lineHeight:1.7}}>The most profound lesson of Jonah comes not from the whale — but from a single plant. Every organism in every ecosystem is a gourd: placed by God with deliberate purpose.</p>
+          </div>
+          <div style={{background:"rgba(253,224,71,0.05)",border:"1px solid rgba(253,224,71,0.2)",borderRadius:14,padding:"14px 20px",marginBottom:18,textAlign:"center"}}>
+            <p style={{fontStyle:"italic",color:"rgba(255,245,200,0.85)",fontSize:13,lineHeight:1.8,margin:0}}>"You had compassion on the plant for which you did not work… And should I not have compassion on Nineveh, the great city, in which there are more than 120,000 persons — and also many animals?"</p>
+            <p style={{fontSize:11,color:"rgba(253,224,71,0.7)",marginTop:8,letterSpacing:"0.08em"}}>— Jonah 4:10–11</p>
+          </div>
+          <div style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,0.07)",marginBottom:20}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(0,0,0,0.5)"}}>
+              {[{label:"🔬 Scientific Truth",color:"#38bdf8"},{label:"🌿 The Bridge",color:"#4ade80"},{label:"✝️ Spiritual Truth",color:"#fbbf24"}].map((h,i)=>(
+                <div key={i} style={{padding:"12px 16px",borderRight:i<2?"1px solid rgba(255,255,255,0.07)":"none",textAlign:"center"}}>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:11,color:h.color,letterSpacing:"0.12em",fontWeight:700}}>{h.label}</div>
+                </div>
+              ))}
+            </div>
+            {TABLE.map((row,i)=>(
+              <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:i%2===0?"rgba(255,255,255,0.02)":"rgba(0,0,0,0.2)",borderTop:"1px solid rgba(255,255,255,0.05)"}}>
+                <div style={{padding:"13px 16px",borderRight:"1px solid rgba(255,255,255,0.05)",fontSize:12,color:"rgba(147,197,253,0.85)",lineHeight:1.65}}>{row.science}</div>
+                <div style={{padding:"13px 16px",borderRight:"1px solid rgba(255,255,255,0.05)",fontSize:12,color:"rgba(134,239,172,0.85)",lineHeight:1.65,fontStyle:"italic"}}>{row.bridge}</div>
+                <div style={{padding:"13px 16px",fontSize:12,color:"rgba(253,224,71,0.8)",lineHeight:1.65}}>{row.spirit}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <button onClick={()=>setStep(0)} style={{padding:"11px 24px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,color:"rgba(255,255,255,0.5)",fontFamily:"'Cinzel',serif",fontSize:12,cursor:"pointer"}}>← Back</button>
+            <button onClick={onDone} style={{padding:"13px 44px",background:"linear-gradient(135deg,#16a34a,#15803d)",border:"none",borderRadius:12,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 6px 24px rgba(22,163,74,0.45)"}}>
+              🛡️ Choose Your Ecosystem →
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SetupScreen({ onStart }) {
   const [step, setStep] = useState(0);
   const [eco, setEco] = useState(null);
@@ -1611,7 +2096,7 @@ function SetupScreen({ onStart }) {
       ))}
       <div style={{textAlign:"center",marginBottom:36,animation:"fadeUp 0.7s ease"}}>
         <div style={{fontSize:56,marginBottom:8,animation:"float 3s ease-in-out infinite",filter:"drop-shadow(0 0 20px rgba(34,197,94,0.5))"}}>🌍</div>
-        <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:24,color:"#fff",letterSpacing:"0.08em",textShadow:"0 0 30px rgba(74,222,128,0.4)"}}>ECOSYSTEM EXPLORER</h1>
+        <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:24,color:"#fff",letterSpacing:"0.08em",textShadow:"0 0 30px rgba(74,222,128,0.4)"}}>GUARDIANS OF THE GARDEN</h1>
         <div style={{fontSize:11,color:"#4ade80",letterSpacing:"0.3em",marginTop:4}}>BOARD GAME · 36–72 SQUARES · 7TH GRADE</div>
       </div>
       <div style={{display:"flex",gap:8,marginBottom:32}}>
@@ -1985,6 +2470,16 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
             <div style={{fontFamily:"'Cinzel',serif",fontSize:"1rem",color:ct.color,letterSpacing:"0.1em",fontWeight:700}}>{ct.label}</div>
             <div style={{fontSize:"0.8rem",color:TEAM_COLORS[team.colorIdx].light}}>● {team.name}</div>
           </div>
+          {(()=>{const r=ROLES.find(ro=>ro.challenge===cell.type);if(!r)return null;const assignedPlayer=(team.roleAssignments||{})[r.id]||"";return(
+            <div style={{background:`${r.color}15`,border:`1px solid ${r.color}40`,borderRadius:"0.7rem",padding:"0.3rem 0.7rem",display:"flex",alignItems:"center",gap:7,flexShrink:0}}>
+              <span style={{fontSize:18}}>{r.emoji}</span>
+              <div>
+                <div style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em"}}>GUARDIAN</div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.72rem",color:r.color,fontWeight:700}}>{r.name}</div>
+                {assignedPlayer&&<div style={{fontSize:"0.68rem",color:"rgba(255,255,255,0.6)",marginTop:1}}>👤 {assignedPlayer}</div>}
+              </div>
+            </div>
+          );})()}
           {pendingOrganism&&<div style={{marginLeft:"auto",background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.3)",borderRadius:"0.65rem",padding:"0.35rem 0.75rem",fontSize:"0.78rem",color:"#4ade80"}}>Prize: {pendingOrganism.emoji} {pendingOrganism.name}</div>}
         </div>
         {cell.type==="trivia"&&<TriviaChallenge data={challenge} onResult={setResult} />}
@@ -2346,18 +2841,24 @@ function VictoryScreen({ teams, ecosystem, winner, onRestart }) {
 
 // ── ROOT ───────────────────────────────────────────
 export default function App() {
-  const [screen,setScreen]=useState("setup");
+  const [screen,setScreen]=useState("welcome");
   const [ecosystem,setEcosystem]=useState(null);
   const [gameTeams,setGameTeams]=useState([]);
   const [firstTeam,setFirstTeam]=useState(0);
-  const handleSetupDone=(eco,teams)=>{setEcosystem(eco);setGameTeams(teams);setScreen("genesis");};
+  const handleSetupDone=(eco,teams)=>{setEcosystem(eco);setGameTeams(teams);setScreen("roles");};
+  const handleRolesDone=(teamsWithRoles)=>{setGameTeams(teamsWithRoles);setScreen("genesis");};
+  const handleNarrativeDone=()=>{setScreen("setup");};
   const handleGenesisDone=idx=>{setFirstTeam(idx);setScreen("game");};
+  const handleRestart=()=>{setScreen("welcome");setEcosystem(null);setGameTeams([]);setFirstTeam(0);};
   return(
     <>
       <style>{GS}</style>
+      {screen==="welcome"&&<WelcomeScreen onEnter={()=>setScreen("narrative")} />}
+      {screen==="narrative"&&<NarrativeScreen onDone={handleNarrativeDone} />}
       {screen==="setup"&&<SetupScreen onStart={handleSetupDone} />}
+      {screen==="roles"&&gameTeams.length>0&&<RolesScreen teams={gameTeams} onDone={handleRolesDone} />}
       {screen==="genesis"&&gameTeams.length>0&&<GenesisScreen teams={gameTeams} ecosystem={ecosystem} onStart={handleGenesisDone} />}
-      {screen==="game"&&ecosystem&&<GameScreen ecosystem={ecosystem} initTeams={gameTeams} firstTeamIdx={firstTeam} onEnd={()=>setScreen("setup")} />}
+      {screen==="game"&&ecosystem&&<GameScreen ecosystem={ecosystem} initTeams={gameTeams} firstTeamIdx={firstTeam} onEnd={handleRestart} />}
     </>
   );
 }
