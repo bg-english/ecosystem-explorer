@@ -1732,7 +1732,7 @@ const GS = `
   @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
   @keyframes popIn { 0%{opacity:0;transform:scale(0.4)} 70%{transform:scale(1.1)} 100%{opacity:1;transform:scale(1)} }
   @keyframes twinkle { 0%,100%{opacity:0.15;transform:scale(0.8)} 50%{opacity:0.8;transform:scale(1.2)} }
-  @keyframes diceRoll { 0%{transform:scale(1) rotate(0deg)} 50%{transform:scale(1.2) rotate(180deg)} 100%{transform:scale(1) rotate(360deg)} }
+  @keyframes diceRoll { 0%{transform:rotateZ(0deg)} 100%{transform:rotateZ(360deg)} }
   @keyframes chaosFloat { 0%{transform:translate(0,0) rotate(0deg);opacity:0.05} 25%{transform:translate(-8px,6px) rotate(45deg);opacity:0.12} 50%{transform:translate(5px,-4px) rotate(90deg);opacity:0.06} 75%{transform:translate(-3px,8px) rotate(135deg);opacity:0.10} 100%{transform:translate(0,0) rotate(180deg);opacity:0.05} }
   @keyframes genesisReveal { from{opacity:0;letter-spacing:0.6em} to{opacity:1;letter-spacing:0.12em} }
   @keyframes lightBurst { 0%{opacity:0;transform:scale(0.3)} 60%{opacity:1;transform:scale(1.2)} 100%{opacity:1;transform:scale(1)} }
@@ -1743,12 +1743,18 @@ const GS = `
   @keyframes shimmer { 0%,100%{opacity:0.7} 50%{opacity:1} }
   @keyframes staggerIn { from{opacity:0;transform:translateY(28px) scale(0.96)} to{opacity:1;transform:translateY(0) scale(1)} }
   @keyframes pulseGlow { 0%,100%{box-shadow:0 8px 36px rgba(22,163,74,0.55),0 0 0 0 rgba(22,163,74,0.4)} 50%{box-shadow:0 8px 36px rgba(22,163,74,0.55),0 0 0 12px rgba(22,163,74,0)} }
-  @keyframes splashOut { 0%{opacity:1;transform:scale(1)} 70%{opacity:1;transform:scale(1.04)} 100%{opacity:0;transform:scale(0.92)} }
+  @keyframes splashOut { 0%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(1.06)} }
   @keyframes splashIconIn { 0%{opacity:0;transform:scale(0.2) rotate(-15deg)} 60%{transform:scale(1.15) rotate(4deg)} 100%{opacity:1;transform:scale(1) rotate(0deg)} }
   @keyframes splashLabelIn { from{opacity:0;letter-spacing:0.6em} to{opacity:1;letter-spacing:0.15em} }
   @keyframes victoryFloat { 0%{transform:translateY(0) rotate(0deg);opacity:0.7} 50%{transform:translateY(-18px) rotate(8deg);opacity:1} 100%{transform:translateY(0) rotate(0deg);opacity:0.7} }
   @keyframes victoryTitle { 0%{opacity:0;transform:translateY(-30px) scale(0.8)} 60%{transform:translateY(4px) scale(1.04)} 100%{opacity:1;transform:translateY(0) scale(1)} }
   @keyframes rankSlideIn { from{opacity:0;transform:translateX(-32px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes ecoCardHover { from{transform:scale(1)} to{transform:scale(1.02)} }
+  @keyframes destroyedEmber { 0%{transform:translateY(0) rotate(0deg);opacity:0.18} 50%{opacity:0.35} 100%{transform:translateY(-120px) rotate(180deg);opacity:0} }
+  @keyframes destroyedShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+  @keyframes wowPanelIn { from{opacity:0;transform:translateY(16px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+  @keyframes teamActive { 0%,100%{box-shadow:0 0 18px var(--tc)40,inset 0 0 12px var(--tc)08} 50%{box-shadow:0 0 28px var(--tc)66,inset 0 0 16px var(--tc)12} }
+  @keyframes diceOverlayIn { from{opacity:0;transform:translateX(-50%) translateY(12px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
   ::-webkit-scrollbar{width:7px} ::-webkit-scrollbar-track{background:rgba(255,255,255,0.04)} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.18);border-radius:4px}
 `;
 
@@ -1777,14 +1783,21 @@ const GENESIS_Q = {
 
 function GenesisScreen({ teams, onStart }) {
   const [phase, setPhase] = useState(0); // 0=chaos 1=text 2=light 3=question
-  // Spinner state
   const [activeTeams, setActiveTeams] = useState(teams);
   const [spinning, setSpinning] = useState(false);
   const [deg, setDeg] = useState(0);
-  const [chosen, setChosen] = useState(null);   // team object
-  const [spinPhase, setSpinPhase] = useState("spin"); // spin | question | wrong
+  const [chosen, setChosen] = useState(null);
+  const [spinPhase, setSpinPhase] = useState("spin");
   const [sel, setSel] = useState(null);
   const spinDegRef = useRef(0);
+
+  const chaosSymbols = ["✦","◆","▲","●","◉","⬟","⬡","⟐","⋆","✧","◈","⬢","⬣"];
+  const chaosParticles = useMemo(()=>Array.from({length:60}).map((_,i)=>({
+    left:`${(i*17.3)%100}%`, top:`${(i*13.7)%100}%`,
+    sz: Math.round(8 + (i*7)%14),
+    dur:`${3+(i*3)%5}s`, delay:`${(i*0.9)%4}s`,
+    sym: chaosSymbols[i%chaosSymbols.length],
+  })),[]);
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 800);
@@ -1831,14 +1844,13 @@ function GenesisScreen({ teams, onStart }) {
 
   const n = activeTeams.length;
   const conicParts = activeTeams.map((t, i) => `${TEAM_COLORS[t.colorIdx].bg} ${(i/n)*100}% ${((i+1)/n)*100}%`).join(", ");
-  const chaosSymbols = ["✦","◆","▲","●","◉","⬟","⬡","⟐","⋆","✧","◈","⬢","⬣"];
 
   return (
     <div style={{minHeight:"100vh",background:"#000",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start",fontFamily:"'Libre Baskerville',serif",overflow:"hidden auto",position:"relative",paddingBottom:40}}>
-      {/* Chaos particles */}
-      {Array.from({length:60}).map((_,i)=>(
-        <div key={i} style={{position:"fixed",left:`${(i*17.3)%100}%`,top:`${(i*13.7)%100}%`,fontSize:Math.random()*18+8,color:"rgba(100,100,150,1)",animation:`chaosFloat ${3+Math.random()*5}s ease-in-out ${Math.random()*4}s infinite`,pointerEvents:"none",opacity:phase<2?1:0,transition:"opacity 2s ease"}}>
-          {chaosSymbols[i%chaosSymbols.length]}
+      {/* Chaos particles — memoized */}
+      {chaosParticles.map((p,i)=>(
+        <div key={i} style={{position:"fixed",left:p.left,top:p.top,fontSize:p.sz,color:"rgba(100,100,150,1)",animation:`chaosFloat ${p.dur} ease-in-out ${p.delay} infinite`,pointerEvents:"none",opacity:phase<2?1:0,transition:"opacity 2s ease"}}>
+          {p.sym}
         </div>
       ))}
       {/* Light burst */}
@@ -1890,8 +1902,17 @@ function GenesisScreen({ teams, onStart }) {
                 {activeTeams.length < teams.length ? `Remaining teams: ${activeTeams.map(t=>t.name).join(", ")}` : "Spin the wheel to decide who answers"}
               </div>
               <div style={{position:"relative"}}>
-                <div style={{position:"absolute",top:-16,left:"50%",transform:"translateX(-50%)",zIndex:10,fontSize:22,color:"rgba(255,220,100,0.9)"}}>▼</div>
-                <div style={{width:240,height:240,borderRadius:"50%",background:`conic-gradient(${conicParts})`,transform:`rotate(${deg}deg)`,transition:spinning?"transform 4.2s cubic-bezier(0.17,0.67,0.12,1)":"none",border:"3px solid rgba(255,255,255,0.15)",position:"relative",boxShadow:"0 0 40px rgba(200,160,60,0.15)"}}>
+                {/* Pointer */}
+                <div style={{
+                  position:"absolute",top:-20,left:"50%",transform:"translateX(-50%)",
+                  zIndex:10,
+                  width:0,height:0,
+                  borderLeft:"10px solid transparent",
+                  borderRight:"10px solid transparent",
+                  borderTop:"22px solid rgba(255,220,100,0.95)",
+                  filter:"drop-shadow(0 2px 8px rgba(255,220,100,0.7))",
+                }} />
+                <div style={{width:240,height:240,borderRadius:"50%",background:`conic-gradient(${conicParts})`,transform:`rotate(${deg}deg)`,transition:spinning?"transform 4.2s cubic-bezier(0.17,0.67,0.12,1)":"none",border:"3px solid rgba(255,255,255,0.15)",position:"relative",boxShadow:"0 0 40px rgba(200,160,60,0.2), 0 0 80px rgba(200,160,60,0.08)"}}>
                   {activeTeams.map((t,i)=>{
                     const angle=(i/n+0.5/n)*360-90, rad=angle*Math.PI/180;
                     return(
@@ -1903,7 +1924,18 @@ function GenesisScreen({ teams, onStart }) {
                 </div>
                 <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:44,height:44,borderRadius:"50%",background:"#050508",border:"2px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,zIndex:5}}>📖</div>
               </div>
-              <button onClick={doSpin} disabled={spinning} style={{padding:"13px 40px",background:spinning?"rgba(255,255,255,0.04)":"linear-gradient(135deg,rgba(200,160,60,0.3),rgba(255,220,100,0.2))",border:"1px solid rgba(200,160,60,0.4)",borderRadius:12,color:spinning?"rgba(255,255,255,0.3)":"rgba(255,245,200,0.9)",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:13,cursor:spinning?"not-allowed":"pointer",letterSpacing:"0.15em",boxShadow:spinning?"none":"0 0 20px rgba(200,160,60,0.2)"}}>
+              <button onClick={doSpin} disabled={spinning} style={{
+                padding:"13px 48px",
+                background:spinning?"rgba(255,255,255,0.04)":"linear-gradient(135deg,rgba(200,160,60,0.35),rgba(255,220,100,0.25))",
+                border:`1.5px solid ${spinning?"rgba(255,255,255,0.1)":"rgba(200,160,60,0.5)"}`,
+                borderRadius:12,
+                color:spinning?"rgba(255,255,255,0.3)":"rgba(255,245,200,0.95)",
+                fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:13,
+                cursor:spinning?"not-allowed":"pointer",
+                letterSpacing:"0.15em",
+                boxShadow:spinning?"none":"0 0 24px rgba(200,160,60,0.25)",
+                transition:"all 0.25s",
+              }}>
                 {spinning?"Spinning…":"⚡ SPIN"}
               </button>
             </div>
@@ -2427,6 +2459,14 @@ function SetupScreen({ onStart }) {
   const [editing, setEditing] = useState({ idx:0, name:"Team 1", players:[""] });
   const ecoList = Object.values(ECOSYSTEMS).sort((a,b)=>a.difficulty-b.difficulty);
   const diffColors = {1:"#4ade80",2:"#86efac",3:"#fbbf24",4:"#f97316",5:"#f87171"};
+  const diffIcons  = {1:"🌱",2:"🌿",3:"🌳",4:"⚡",5:"🔥"};
+
+  const stars = useMemo(()=>Array.from({length:44}).map((_,i)=>({
+    left:`${(i*43+7)%100}%`, top:`${(i*61+11)%100}%`,
+    sz: i%9===0?3:i%4===0?2:1.5,
+    op: i%3===0?0.4:0.18,
+    dur:`${2+i%4}s`, delay:`${(i%5)*0.9}s`,
+  })),[]);
 
   const initTeams = n => {
     const t = Array.from({length:n},(_,i)=>({id:i,name:`Team ${i+1}`,players:[""],colorIdx:i}));
@@ -2440,57 +2480,116 @@ function SetupScreen({ onStart }) {
 
   return (
     <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",padding:"40px 20px",position:"relative",overflow:"hidden"}}>
-      {Array.from({length:40}).map((_,i)=>(
-        <div key={i} style={{position:"absolute",left:`${Math.random()*100}%`,top:`${Math.random()*100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",animation:`twinkle ${2+Math.random()*3}s ease-in-out ${Math.random()*4}s infinite`,opacity:0.3,pointerEvents:"none"}} />
+      {stars.map((s,i)=>(
+        <div key={i} style={{position:"absolute",left:s.left,top:s.top,width:s.sz,height:s.sz,borderRadius:"50%",background:"#fff",opacity:s.op,animation:`twinkle ${s.dur} ease-in-out ${s.delay} infinite`,pointerEvents:"none"}} />
       ))}
       <div style={{textAlign:"center",marginBottom:36,animation:"fadeUp 0.7s ease"}}>
         <div style={{fontSize:56,marginBottom:8,animation:"float 3s ease-in-out infinite",filter:"drop-shadow(0 0 20px rgba(34,197,94,0.5))"}}>🌍</div>
         <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:24,color:"#fff",letterSpacing:"0.08em",textShadow:"0 0 30px rgba(74,222,128,0.4)"}}>GUARDIANS OF THE GARDEN</h1>
         <div style={{fontSize:11,color:"#4ade80",letterSpacing:"0.3em",marginTop:4}}>BOARD GAME · 36–72 SQUARES · 7TH GRADE</div>
       </div>
+      {/* Step indicator */}
       <div style={{display:"flex",gap:8,marginBottom:32}}>
         {["Ecosystem","Teams","Players"].map((s,i)=>(
           <div key={i} style={{display:"flex",alignItems:"center",gap:8}}>
-            <div style={{width:28,height:28,borderRadius:"50%",background:i<=step?"#22c55e":"rgba(255,255,255,0.08)",border:`2px solid ${i<=step?"#22c55e":"rgba(255,255,255,0.15)"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:i<=step?"#fff":"rgba(255,255,255,0.3)",fontFamily:"'Cinzel',serif"}}>{i+1}</div>
-            <span style={{fontSize:11,color:i<=step?"#86efac":"rgba(255,255,255,0.3)",letterSpacing:"0.1em"}}>{s}</span>
+            <div style={{width:28,height:28,borderRadius:"50%",background:i<=step?"#22c55e":"rgba(255,255,255,0.08)",border:`2px solid ${i<=step?"#22c55e":"rgba(255,255,255,0.15)"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:i<=step?"#fff":"rgba(255,255,255,0.3)",fontFamily:"'Cinzel',serif",transition:"all 0.4s"}}>{i<step?"✓":i+1}</div>
+            <span style={{fontSize:11,color:i<=step?"#86efac":"rgba(255,255,255,0.3)",letterSpacing:"0.1em",transition:"color 0.4s"}}>{s}</span>
             {i<2&&<div style={{width:24,height:1,background:"rgba(255,255,255,0.1)"}} />}
           </div>
         ))}
       </div>
       {step===0&&(
-        <div style={{width:"100%",maxWidth:900,animation:"fadeUp 0.5s ease"}}>
-          <p style={{textAlign:"center",color:"rgba(255,255,255,0.5)",marginBottom:24,fontSize:13}}>Choose the ecosystem your class will explore</p>
+        <div style={{width:"100%",maxWidth:960,animation:"fadeUp 0.5s ease"}}>
+          <p style={{textAlign:"center",color:"rgba(255,255,255,0.4)",marginBottom:24,fontSize:13,letterSpacing:"0.05em"}}>Choose the ecosystem your class will explore</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:14}}>
-            {ecoList.map(e=>(
-              <div key={e.id} onClick={()=>setEco(e)} style={{background:eco?.id===e.id?`${e.color}22`:"rgba(255,255,255,0.03)",border:`2px solid ${eco?.id===e.id?e.color:"rgba(255,255,255,0.08)"}`,borderRadius:16,padding:"18px 20px",cursor:"pointer",transition:"all 0.25s",boxShadow:eco?.id===e.id?`0 0 20px ${e.color}44`:"none"}}>
-                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
-                  <span style={{fontSize:32}}>{e.emoji}</span>
-                  <div>
-                    <div style={{fontFamily:"'Cinzel',serif",fontSize:14,color:"#fff",fontWeight:700}}>{e.name}</div>
-                    <span style={{fontSize:10,background:`${diffColors[e.difficulty]||"#a5f3fc"}22`,color:diffColors[e.difficulty]||"#a5f3fc",border:`1px solid ${diffColors[e.difficulty]||"#a5f3fc"}44`,borderRadius:10,padding:"2px 8px",fontFamily:"'Cinzel',serif"}}>{e.diffLabel}</span>
+            {ecoList.map(e=>{
+              const sel=eco?.id===e.id;
+              return(
+                <div key={e.id} onClick={()=>setEco(e)} style={{
+                  background:sel?`${e.color}18`:"rgba(255,255,255,0.03)",
+                  border:`2px solid ${sel?e.color:"rgba(255,255,255,0.07)"}`,
+                  borderRadius:18,padding:"20px 20px 16px",cursor:"pointer",
+                  transition:"all 0.25s cubic-bezier(0.34,1.3,0.64,1)",
+                  boxShadow:sel?`0 0 28px ${e.color}44, inset 0 0 20px ${e.color}08`:"none",
+                  transform:sel?"scale(1.02)":"scale(1)",
+                }}>
+                  {/* Top row */}
+                  <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:12}}>
+                    <div style={{display:"flex",alignItems:"center",gap:12}}>
+                      <div style={{
+                        width:50,height:50,borderRadius:14,
+                        background:`${e.color}18`,
+                        border:`1.5px solid ${e.color}44`,
+                        display:"flex",alignItems:"center",justifyContent:"center",
+                        fontSize:26,
+                        boxShadow:sel?`0 0 16px ${e.color}55`:"none",
+                        transition:"box-shadow 0.3s",
+                      }}>{e.emoji}</div>
+                      <div>
+                        <div style={{fontFamily:"'Cinzel',serif",fontSize:14,color:"#fff",fontWeight:700,marginBottom:5}}>{e.name}</div>
+                        <div style={{display:"flex",alignItems:"center",gap:5}}>
+                          <span style={{fontSize:11}}>{diffIcons[e.difficulty]}</span>
+                          <span style={{fontSize:10,color:diffColors[e.difficulty]||"#a5f3fc",fontFamily:"'Cinzel',serif",letterSpacing:"0.05em"}}>{e.diffLabel}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {sel&&<div style={{width:20,height:20,borderRadius:"50%",background:"#22c55e",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#fff",fontWeight:700,flexShrink:0,animation:"popIn 0.3s ease"}}>✓</div>}
+                  </div>
+                  {/* Stats row */}
+                  <div style={{display:"flex",gap:10,marginBottom:10}}>
+                    {[
+                      {label:"Organisms", val:e.organisms.length},
+                      {label:"Squares",   val:e.boardSize},
+                    ].map(stat=>(
+                      <div key={stat.label} style={{flex:1,background:"rgba(0,0,0,0.25)",borderRadius:8,padding:"6px 10px",textAlign:"center"}}>
+                        <div style={{fontFamily:"'Cinzel',serif",fontSize:15,color:e.color,fontWeight:700}}>{stat.val}</div>
+                        <div style={{fontSize:9,color:"rgba(255,255,255,0.3)",letterSpacing:"0.08em"}}>{stat.label.toUpperCase()}</div>
+                      </div>
+                    ))}
+                    <div style={{flex:2,background:"rgba(0,0,0,0.25)",borderRadius:8,padding:"6px 10px",textAlign:"center"}}>
+                      <div style={{fontFamily:"'Cinzel',serif",fontSize:10,color:"rgba(255,255,255,0.55)",marginTop:2}}>
+                        {e.difficulty<=2?"Basic chains":e.difficulty<=3?"Moderate chains":e.difficulty<=4?"Complex chains":"Expert chains"}
+                      </div>
+                    </div>
+                  </div>
+                  {/* Organism emoji strip */}
+                  <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                    {e.organisms.slice(0,8).map(org=>(
+                      <span key={org.id} style={{fontSize:14,opacity:sel?0.9:0.4,transition:"opacity 0.3s"}}>{org.emoji}</span>
+                    ))}
                   </div>
                 </div>
-                <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",lineHeight:1.5}}>{e.organisms.length} organisms · {e.boardSize} squares · {e.difficulty>=6?"Expert chains":e.difficulty>=4?"Complex chains":e.difficulty<=2?"Basic chains":"Moderate chains"}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
       {step===1&&(
         <div style={{width:"100%",maxWidth:500,animation:"fadeUp 0.5s ease",textAlign:"center"}}>
-          <p style={{color:"rgba(255,255,255,0.5)",marginBottom:32,fontSize:13}}>How many teams are playing?</p>
-          <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
-            {[2,3,4,5,6].map(n=>(
-              <div key={n} onClick={()=>initTeams(n)} style={{width:80,height:80,borderRadius:16,background:numTeams===n?"rgba(34,197,94,0.2)":"rgba(255,255,255,0.04)",border:`2px solid ${numTeams===n?"#22c55e":"rgba(255,255,255,0.1)"}`,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-                <span style={{fontFamily:"'Cinzel',serif",fontSize:28,color:numTeams===n?"#4ade80":"rgba(255,255,255,0.6)",fontWeight:700}}>{n}</span>
-                <span style={{fontSize:9,color:"rgba(255,255,255,0.35)",letterSpacing:"0.1em"}}>GRUPOS</span>
-              </div>
-            ))}
+          <p style={{color:"rgba(255,255,255,0.45)",marginBottom:28,fontSize:13,letterSpacing:"0.05em"}}>How many teams are playing?</p>
+          <div style={{display:"flex",gap:14,justifyContent:"center",flexWrap:"wrap"}}>
+            {[2,3,4,5,6].map(n=>{
+              const sel=numTeams===n;
+              return(
+                <div key={n} onClick={()=>initTeams(n)} style={{
+                  width:84,height:84,borderRadius:18,cursor:"pointer",
+                  background:sel?`rgba(34,197,94,0.2)`:"rgba(255,255,255,0.04)",
+                  border:`2px solid ${sel?"#22c55e":"rgba(255,255,255,0.09)"}`,
+                  display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+                  transition:"all 0.2s cubic-bezier(0.34,1.4,0.64,1)",
+                  transform:sel?"scale(1.08)":"scale(1)",
+                  boxShadow:sel?"0 0 20px rgba(34,197,94,0.35)":"none",
+                }}>
+                  <span style={{fontFamily:"'Cinzel Decorative',serif",fontSize:30,color:sel?"#4ade80":"rgba(255,255,255,0.55)",fontWeight:700,lineHeight:1}}>{n}</span>
+                  <span style={{fontSize:9,color:sel?"rgba(134,239,172,0.8)":"rgba(255,255,255,0.3)",letterSpacing:"0.15em",marginTop:4,fontFamily:"'Cinzel',serif"}}>TEAM{n>1?"S":""}</span>
+                </div>
+              );
+            })}
           </div>
           <div style={{marginTop:24,display:"flex",gap:10,flexWrap:"wrap",justifyContent:"center"}}>
             {teams.map((t,i)=>(
-              <div key={i} style={{display:"flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.05)",border:`1px solid ${TEAM_COLORS[i].bg}44`,borderRadius:10,padding:"8px 14px"}}>
-                <div style={{width:12,height:12,borderRadius:"50%",background:TEAM_COLORS[i].bg}} />
+              <div key={i} style={{display:"flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.05)",border:`1px solid ${TEAM_COLORS[i].bg}44`,borderRadius:10,padding:"7px 14px",animation:"popIn 0.3s ease"}}>
+                <div style={{width:8,height:8,borderRadius:"50%",background:TEAM_COLORS[i].bg,boxShadow:`0 0 6px ${TEAM_COLORS[i].bg}`}} />
                 <span style={{fontSize:12,color:"rgba(255,255,255,0.7)",fontFamily:"'Cinzel',serif"}}>{t.name}</span>
               </div>
             ))}
@@ -2594,19 +2693,41 @@ function TriviaChallenge({ data, onResult }) {
   const [sel,setSel]=useState(null);
   const [answered,setAnswered]=useState(false);
   const submit=idx=>{if(answered)return;setSel(idx);setAnswered(true);setTimeout(()=>onResult(idx===data.a),1500);};
+  const LETTERS=["A","B","C","D"];
   return(
     <div>
-      <p style={{fontSize:17,color:"#fff",lineHeight:1.5,fontWeight:"bold",fontFamily:"'Cinzel',serif",marginBottom:20}}>{data.q}</p>
+      <p style={{fontSize:16,color:"rgba(255,255,255,0.95)",lineHeight:1.65,fontFamily:"'Libre Baskerville',serif",fontWeight:700,marginBottom:20,padding:"0 2px"}}>{data.q}</p>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
         {data.opts.map((opt,i)=>{
-          let bg="rgba(255,255,255,0.07)",border="1px solid rgba(255,255,255,0.12)",color="rgba(255,255,255,0.85)";
-          if(answered){if(i===data.a){bg="rgba(22,163,74,0.25)";border="1.5px solid #22c55e";color="#4ade80";}else if(i===sel){bg="rgba(239,68,68,0.2)";border="1.5px solid #ef4444";color="#f87171";}}
-          return(<button key={i} onClick={()=>submit(i)} style={{background:bg,border,borderRadius:12,padding:"13px 15px",color,fontFamily:"'Libre Baskerville',serif",fontSize:14,textAlign:"left",cursor:answered?"default":"pointer",transition:"all 0.2s",display:"flex",gap:10,alignItems:"center"}}>
-            <span style={{width:24,height:24,borderRadius:"50%",background:"rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontFamily:"'Cinzel',serif",flexShrink:0}}>{String.fromCharCode(65+i)}</span>{opt}
-          </button>);
+          const isCorrect=answered&&i===data.a;
+          const isWrong=answered&&i===sel&&i!==data.a;
+          const idle=!answered;
+          return(
+            <button key={i} onClick={()=>submit(i)} style={{
+              background:isCorrect?"rgba(22,163,74,0.22)":isWrong?"rgba(239,68,68,0.18)":"rgba(255,255,255,0.05)",
+              border:`1.5px solid ${isCorrect?"#22c55e":isWrong?"#ef4444":"rgba(255,255,255,0.1)"}`,
+              borderRadius:12,padding:"12px 14px",
+              color:isCorrect?"#4ade80":isWrong?"#f87171":"rgba(255,255,255,0.85)",
+              fontFamily:"'Libre Baskerville',serif",fontSize:13.5,
+              textAlign:"left",cursor:answered?"default":"pointer",
+              transition:"all 0.18s",
+              display:"flex",gap:11,alignItems:"center",
+              boxShadow:isCorrect?"0 0 14px rgba(34,197,94,0.2)":isWrong?"0 0 10px rgba(239,68,68,0.15)":"none",
+            }}>
+              <span style={{
+                minWidth:26,height:26,borderRadius:8,flexShrink:0,
+                background:isCorrect?"rgba(34,197,94,0.25)":isWrong?"rgba(239,68,68,0.25)":"rgba(255,255,255,0.1)",
+                border:`1px solid ${isCorrect?"rgba(34,197,94,0.5)":isWrong?"rgba(239,68,68,0.5)":"rgba(255,255,255,0.15)"}`,
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:11,fontFamily:"'Cinzel',serif",fontWeight:700,
+                color:isCorrect?"#4ade80":isWrong?"#f87171":"rgba(255,255,255,0.5)",
+              }}>{LETTERS[i]}</span>
+              <span style={{lineHeight:1.4}}>{opt}</span>
+            </button>
+          );
         })}
       </div>
-      {answered&&<div style={{marginTop:14,padding:"12px 16px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,fontSize:13,color:"rgba(255,255,255,0.65)",lineHeight:1.6}}>💡 {data.exp||"Well answered!"}</div>}
+      {answered&&<div style={{marginTop:14,padding:"11px 15px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.09)",borderRadius:10,fontSize:13,color:"rgba(255,255,255,0.6)",lineHeight:1.65,fontFamily:"'Libre Baskerville',serif"}}>💡 {data.exp||"Well answered!"}</div>}
     </div>
   );
 }
@@ -2988,7 +3109,7 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
 // ── WOW FACTS MODAL ────────────────────────────────
 function WowFactsModal({ fact, ecosystem, context, onDone }) {
   const eco = ECOSYSTEMS[ecosystem.id];
-  const [phase, setPhase] = useState("in"); // "in" | "ready"
+  const [phase, setPhase] = useState("in");
   useEffect(() => {
     const t = setTimeout(() => setPhase("ready"), 800);
     if (context === "victory") SFX.victory();
@@ -3002,22 +3123,37 @@ function WowFactsModal({ fact, ecosystem, context, onDone }) {
     ? "🏆 Ecosystem Complete!"
     : "🕸️ Food Web Mastered!";
 
+  const contextColor = context === "victory" ? "#fde047"
+    : context === "restoration" ? "#4ade80"
+    : "#fb923c";
+
   return (
     <div style={{
       position:"fixed", inset:0,
-      background:"rgba(0,0,0,0.92)",
+      background:`radial-gradient(ellipse at 50% 0%, ${eco.glow}18 0%, rgba(0,0,0,0.94) 55%)`,
       display:"flex", alignItems:"center", justifyContent:"center",
       zIndex:250, padding:"1.5rem",
-      animation:"slowFade 0.4s ease",
+      animation:"slowFade 0.35s ease",
     }}>
+      {/* Subtle eco-color ambient dots */}
+      {[0,1,2,3].map(i=>(
+        <div key={i} style={{
+          position:"absolute",
+          left:`${[15,80,25,72][i]}%`, top:`${[10,15,85,80][i]}%`,
+          width:200,height:200,borderRadius:"50%",
+          background:`radial-gradient(ellipse, ${eco.glow}10 0%, transparent 70%)`,
+          pointerEvents:"none",
+        }}/>
+      ))}
+
       <div style={{
         maxWidth:"54rem", width:"100%",
         display:"flex", flexDirection:"column", alignItems:"center",
-        gap:"1.5rem",
+        gap:"1.4rem", position:"relative", zIndex:1,
       }}>
         {/* Header */}
-        <div style={{textAlign:"center", animation:"fadeUp 0.6s ease"}}>
-          <div style={{fontSize:"3rem", marginBottom:"0.4rem", animation:"float 3s ease-in-out infinite", filter:`drop-shadow(0 0 20px ${eco.glow})`}}>
+        <div style={{textAlign:"center", animation:"fadeUp 0.55s ease"}}>
+          <div style={{fontSize:"3.2rem", marginBottom:"0.4rem", animation:"float 3s ease-in-out infinite", filter:`drop-shadow(0 0 24px ${eco.glow})`}}>
             {eco.emoji}
           </div>
           <div style={{
@@ -3025,92 +3161,62 @@ function WowFactsModal({ fact, ecosystem, context, onDone }) {
             fontSize:"clamp(1rem,3vw,1.6rem)",
             color:"#fde047",
             letterSpacing:"0.12em",
-            textShadow:"0 0 30px rgba(253,224,71,0.6)",
+            textShadow:"0 0 32px rgba(253,224,71,0.65)",
             marginBottom:"0.3rem",
-          }}>
-            WOW FACT!
-          </div>
+          }}>WOW FACT!</div>
           <div style={{
-            fontFamily:"'Cinzel',serif",
-            fontSize:"0.72rem",
-            color: eco.color,
-            letterSpacing:"0.25em",
-            opacity:0.85,
+            display:"inline-flex",alignItems:"center",gap:"0.5rem",
+            background:`${contextColor}18`,
+            border:`1px solid ${contextColor}40`,
+            borderRadius:"2rem",
+            padding:"0.25rem 0.9rem",
           }}>
-            {contextLabel.toUpperCase()} · {eco.name.toUpperCase()}
+            <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.7rem",color:contextColor,letterSpacing:"0.2em"}}>{contextLabel.toUpperCase()}</span>
+            <span style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.25)"}}>·</span>
+            <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.7rem",color:eco.color,letterSpacing:"0.15em",opacity:0.8}}>{eco.name.toUpperCase()}</span>
           </div>
         </div>
 
         {/* Two panels */}
-        <div style={{
-          display:"grid",
-          gridTemplateColumns:"1fr 1fr",
-          gap:"1rem",
-          width:"100%",
-        }}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",width:"100%"}}>
           {/* Science panel */}
           <div style={{
-            background:"rgba(56,189,248,0.06)",
+            background:"rgba(14,30,50,0.8)",
             border:"1.5px solid rgba(56,189,248,0.3)",
-            borderRadius:"1.2rem",
-            padding:"1.6rem 1.4rem",
-            animation:"wowSlideLeft 0.55s cubic-bezier(0.34,1.4,0.64,1) 0.15s both",
+            borderRadius:"1.3rem",padding:"1.6rem 1.4rem",
+            backdropFilter:"blur(8px)",
+            animation:"wowPanelIn 0.5s cubic-bezier(0.34,1.3,0.64,1) 0.1s both",
+            boxShadow:"0 4px 24px rgba(56,189,248,0.08), inset 0 1px 0 rgba(56,189,248,0.1)",
           }}>
-            <div style={{display:"flex", alignItems:"center", gap:"0.6rem", marginBottom:"1rem"}}>
-              <div style={{
-                width:"2.2rem", height:"2.2rem",
-                borderRadius:"0.6rem",
-                background:"rgba(56,189,248,0.15)",
-                border:"1.5px solid rgba(56,189,248,0.4)",
-                display:"flex", alignItems:"center", justifyContent:"center",
-                fontSize:"1.1rem", flexShrink:0,
-              }}>🔬</div>
+            <div style={{display:"flex",alignItems:"center",gap:"0.6rem",marginBottom:"1rem"}}>
+              <div style={{width:"2.2rem",height:"2.2rem",borderRadius:"0.6rem",background:"rgba(56,189,248,0.12)",border:"1.5px solid rgba(56,189,248,0.35)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem",flexShrink:0}}>🔬</div>
               <div>
-                <div style={{fontFamily:"'Cinzel',serif", fontSize:"0.65rem", color:"rgba(56,189,248,0.7)", letterSpacing:"0.2em"}}>SCIENCE FACT</div>
-                <div style={{fontFamily:"'Cinzel',serif", fontSize:"0.85rem", color:"#38bdf8", fontWeight:700}}>Did you know?</div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.62rem",color:"rgba(56,189,248,0.65)",letterSpacing:"0.22em"}}>SCIENCE FACT</div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.88rem",color:"#38bdf8",fontWeight:700}}>Did you know?</div>
               </div>
             </div>
-            <p style={{
-              color:"rgba(255,255,255,0.88)",
-              fontSize:"0.92rem",
-              lineHeight:1.75,
-              fontFamily:"'Libre Baskerville',serif",
-              margin:0,
-            }}>
+            <p style={{color:"rgba(255,255,255,0.9)",fontSize:"0.92rem",lineHeight:1.8,fontFamily:"'Libre Baskerville',serif",margin:0}}>
               {fact.science}
             </p>
           </div>
 
           {/* Faith panel */}
           <div style={{
-            background:"rgba(253,224,71,0.05)",
+            background:"rgba(30,24,5,0.8)",
             border:"1.5px solid rgba(253,224,71,0.25)",
-            borderRadius:"1.2rem",
-            padding:"1.6rem 1.4rem",
-            animation:"wowSlideRight 0.55s cubic-bezier(0.34,1.4,0.64,1) 0.35s both",
+            borderRadius:"1.3rem",padding:"1.6rem 1.4rem",
+            backdropFilter:"blur(8px)",
+            animation:"wowPanelIn 0.5s cubic-bezier(0.34,1.3,0.64,1) 0.28s both",
+            boxShadow:"0 4px 24px rgba(253,224,71,0.06), inset 0 1px 0 rgba(253,224,71,0.08)",
           }}>
-            <div style={{display:"flex", alignItems:"center", gap:"0.6rem", marginBottom:"1rem"}}>
-              <div style={{
-                width:"2.2rem", height:"2.2rem",
-                borderRadius:"0.6rem",
-                background:"rgba(253,224,71,0.1)",
-                border:"1.5px solid rgba(253,224,71,0.3)",
-                display:"flex", alignItems:"center", justifyContent:"center",
-                fontSize:"1.1rem", flexShrink:0,
-              }}>✝️</div>
+            <div style={{display:"flex",alignItems:"center",gap:"0.6rem",marginBottom:"1rem"}}>
+              <div style={{width:"2.2rem",height:"2.2rem",borderRadius:"0.6rem",background:"rgba(253,224,71,0.08)",border:"1.5px solid rgba(253,224,71,0.28)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem",flexShrink:0}}>✝️</div>
               <div>
-                <div style={{fontFamily:"'Cinzel',serif", fontSize:"0.65rem", color:"rgba(253,224,71,0.7)", letterSpacing:"0.2em"}}>FAITH CONNECTION</div>
-                <div style={{fontFamily:"'Cinzel',serif", fontSize:"0.85rem", color:"#fde047", fontWeight:700}}>God's Design</div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.62rem",color:"rgba(253,224,71,0.65)",letterSpacing:"0.22em"}}>FAITH CONNECTION</div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.88rem",color:"#fde047",fontWeight:700}}>God's Design</div>
               </div>
             </div>
-            <p style={{
-              color:"rgba(255,245,200,0.88)",
-              fontSize:"0.92rem",
-              lineHeight:1.75,
-              fontFamily:"'Libre Baskerville',serif",
-              fontStyle:"italic",
-              margin:0,
-            }}>
+            <p style={{color:"rgba(255,245,200,0.9)",fontSize:"0.92rem",lineHeight:1.8,fontFamily:"'Libre Baskerville',serif",fontStyle:"italic",margin:0}}>
               {fact.faith}
             </p>
           </div>
@@ -3120,23 +3226,18 @@ function WowFactsModal({ fact, ecosystem, context, onDone }) {
         <button
           onClick={onDone}
           style={{
-            padding:"0.85rem 2.8rem",
-            background:"linear-gradient(135deg,rgba(74,222,128,0.25),rgba(22,163,74,0.35))",
-            border:"1.5px solid rgba(74,222,128,0.5)",
+            padding:"0.85rem 3rem",
+            background:`linear-gradient(135deg,${eco.glow}28,${eco.color}18)`,
+            border:`1.5px solid ${eco.glow}55`,
             borderRadius:"0.85rem",
-            color:"#4ade80",
-            fontFamily:"'Cinzel',serif",
-            fontWeight:700,
-            fontSize:"0.9rem",
-            cursor:"pointer",
-            letterSpacing:"0.12em",
-            boxShadow:"0 0 20px rgba(74,222,128,0.2)",
-            animation:"fadeUp 0.5s ease 0.6s both",
+            color:eco.color,
+            fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.9rem",
+            cursor:"pointer",letterSpacing:"0.12em",
+            boxShadow:`0 0 24px ${eco.glow}22`,
+            animation:"fadeUp 0.5s ease 0.55s both",
             transition:"all 0.2s",
           }}
-        >
-          ✨ Amazing! Continue →
-        </button>
+        >✨ Amazing! Continue →</button>
       </div>
     </div>
   );
@@ -3150,7 +3251,7 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
   const [splash,setSplash]=useState(true);
 
   useEffect(()=>{
-    const t=setTimeout(()=>setSplash(false), 520);
+    const t=setTimeout(()=>setSplash(false), 1400);
     return ()=>clearTimeout(t);
   },[]);
 
@@ -3172,7 +3273,7 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
         position:"fixed",inset:0,zIndex:200,
         background:`radial-gradient(ellipse at 50% 40%, ${ct.bg} 0%, rgba(2,4,7,0.97) 70%)`,
         display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
-        animation:"splashOut 0.52s ease 0.28s both",
+        animation:"splashOut 0.35s ease-in 1s both",
       }}>
         {/* Color burst ring */}
         <div style={{
@@ -3227,34 +3328,60 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
     );
   }
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200,padding:"1.5rem"}}>
-      <div style={{background:"#0a0f1a",border:`2px solid ${ct.color}55`,borderRadius:"1.3rem",padding:"1.8rem",maxWidth:"42rem",width:"100%",boxShadow:`0 0 50px ${ct.color}22`,maxHeight:"90vh",overflowY:"auto"}}>
-        <div style={{display:"flex",alignItems:"center",gap:"0.9rem",marginBottom:"1.2rem"}}>
-          <div style={{width:"3rem",height:"3rem",borderRadius:"0.8rem",background:ct.bg,border:`2px solid ${ct.color}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.4rem"}}>{ct.icon}</div>
-          <div>
-            <div style={{fontFamily:"'Cinzel',serif",fontSize:"1rem",color:ct.color,letterSpacing:"0.1em",fontWeight:700}}>{ct.label}</div>
-            <div style={{fontSize:"0.8rem",color:TEAM_COLORS[team.colorIdx].light}}>● {team.name}</div>
-          </div>
-          {(()=>{const r=ROLES.find(ro=>ro.challenge===cell.type);if(!r)return null;const assignedPlayer=(team.roleAssignments||{})[r.id]||"";return(
-            <div style={{background:`${r.color}15`,border:`1px solid ${r.color}40`,borderRadius:"0.7rem",padding:"0.3rem 0.7rem",display:"flex",alignItems:"center",gap:7,flexShrink:0}}>
-              <span style={{fontSize:18}}>{r.emoji}</span>
-              <div>
-                <div style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em"}}>GUARDIAN</div>
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.72rem",color:r.color,fontWeight:700}}>{r.name}</div>
-                {assignedPlayer&&<div style={{fontSize:"0.68rem",color:"rgba(255,255,255,0.6)",marginTop:1}}>👤 {assignedPlayer}</div>}
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200,padding:"1.5rem"}}>
+      <div style={{background:"#090e18",border:`1.5px solid ${ct.color}44`,borderRadius:"1.4rem",padding:"0",maxWidth:"46rem",width:"100%",boxShadow:`0 0 60px ${ct.color}18, 0 24px 60px rgba(0,0,0,0.7)`,maxHeight:"90vh",overflowY:"auto",animation:"fadeUp 0.3s ease"}}>
+
+        {/* ── Header ── */}
+        <div style={{padding:"1.2rem 1.5rem 1rem",borderBottom:`1px solid rgba(255,255,255,0.07)`}}>
+          {/* Row 1: type badge + team + prize */}
+          <div style={{display:"flex",alignItems:"center",gap:"0.75rem",marginBottom:"0.75rem"}}>
+            <div style={{width:"2.6rem",height:"2.6rem",borderRadius:"0.65rem",background:ct.bg,border:`1.5px solid ${ct.color}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.25rem",flexShrink:0}}>{ct.icon}</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.78rem",color:ct.color,letterSpacing:"0.12em",fontWeight:700}}>{ct.label}</div>
+              <div style={{fontSize:"0.75rem",color:TEAM_COLORS[team.colorIdx].light,marginTop:1,display:"flex",alignItems:"center",gap:5}}>
+                <span style={{width:6,height:6,borderRadius:"50%",background:TEAM_COLORS[team.colorIdx].bg,display:"inline-block",boxShadow:`0 0 5px ${TEAM_COLORS[team.colorIdx].bg}`}}/>
+                {team.name}
               </div>
             </div>
-          );})()}
-          {pendingOrganism&&<div style={{marginLeft:"auto",background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.3)",borderRadius:"0.65rem",padding:"0.35rem 0.75rem",fontSize:"0.78rem",color:"#4ade80"}}>Prize: {pendingOrganism.emoji} {pendingOrganism.name}</div>}
+            {pendingOrganism&&(
+              <div style={{background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.28)",borderRadius:"0.6rem",padding:"0.3rem 0.7rem",display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
+                <span style={{fontSize:16}}>{pendingOrganism.emoji}</span>
+                <div>
+                  <div style={{fontSize:"0.58rem",color:"rgba(74,222,128,0.6)",letterSpacing:"0.15em",fontFamily:"'Cinzel',serif"}}>PRIZE</div>
+                  <div style={{fontSize:"0.72rem",color:"#4ade80",fontFamily:"'Cinzel',serif",fontWeight:700,whiteSpace:"nowrap"}}>{pendingOrganism.name}</div>
+                </div>
+              </div>
+            )}
+          </div>
+          {/* Row 2: Guardian badge (only if role exists) */}
+          {(()=>{
+            const r=ROLES.find(ro=>ro.challenge===cell.type);
+            if(!r)return null;
+            const assignedPlayer=(team.roleAssignments||{})[r.id]||"";
+            return(
+              <div style={{display:"inline-flex",alignItems:"center",gap:8,background:`${r.color}10`,border:`1px solid ${r.color}30`,borderRadius:"0.6rem",padding:"0.25rem 0.7rem"}}>
+                <span style={{fontSize:15}}>{r.emoji}</span>
+                <div>
+                  <span style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.3)",letterSpacing:"0.15em",fontFamily:"'Cinzel',serif"}}>GUARDIAN · </span>
+                  <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.72rem",color:r.color,fontWeight:700}}>{r.name}</span>
+                  {assignedPlayer&&<span style={{fontSize:"0.68rem",color:"rgba(255,255,255,0.5)",marginLeft:6}}>— {assignedPlayer}</span>}
+                </div>
+              </div>
+            );
+          })()}
         </div>
-        {cell.type==="trivia"&&<TriviaChallenge data={challenge} onResult={setResult} />}
-        {cell.type==="foodchain"&&<TriviaChallenge data={{...challenge,exp:"That's how energy flows in this food chain!"}} onResult={setResult} />}
-        {cell.type==="identify"&&<IdentifyChallenge data={challenge} onResult={setResult} />}
-        {cell.type==="hangman"&&<HangmanChallenge data={challenge} onResult={setResult} />}
-        {cell.type==="match"&&<MatchChallenge data={challenge} onResult={setResult} />}
-        {cell.type==="unscramble"&&<UnscrambleChallenge data={challenge} onResult={setResult} />}
-        {cell.type==="truefalse"&&<TrueFalseChallenge data={challenge} onResult={setResult} />}
-        {cell.type==="foodweb"&&<FoodWebChallenge ecosystem={ecosystem} onResult={setResult} />}
+
+        {/* ── Challenge content ── */}
+        <div style={{padding:"1.4rem 1.5rem"}}>
+          {cell.type==="trivia"&&<TriviaChallenge data={challenge} onResult={setResult} />}
+          {cell.type==="foodchain"&&<TriviaChallenge data={{...challenge,exp:"That's how energy flows in this food chain!"}} onResult={setResult} />}
+          {cell.type==="identify"&&<IdentifyChallenge data={challenge} onResult={setResult} />}
+          {cell.type==="hangman"&&<HangmanChallenge data={challenge} onResult={setResult} />}
+          {cell.type==="match"&&<MatchChallenge data={challenge} onResult={setResult} />}
+          {cell.type==="unscramble"&&<UnscrambleChallenge data={challenge} onResult={setResult} />}
+          {cell.type==="truefalse"&&<TrueFalseChallenge data={challenge} onResult={setResult} />}
+          {cell.type==="foodweb"&&<FoodWebChallenge ecosystem={ecosystem} onResult={setResult} />}
+        </div>
       </div>
     </div>
   );
@@ -3289,11 +3416,11 @@ function TeamPanel({ teams, currentTeamIdx, ecosystem }) {
         return(
           <div key={team.id} style={{
             background:isA?`${tc.bg}18`:"rgba(255,255,255,0.03)",
-            border:`1.5px solid ${isA?tc.bg:"rgba(255,255,255,0.07)"}`,
+            border:`1.5px solid ${isA?tc.bg:"rgba(255,255,255,0.06)"}`,
             borderRadius:"0.9rem",
             padding:"0.85rem 0.9rem",
             transition:"all 0.35s ease",
-            boxShadow:isA?`0 0 18px ${tc.bg}40,inset 0 0 12px ${tc.bg}08`:"none",
+            boxShadow:isA?`0 0 22px ${tc.bg}50,inset 0 0 14px ${tc.bg}0a`:"none",
           }}>
             {/* Header row */}
             <div style={{display:"flex",alignItems:"center",gap:"0.55rem",marginBottom:"0.45rem"}}>
@@ -3394,8 +3521,10 @@ function Dice({ value, rolling, teamColor }) {
         : "0 4px 16px rgba(0,0,0,0.3)",
       position:"relative",
       flexShrink:0,
-      animation: rolling ? "diceRoll 0.12s ease-in-out infinite" : value ? "popIn 0.3s ease" : undefined,
+      animation: rolling ? "diceRoll 0.18s linear infinite" : value ? "popIn 0.3s ease" : undefined,
       transition:"border-color 0.3s,box-shadow 0.3s",
+      willChange:"transform",
+      transformOrigin:"center center",
     }}>
       {!dots ? (
         <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"2rem",opacity:0.35}}>🎲</div>
@@ -3751,27 +3880,53 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
           <div style={{position:"absolute",inset:0,zIndex:1}}>
             <IsometricBoard teams={teams} currentTeamIdx={curIdx} board={board} gridSize={eco.gridSize} hasImage={!!ECO_IMAGES[eco.id]} />
           </div>
-          {/* Dice controls overlay */}
-          <div style={{position:"absolute",bottom:"1rem",left:"50%",transform:"translateX(-50%)",zIndex:10,display:"flex",alignItems:"center",gap:"1.2rem",background:"rgba(0,0,0,0.82)",backdropFilter:"blur(16px)",border:`1px solid ${tc.bg}44`,borderRadius:"1.1rem",padding:"0.9rem 1.5rem",boxShadow:`0 8px 40px rgba(0,0,0,0.6),0 0 24px ${tc.bg}22`,transition:"border-color 0.4s,box-shadow 0.4s"}}>
-            <Dice value={diceVal} rolling={rolling} teamColor={tc.bg} />
-            <div>
-              <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.85rem",color:tc.light,marginBottom:"0.2rem",fontWeight:700}}>{curTeam?.name}</div>
-              <div style={{fontSize:"0.72rem",color:"rgba(255,255,255,0.38)",marginBottom:"0.5rem"}}>{curTeam?.players?.join(" · ")}</div>
-              <button onClick={rollDice} disabled={phase!=="idle"} style={{padding:"0.6rem 1.6rem",background:phase==="idle"?`linear-gradient(135deg,${tc.bg},${tc.dark})`:"rgba(255,255,255,0.05)",border:"none",borderRadius:"0.7rem",color:phase==="idle"?"#fff":"rgba(255,255,255,0.3)",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.9rem",cursor:phase==="idle"?"pointer":"not-allowed",letterSpacing:"0.1em",boxShadow:phase==="idle"?`0 4px 20px ${tc.bg}66`:"none",transition:"all 0.25s"}}>
-                {phase==="idle"?"🎲 Roll Dice":phase==="rolling"?"Rolling…":"Wait…"}
-              </button>
-            </div>
-            {diceVal&&<div style={{textAlign:"center",minWidth:"3rem",animation:"fadeUp 0.3s ease"}}>
-              <div style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.4)",marginBottom:"0.15rem",letterSpacing:"0.15em"}}>ROLLED</div>
-              <div style={{fontFamily:"'Cinzel',serif",fontSize:"2rem",color:tc.light,fontWeight:700,textShadow:`0 0 16px ${tc.bg}`}}>{diceVal}</div>
-            </div>}
-          </div>
         </div>
 
         {/* Right sidebar */}
-        <div style={{width:"18rem",background:"rgba(0,0,0,0.45)",borderLeft:"1px solid rgba(255,255,255,0.07)",padding:"1rem 0.9rem",overflowY:"auto",flexShrink:0}}>
-          <div style={{fontSize:"0.65rem",letterSpacing:"0.25em",color:"rgba(255,255,255,0.35)",marginBottom:"0.7rem"}}>TEAMS · ECOSYSTEM</div>
-          <TeamPanel teams={teams} currentTeamIdx={curIdx} ecosystem={ecosystem} />
+        <div style={{width:"18rem",background:"rgba(0,0,0,0.5)",borderLeft:"1px solid rgba(255,255,255,0.07)",padding:"1rem 0.9rem",overflowY:"auto",flexShrink:0,display:"flex",flexDirection:"column"}}>
+          <div style={{fontSize:"0.6rem",letterSpacing:"0.28em",color:"rgba(255,255,255,0.28)",marginBottom:"0.8rem",display:"flex",alignItems:"center",gap:"0.5rem"}}>
+            <span>TEAMS</span>
+            <div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}/>
+            <span style={{fontSize:"0.58rem",color:eco.color,opacity:0.7}}>{eco.name.toUpperCase()}</span>
+          </div>
+          <div style={{flex:1}}>
+            <TeamPanel teams={teams} currentTeamIdx={curIdx} ecosystem={ecosystem} />
+          </div>
+
+          {/* ── Dice panel ── */}
+          <div style={{marginTop:"0.9rem",paddingTop:"0.9rem",borderTop:`1px solid rgba(255,255,255,0.07)`}}>
+            {/* Turn info */}
+            <div style={{display:"flex",alignItems:"center",gap:"0.5rem",marginBottom:"0.7rem"}}>
+              <div style={{width:8,height:8,borderRadius:"50%",background:tc.bg,boxShadow:`0 0 7px ${tc.bg}`,flexShrink:0}}/>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.8rem",color:tc.light,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{curTeam?.name}</div>
+                {curTeam?.players?.length>0&&<div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.35)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{curTeam.players.join(" · ")}</div>}
+              </div>
+              {diceVal&&<div style={{textAlign:"center",animation:"fadeUp 0.3s ease",flexShrink:0}}>
+                <div style={{fontSize:"0.52rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginBottom:1}}>ROLLED</div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"1.6rem",color:tc.light,fontWeight:700,lineHeight:1,textShadow:`0 0 14px ${tc.bg}`}}>{diceVal}</div>
+              </div>}
+            </div>
+            {/* Dice + button row */}
+            <div style={{display:"flex",alignItems:"center",gap:"0.75rem"}}>
+              <div style={{width:"5rem",height:"5rem",flexShrink:0,position:"relative",isolation:"isolate"}}>
+                <Dice value={diceVal} rolling={rolling} teamColor={tc.bg} />
+              </div>
+              <button onClick={rollDice} disabled={phase!=="idle"} style={{
+                flex:1,padding:"0.65rem 0",
+                background:phase==="idle"?`linear-gradient(135deg,${tc.bg},${tc.dark})`:"rgba(255,255,255,0.05)",
+                border:"none",borderRadius:"0.7rem",
+                color:phase==="idle"?"#fff":"rgba(255,255,255,0.3)",
+                fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.85rem",
+                cursor:phase==="idle"?"pointer":"not-allowed",
+                letterSpacing:"0.08em",
+                boxShadow:phase==="idle"?`0 4px 18px ${tc.bg}66`:"none",
+                transition:"all 0.25s",
+              }}>
+                {phase==="idle"?"🎲 Roll Dice":phase==="rolling"?"Rolling…":"Wait…"}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -3894,60 +4049,97 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
 // ── ECOSYSTEM DESTROYED ──────────────────────────────
 function EcosystemDestroyedScreen({ ecosystem, teams, onRestart }) {
   const eco = ECOSYSTEMS[ecosystem.id];
+  const [entered, setEntered] = useState(false);
+  useEffect(()=>{ const t=setTimeout(()=>setEntered(true),80); return()=>clearTimeout(t); },[]);
+
+  const embers = useMemo(()=>Array.from({length:28}).map((_,i)=>({
+    left:`${(i*37+3)%100}%`,
+    botStart:`${(i*19)%40}%`,
+    sz: 8 + (i*5)%16,
+    dur:`${4+(i*3)%5}s`,
+    delay:`${(i*0.7)%5}s`,
+    sym:["🥀","💀","🌑","🖤","🍂","🔥","💔"][i%7],
+  })),[]);
+
+  const vis = (delay="0s") => ({
+    opacity: entered ? 1 : 0,
+    transform: entered ? "translateY(0)" : "translateY(20px)",
+    transition:`opacity 0.7s ease ${delay}, transform 0.7s ease ${delay}`,
+  });
+
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 30%,#1a0000,#020407)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:24,position:"relative",overflow:"hidden"}}>
-      {/* Falling embers */}
-      {Array.from({length:20}).map((_,i)=>(
-        <div key={i} style={{position:"absolute",left:`${Math.random()*100}%`,top:`${Math.random()*100}%`,fontSize:Math.random()*18+8,opacity:0.15,animation:`float ${3+Math.random()*4}s ease-in-out ${Math.random()*5}s infinite`,pointerEvents:"none"}}>
-          {["🥀","💀","🌑","🖤","🍂"][i%5]}
-        </div>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 25%,#1a0003 0%,#0a0000 45%,#020407 100%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:24,position:"relative",overflow:"hidden"}}>
+      {/* Rising embers */}
+      {embers.map((e,i)=>(
+        <div key={i} style={{
+          position:"absolute",left:e.left,bottom:e.botStart,
+          fontSize:e.sz,
+          animation:`destroyedEmber ${e.dur} ease-in ${e.delay} infinite`,
+          pointerEvents:"none",userSelect:"none",
+        }}>{e.sym}</div>
       ))}
+      {/* Red ambient vignette */}
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 30%, rgba(127,0,0,0.18) 0%, transparent 65%)",pointerEvents:"none"}} />
 
       {/* Main icon */}
-      <div style={{fontSize:"5rem",animation:"chaosFloat 2s ease-in-out infinite",marginBottom:"1.2rem",filter:"drop-shadow(0 0 30px rgba(239,68,68,0.6))"}}>🥀</div>
+      <div style={{...vis("0s"),fontSize:"5.5rem",marginBottom:"1rem",filter:"drop-shadow(0 0 40px rgba(239,68,68,0.7))"}}>
+        <span style={{display:"inline-block",animation:"destroyedShake 0.5s ease 0.4s both, chaosFloat 3s ease-in-out 1s infinite"}}>🥀</span>
+      </div>
 
       {/* Title */}
-      <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"clamp(1.2rem,5vw,2rem)",color:"#f87171",letterSpacing:"0.08em",textAlign:"center",textShadow:"0 0 40px rgba(248,113,113,0.7)",marginBottom:"0.5rem"}}>
+      <div style={{...vis("0.15s"),fontFamily:"'Cinzel Decorative',serif",fontSize:"clamp(1.2rem,5vw,2rem)",color:"#f87171",letterSpacing:"0.08em",textAlign:"center",textShadow:"0 0 50px rgba(248,113,113,0.8), 0 0 20px rgba(248,113,113,0.4)",marginBottom:"0.4rem"}}>
         The Ecosystem Was Destroyed
       </div>
-      <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.8rem",color:"rgba(255,200,200,0.4)",letterSpacing:"0.25em",marginBottom:"2.5rem"}}>
+      <div style={{...vis("0.2s"),fontFamily:"'Cinzel',serif",fontSize:"0.78rem",color:"rgba(255,180,180,0.4)",letterSpacing:"0.28em",marginBottom:"2rem"}}>
         {eco.name.toUpperCase()} · ALL BUILDERS HAVE FALLEN
       </div>
 
       {/* Scripture */}
-      <div style={{maxWidth:"32rem",width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"1.1rem",padding:"1.6rem 2rem",marginBottom:"2rem",textAlign:"center"}}>
-        <div style={{fontSize:"1.6rem",marginBottom:"0.8rem"}}>✝️</div>
-        <p style={{fontStyle:"italic",color:"rgba(255,230,200,0.85)",fontSize:"1rem",lineHeight:1.8,margin:"0 0 0.9rem 0",fontFamily:"'Libre Baskerville',serif"}}>
+      <div style={{...vis("0.3s"),maxWidth:"32rem",width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"1.2rem",padding:"1.6rem 2rem",marginBottom:"1.8rem",textAlign:"center",backdropFilter:"blur(4px)"}}>
+        <div style={{fontSize:"1.5rem",marginBottom:"0.7rem"}}>✝️</div>
+        <p style={{fontStyle:"italic",color:"rgba(255,230,200,0.85)",fontSize:"0.98rem",lineHeight:1.85,margin:"0 0 0.8rem 0",fontFamily:"'Libre Baskerville',serif"}}>
           "No nos cansemos de hacer el bien, porque a su debido tiempo cosecharemos si no nos damos por vencidos."
         </p>
-        <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.75rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em"}}>
+        <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.72rem",color:"rgba(255,200,150,0.4)",letterSpacing:"0.18em"}}>
           GÁLATAS 6:9
         </div>
       </div>
 
       {/* Encouragement */}
-      <p style={{color:"rgba(255,200,200,0.55)",fontSize:"0.88rem",textAlign:"center",maxWidth:"28rem",lineHeight:1.7,marginBottom:"2.5rem"}}>
+      <p style={{...vis("0.38s"),color:"rgba(255,180,180,0.5)",fontSize:"0.88rem",textAlign:"center",maxWidth:"28rem",lineHeight:1.75,marginBottom:"2rem"}}>
         El ecosistema fue destruido... pero cada acto de cuidado importa.{" "}
         <strong style={{color:"rgba(255,180,100,0.8)"}}>El bien siempre es más fuerte</strong> — ¡vuelve a intentarlo!
       </p>
 
       {/* Teams summary */}
-      <div style={{width:"100%",maxWidth:480,display:"flex",flexDirection:"column",gap:8,marginBottom:"2rem"}}>
+      <div style={{...vis("0.45s"),width:"100%",maxWidth:480,display:"flex",flexDirection:"column",gap:8,marginBottom:"2rem"}}>
         {[...teams].sort((a,b)=>b.organisms.length-a.organisms.length).map((team,i)=>{
           const tc=TEAM_COLORS[team.colorIdx];
           return(
-            <div key={team.id} style={{background:"rgba(255,255,255,0.04)",border:`1px solid ${tc.bg}33`,borderRadius:10,padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
+            <div key={team.id} style={{
+              background:"rgba(255,255,255,0.03)",
+              border:`1px solid ${tc.bg}25`,
+              borderRadius:10,padding:"10px 14px",
+              display:"flex",alignItems:"center",gap:10,
+              animation:`rankSlideIn 0.4s ease ${i*0.08}s both`,
+            }}>
               <div style={{width:8,height:8,borderRadius:"50%",background:tc.bg,flexShrink:0}} />
-              <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.8rem",color:"rgba(255,255,255,0.6)",flex:1}}>{team.name}</span>
-              <span style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.3)"}}>{team.organisms.length} organisms</span>
+              <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.8rem",color:"rgba(255,255,255,0.55)",flex:1}}>{team.name}</span>
+              <div style={{display:"flex",gap:3}}>
+                {team.organisms.slice(0,5).map(o=><span key={o.id} style={{fontSize:13}}>{o.emoji}</span>)}
+                {team.organisms.length>5&&<span style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginLeft:2}}>+{team.organisms.length-5}</span>}
+              </div>
+              <span style={{fontSize:"0.72rem",color:"rgba(255,255,255,0.28)",marginLeft:4}}>{team.organisms.length} saved</span>
             </div>
           );
         })}
       </div>
 
-      <button onClick={onRestart} style={{padding:"13px 40px",background:"linear-gradient(135deg,rgba(185,28,28,0.6),rgba(127,29,29,0.8))",border:"1.5px solid rgba(248,113,113,0.45)",borderRadius:14,color:"#fca5a5",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.95rem",cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 8px 30px rgba(127,29,29,0.5)"}}>
-        🌍 Try Again
-      </button>
+      <div style={vis("0.55s")}>
+        <button onClick={onRestart} style={{padding:"13px 44px",background:"linear-gradient(135deg,rgba(185,28,28,0.55),rgba(127,29,29,0.75))",border:"1.5px solid rgba(248,113,113,0.4)",borderRadius:14,color:"#fca5a5",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.95rem",cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 8px 30px rgba(127,29,29,0.45)"}}>
+          🌍 Try Again
+        </button>
+      </div>
     </div>
   );
 }
