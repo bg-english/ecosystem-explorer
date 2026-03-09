@@ -604,7 +604,7 @@ function NarrativeScreen({ onDone }) {
     {science:"Biodiversity makes ecosystems resilient. Less diversity = more fragility.",bridge:"One withered plant changed Jonah's entire experience of the world.",spirit:"Our moral and spiritual health directly affects the world around us — always."},
   ];
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 40% 20%,#071a0e,#020407 70%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start",padding:"48px 20px 40px",position:"relative",overflowX:"hidden",overflowY:"auto"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 40% 20%,#071a0e,#020407 70%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start",padding:"48px 20px 60px",position:"relative",overflowX:"hidden"}}>
       {Array.from({length:30}).map((_,i)=>(
         <div key={i} style={{position:"absolute",left:`${(i*37)%100}%`,top:`${(i*61)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.15,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none"}} />
       ))}
