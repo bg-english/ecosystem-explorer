@@ -1824,8 +1824,8 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
   }, []); // mount once; team data via refs
 
   return (
-    <div style={{ width: "100%", height: "100%", overflowX: "auto", overflowY: "hidden", touchAction: "pan-x pan-y" }}>
-      <canvas ref={canvasRef} style={{ minWidth: "1000px", width: "100%", height: "100%", display: "block", background: "transparent" }} />
+    <div style={{ width: "100%", height: "100%", overflow: "hidden", touchAction: "pan-x pan-y" }}>
+      <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block", background: "transparent" }} />
     </div>
   );
 }
@@ -1836,42 +1836,51 @@ const GS = `
   html { font-size: clamp(14px, 1.4vw, 22px); }
   body { overflow-x: hidden; }
 
-  /* 📱 REGLAS RESPONSIVE (MÓVILES Y TABLETS) 📱 */
+  /* 📱 RESPONSIVE RULES 📱 */
   @media (max-width: 768px) {
     html { font-size: 13px !important; }
-    
-    /* Forzar a que los contenedores de ancho fijo se adapten a la pantalla */
-    div[style*="width: 800px"], 
-    div[style*="width: 900px"], 
-    div[style*="width: 700px"], 
-    div[style*="width: 600px"], 
-    div[style*="width: 400px"],
-    div[style*="width: 60%"] {
-      width: 100% !important;
-      max-width: 92vw !important;
+
+    /* Kill any fixed pixel widths that break layout */
+    [style*="width: 800px"], [style*="width: 900px"],
+    [style*="width: 700px"], [style*="width: 600px"],
+    [style*="width: 580px"], [style*="width: 540px"],
+    [style*="width: 500px"], [style*="width: 480px"] {
+      width: 95vw !important;
+      max-width: 95vw !important;
       min-width: unset !important;
-      padding-left: 10px !important;
-      padding-right: 10px !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
     }
-    
-    /* Apilar los elementos que estaban en fila horizontal */
-    div[style*="flex-direction: row"] {
-      flex-direction: column !important;
-      align-items: center !important;
-      gap: 15px !important;
+
+    /* Modals and panels max-width */
+    [style*="maxWidth: 46rem"], [style*="maxWidth: 580px"],
+    [style*="max-width: 46rem"], [style*="max-width: 580px"],
+    [style*="maxWidth: 36rem"], [style*="maxWidth: 30rem"] {
+      max-width: 95vw !important;
+      width: 95vw !important;
     }
-    
-    /* Reducir los márgenes excesivos en pantallas pequeñas */
-    div[style*="padding: 40px"], 
-    div[style*="padding: 24px"] {
-      padding: 15px !important;
+
+    /* Challenge modal scrollable area */
+    [style*="maxHeight: 90vh"] {
+      max-height: 94dvh !important;
     }
-    
-    button {
-      max-width: 100% !important;
+
+    /* Spinner wheel */
+    [style*="width:300px"] {
+      width: min(85vw, 300px) !important;
+      height: min(85vw, 300px) !important;
     }
+
+    /* Setup/roles screens with horizontal paddings */
+    [style*="padding: 40px"],
+    [style*="padding: 48px"] {
+      padding: 16px !important;
+    }
+
+    /* Grids: trivia 2-column stays, food-chain word wrap */
+    button { touch-action: manipulation; }
+  }
+
+  @media (max-width: 480px) {
+    html { font-size: 12px !important; }
   }
 
   /* ANIMACIONES ORIGINALES */
@@ -3648,8 +3657,47 @@ function WildcardModal({ cell, resolved, teams, curIdx, onDone }) {
 }
 
 // ── TEAM PANEL ─────────────────────────────────────
-function TeamPanel({ teams, currentTeamIdx, ecosystem }) {
+function TeamPanel({ teams, currentTeamIdx, ecosystem, compact }) {
   const eco=ECOSYSTEMS[ecosystem.id];
+  if(compact){
+    // Mobile: horizontal scrollable list of team mini-cards
+    return(
+      <div style={{display:"flex",flexDirection:"row",gap:"0.5rem",overflowX:"auto",overflowY:"hidden",paddingBottom:"0.2rem",maxHeight:"100%"}}>
+        {teams.map((team,i)=>{
+          const isA=i===currentTeamIdx,tc=TEAM_COLORS[team.colorIdx],col=team.organisms||[],total=eco.organisms.length,pct=Math.round((col.length/total)*100);
+          return(
+            <div key={team.id} style={{
+              background:isA?`${tc.bg}22`:"rgba(255,255,255,0.04)",
+              border:`1.5px solid ${isA?tc.bg:"rgba(255,255,255,0.08)"}`,
+              borderRadius:"0.75rem",
+              padding:"0.5rem 0.65rem",
+              flexShrink:0,
+              minWidth:"7rem",
+              boxShadow:isA?`0 0 16px ${tc.bg}55`:"none",
+              transition:"all 0.3s",
+            }}>
+              <div style={{display:"flex",alignItems:"center",gap:"0.35rem",marginBottom:"0.3rem"}}>
+                <div style={{width:"0.55rem",height:"0.55rem",borderRadius:"50%",background:tc.bg,flexShrink:0}}/>
+                <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.65rem",color:isA?tc.light:"rgba(255,255,255,0.6)",fontWeight:isA?700:400,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",flex:1}}>{team.name}</span>
+                {isA&&<span style={{fontSize:"0.5rem",color:tc.light,animation:"shimmer 1.8s ease-in-out infinite"}}>▶</span>}
+              </div>
+              <div style={{height:"0.25rem",background:"rgba(255,255,255,0.08)",borderRadius:"0.2rem",overflow:"hidden",marginBottom:"0.3rem"}}>
+                <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${tc.bg},${tc.light})`,borderRadius:"0.2rem",transition:"width 0.6s ease"}}/>
+              </div>
+              <div style={{fontSize:"0.55rem",color:"rgba(255,255,255,0.4)",fontFamily:"'Cinzel',serif"}}>{col.length}/{total} · Sq {team.position+1}</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:"0.15rem",marginTop:"0.3rem"}}>
+                {eco.organisms.slice(0,8).map(org=>{
+                  const has=col.find(c=>c.id===org.id);
+                  return <span key={org.id} style={{fontSize:"0.7rem",opacity:has?1:0.18,transition:"opacity 0.4s"}}>{org.emoji}</span>;
+                })}
+                {eco.organisms.length>8&&<span style={{fontSize:"0.55rem",color:"rgba(255,255,255,0.25)"}}>+{eco.organisms.length-8}</span>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
   return(
     <div style={{display:"flex",flexDirection:"column",gap:"0.7rem",overflowY:"auto",maxHeight:"100%"}}>
       {teams.map((team,i)=>{
@@ -3806,6 +3854,13 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const [revealedChapters, setRevealedChapters] = useState(new Set([0]));
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [totalAnswers,   setTotalAnswers]   = useState(0);
+  // ── Responsive ────────────────────────────────────
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
   // ── Collapse Emergency System ──────────────────────
   const [collapseCount, setCollapseCount]       = useState(0);
   const [collapseEmergency, setCollapseEmergency] = useState(null);
@@ -3992,24 +4047,24 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   return(
     <div style={{height:"100vh",background:eco.bg,fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",overflow:"hidden"}}>
       {/* Top bar */}
-      <div style={{background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${isCollapsed?"rgba(239,68,68,0.35)":"rgba(255,255,255,0.06)"}`,padding:"0.7rem 1.4rem",display:"flex",alignItems:"center",gap:"1rem",flexShrink:0,transition:"border-color 0.5s"}}>
-        <span style={{fontSize:"1.6rem"}}>{eco.emoji}</span>
-        <div>
-          <div style={{fontFamily:"'Cinzel',serif",fontSize:"1rem",color:"#fff",fontWeight:700}}>{eco.name}</div>
-          <div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.4)",letterSpacing:"0.1em"}}>Turn {turn} · Square {curTeam?.position+1}/{N_BOARD}</div>
+      <div style={{background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${isCollapsed?"rgba(239,68,68,0.35)":"rgba(255,255,255,0.06)"}`,padding:isMobile?"0.45rem 0.75rem":"0.7rem 1.4rem",display:"flex",alignItems:"center",gap:isMobile?"0.5rem":"1rem",flexShrink:0,transition:"border-color 0.5s",flexWrap:isMobile?"wrap":"nowrap",minHeight:isMobile?"auto":"unset"}}>
+        <span style={{fontSize:isMobile?"1.2rem":"1.6rem"}}>{eco.emoji}</span>
+        <div style={{minWidth:0}}>
+          <div style={{fontFamily:"'Cinzel',serif",fontSize:isMobile?"0.78rem":"1rem",color:"#fff",fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{eco.name}</div>
+          <div style={{fontSize:isMobile?"0.55rem":"0.65rem",color:"rgba(255,255,255,0.4)",letterSpacing:"0.1em"}}>Turn {turn} · {curTeam?.position+1}/{N_BOARD}</div>
         </div>
-        {/* Revealed elements strip */}
-        <div style={{display:"flex",gap:"0.35rem",marginLeft:"0.9rem",flexWrap:"wrap",maxWidth:"10rem"}}>
+        {/* Revealed elements strip — hide on very small screens */}
+        {!isMobile&&<div style={{display:"flex",gap:"0.35rem",marginLeft:"0.9rem",flexWrap:"wrap",maxWidth:"10rem"}}>
           {revealedElements.map((ch,i)=>(
             <span key={i} title={ch.title} style={{fontSize:"1.2rem",animation:"popIn 0.4s ease",filter:`drop-shadow(0 0 6px ${eco.glow})`}}>{ch.element}</span>
           ))}
-        </div>
+        </div>}
 
         {/* ── ECOSYSTEM HEALTH WIDGET ── */}
         {totalAnswers > 0 && (
           <div title={healthStatus.msg} style={{display:"flex",alignItems:"center",gap:"0.55rem",background:`${healthStatus.color}10`,border:`1px solid ${healthStatus.color}35`,borderRadius:"0.75rem",padding:"0.3rem 0.75rem",flexShrink:0,transition:"all 0.6s ease",boxShadow:isCollapsed?`0 0 14px rgba(239,68,68,0.35)`:"none"}}>
             <span style={{fontSize:"1.1rem",animation:isCollapsed?"chaosFloat 1.5s ease-in-out infinite":"none"}}>{healthStatus.icon}</span>
-            <div>
+            {!isMobile&&<div>
               <div style={{display:"flex",alignItems:"center",gap:"0.45rem"}}>
                 <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.68rem",color:healthStatus.color,fontWeight:700,letterSpacing:"0.08em"}}>{healthStatus.label}</span>
                 <span style={{fontSize:"0.68rem",color:"rgba(255,255,255,0.45)"}}>{healthPct}%</span>
@@ -4018,18 +4073,19 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
               <div style={{width:"5.5rem",height:"0.28rem",background:"rgba(255,255,255,0.08)",borderRadius:"0.2rem",marginTop:"0.2rem",overflow:"hidden"}}>
                 <div style={{height:"100%",width:`${healthPct}%`,background:`linear-gradient(90deg,${healthPct<40?"#ef4444":healthPct<60?"#fbbf24":"#4ade80"},${healthStatus.color})`,borderRadius:"0.2rem",transition:"width 0.8s ease, background 0.8s ease"}} />
               </div>
-            </div>
-            <span style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.25)"}}>{correctAnswers}/{totalAnswers}</span>
+            </div>}
+            {isMobile&&<span style={{fontFamily:"'Cinzel',serif",fontSize:"0.65rem",color:healthStatus.color,fontWeight:700}}>{healthPct}%</span>}
+            {!isMobile&&<span style={{fontSize:"0.6rem",color:"rgba(255,255,255,0.25)"}}>{correctAnswers}/{totalAnswers}</span>}
           </div>
         )}
 
-        <div style={{marginLeft:"auto",display:"flex",gap:"0.6rem",alignItems:"center"}}>
-          <div style={{width:"0.7rem",height:"0.7rem",borderRadius:"50%",background:tc.bg,boxShadow:`0 0 8px ${tc.bg}`}} />
-          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.9rem",color:tc.light}}>{curTeam?.name}</span>
-          <span style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.35)"}}>playing</span>
+        <div style={{marginLeft:"auto",display:"flex",gap:"0.5rem",alignItems:"center"}}>
+          {!isMobile&&<><div style={{width:"0.7rem",height:"0.7rem",borderRadius:"50%",background:tc.bg,boxShadow:`0 0 8px ${tc.bg}`}} />
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:"0.9rem",color:tc.light,whiteSpace:"nowrap",maxWidth:"8rem",overflow:"hidden",textOverflow:"ellipsis"}}>{curTeam?.name}</span>
+          <span style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.35)"}}>playing</span></>}
         </div>
-        <button onClick={onEnd} style={{padding:"0.35rem 0.9rem",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"0.5rem",color:"rgba(255,255,255,0.5)",fontFamily:"'Cinzel',serif",fontSize:"0.75rem",cursor:"pointer"}}>Exit</button>
-        <button onClick={toggleMute} title={muted?"Unmute sounds":"Mute sounds"} style={{padding:"0.35rem 0.65rem",background:muted?"rgba(239,68,68,0.12)":"rgba(255,255,255,0.06)",border:`1px solid ${muted?"rgba(239,68,68,0.3)":"rgba(255,255,255,0.1)"}`,borderRadius:"0.5rem",color:muted?"#f87171":"rgba(255,255,255,0.5)",fontSize:"0.85rem",cursor:"pointer",transition:"all 0.2s"}}>{muted?"🔇":"🔊"}</button>
+        <button onClick={onEnd} style={{padding:"0.35rem 0.75rem",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"0.5rem",color:"rgba(255,255,255,0.5)",fontFamily:"'Cinzel',serif",fontSize:"0.72rem",cursor:"pointer",flexShrink:0}}>Exit</button>
+        <button onClick={toggleMute} title={muted?"Unmute sounds":"Mute sounds"} style={{padding:"0.35rem 0.65rem",background:muted?"rgba(239,68,68,0.12)":"rgba(255,255,255,0.06)",border:`1px solid ${muted?"rgba(239,68,68,0.3)":"rgba(255,255,255,0.1)"}`,borderRadius:"0.5rem",color:muted?"#f87171":"rgba(255,255,255,0.5)",fontSize:"0.85rem",cursor:"pointer",transition:"all 0.2s",flexShrink:0}}>{muted?"🔇":"🔊"}</button>
       </div>
 
       {/* ── COLLAPSE BANNER ── */}
@@ -4080,9 +4136,9 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
       )}
 
       {/* Main layout */}
-      <div style={{flex:1,display:"flex",overflow:"hidden"}}>
+      <div style={{flex:1,display:"flex",overflow:"hidden",flexDirection:isMobile?"column":"row"}}>
         {/* Board area */}
-        <div style={{flex:1,position:"relative",overflow:"hidden"}}>
+        <div style={{flex:1,position:"relative",overflow:"hidden",minHeight:isMobile?"0":"unset"}}>
 
           {/* ── ECOSYSTEM BACKGROUND: organisms appear as they're collected ── */}
           <div style={{position:"absolute",inset:0,zIndex:0,overflow:"hidden"}}>
@@ -4142,25 +4198,49 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
           </div>
         </div>
 
-        {/* Right sidebar */}
-        <div style={{width:"18rem",background:"rgba(0,0,0,0.5)",borderLeft:"1px solid rgba(255,255,255,0.07)",padding:"1rem 0.9rem",overflowY:"auto",flexShrink:0,display:"flex",flexDirection:"column"}}>
-          <div style={{fontSize:"0.6rem",letterSpacing:"0.28em",color:"rgba(255,255,255,0.28)",marginBottom:"0.8rem",display:"flex",alignItems:"center",gap:"0.5rem"}}>
-            <span>TEAMS</span>
-            <div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}/>
-            <span style={{fontSize:"0.58rem",color:eco.color,opacity:0.7}}>{eco.name.toUpperCase()}</span>
-          </div>
-          <div style={{flex:1}}>
-            <TeamPanel teams={teams} currentTeamIdx={curIdx} ecosystem={ecosystem} />
+        {/* Right sidebar / Mobile bottom panel */}
+        <div style={{
+          width: isMobile ? "100%" : "18rem",
+          height: isMobile ? "auto" : undefined,
+          maxHeight: isMobile ? "42vh" : undefined,
+          background:"rgba(0,0,0,0.5)",
+          borderLeft: isMobile ? "none" : "1px solid rgba(255,255,255,0.07)",
+          borderTop: isMobile ? "1px solid rgba(255,255,255,0.1)" : "none",
+          padding: isMobile ? "0.6rem 0.75rem" : "1rem 0.9rem",
+          overflowY:"auto",
+          flexShrink:0,
+          display:"flex",
+          flexDirection: isMobile ? "row" : "column",
+          gap: isMobile ? "0.75rem" : undefined,
+          alignItems: isMobile ? "flex-start" : undefined,
+        }}>
+          {/* Teams section */}
+          <div style={{flex:1,minWidth:0,display:"flex",flexDirection:"column"}}>
+            {!isMobile&&<div style={{fontSize:"0.6rem",letterSpacing:"0.28em",color:"rgba(255,255,255,0.28)",marginBottom:"0.8rem",display:"flex",alignItems:"center",gap:"0.5rem"}}>
+              <span>TEAMS</span>
+              <div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}/>
+              <span style={{fontSize:"0.58rem",color:eco.color,opacity:0.7}}>{eco.name.toUpperCase()}</span>
+            </div>}
+            <div style={{flex:1,overflow:"hidden"}}>
+              <TeamPanel teams={teams} currentTeamIdx={curIdx} ecosystem={ecosystem} compact={isMobile} />
+            </div>
           </div>
 
           {/* ── Dice panel ── */}
-          <div style={{marginTop:"0.9rem",paddingTop:"0.9rem",borderTop:`1px solid rgba(255,255,255,0.07)`}}>
+          <div style={{
+            marginTop: isMobile ? 0 : "0.9rem",
+            paddingTop: isMobile ? 0 : "0.9rem",
+            borderTop: isMobile ? "none" : "1px solid rgba(255,255,255,0.07)",
+            flexShrink: 0,
+            width: isMobile ? "auto" : undefined,
+            minWidth: isMobile ? "140px" : undefined,
+          }}>
             {/* Turn info */}
-            <div style={{display:"flex",alignItems:"center",gap:"0.5rem",marginBottom:"0.7rem"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"0.5rem",marginBottom:"0.5rem"}}>
               <div style={{width:8,height:8,borderRadius:"50%",background:tc.bg,boxShadow:`0 0 7px ${tc.bg}`,flexShrink:0}}/>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.8rem",color:tc.light,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{curTeam?.name}</div>
-                {curTeam?.players?.length>0&&<div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.35)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{curTeam.players.join(" · ")}</div>}
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:isMobile?"0.7rem":"0.8rem",color:tc.light,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{curTeam?.name}</div>
+                {!isMobile&&curTeam?.players?.length>0&&<div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.35)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{curTeam.players.join(" · ")}</div>}
               </div>
               {diceVal&&<div style={{textAlign:"center",animation:"fadeUp 0.3s ease",flexShrink:0}}>
                 <div style={{fontSize:"0.52rem",color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginBottom:1}}>ROLLED</div>
@@ -4168,22 +4248,23 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
               </div>}
             </div>
             {/* Dice + button row */}
-            <div style={{display:"flex",alignItems:"center",gap:"0.75rem"}}>
-              <div style={{width:"5rem",height:"5rem",flexShrink:0,position:"relative",isolation:"isolate"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"0.6rem"}}>
+              <div style={{width:isMobile?"4rem":"5rem",height:isMobile?"4rem":"5rem",flexShrink:0,position:"relative",isolation:"isolate"}}>
                 <Dice value={diceVal} rolling={rolling} teamColor={tc.bg} />
               </div>
               <button onClick={rollDice} disabled={phase!=="idle"} style={{
-                flex:1,padding:"0.65rem 0",
+                flex:1,padding:isMobile?"0.5rem 0":"0.65rem 0",
                 background:phase==="idle"?`linear-gradient(135deg,${tc.bg},${tc.dark})`:"rgba(255,255,255,0.05)",
                 border:"none",borderRadius:"0.7rem",
                 color:phase==="idle"?"#fff":"rgba(255,255,255,0.3)",
-                fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.85rem",
+                fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:isMobile?"0.75rem":"0.85rem",
                 cursor:phase==="idle"?"pointer":"not-allowed",
                 letterSpacing:"0.08em",
                 boxShadow:phase==="idle"?`0 4px 18px ${tc.bg}66`:"none",
                 transition:"all 0.25s",
+                whiteSpace:"nowrap",
               }}>
-                {phase==="idle"?"🎲 Roll Dice":phase==="rolling"?"Rolling…":"Wait…"}
+                {phase==="idle"?"🎲 Roll":phase==="rolling"?"Rolling…":"Wait…"}
               </button>
             </div>
           </div>
