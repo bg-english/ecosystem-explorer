@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { CT, ROLES, TEAM_COLORS, SFX } from "./constants";
 import { ECOSYSTEMS } from "./ecosystems";
+import { TriviaChallenge, IdentifyChallenge, HangmanChallenge, MatchChallenge, UnscrambleChallenge, TrueFalseChallenge, FoodWebChallenge } from "./Challenges";
 
 function WowFactsModal({ fact, ecosystem, context, onDone }) {
   const eco = ECOSYSTEMS[ecosystem.id];
