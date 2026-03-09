@@ -36,6 +36,7 @@ function WowFactsModal({ fact, ecosystem, context, onDone }) {
       display:"flex", alignItems:"center", justifyContent:"center",
       zIndex:250, padding:"1.5rem",
       animation:"slowFade 0.35s ease",
+      overflowY:"auto",
     }}>
       {/* Subtle eco-color ambient dots */}
       {[0,1,2,3].map(i=>(
@@ -52,6 +53,7 @@ function WowFactsModal({ fact, ecosystem, context, onDone }) {
         maxWidth:"54rem", width:"100%",
         display:"flex", flexDirection:"column", alignItems:"center",
         gap:"1.4rem", position:"relative", zIndex:1,
+        maxHeight:"calc(100vh - 3rem)", overflowY:"auto",
       }}>
         {/* Header */}
         <div style={{textAlign:"center", animation:"fadeUp 0.55s ease"}}>
@@ -316,7 +318,7 @@ function WildcardModal({ cell, resolved, teams, curIdx, onDone }) {
 
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
-      <div style={{background:"#0a0f1a",border:`2px solid ${fx.color}55`,borderRadius:"1.3rem",padding:"2.6rem 2.2rem",maxWidth:"30rem",width:"90%",textAlign:"center",animation:"popIn 0.5s ease",boxShadow:`0 0 60px ${fx.color}33`}}>
+      <div style={{background:"#0a0f1a",border:`2px solid ${fx.color}55`,borderRadius:"1.3rem",padding:"2.6rem 2.2rem",maxWidth:"30rem",width:"90%",textAlign:"center",animation:"popIn 0.5s ease",boxShadow:`0 0 60px ${fx.color}33`,maxHeight:"calc(100vh - 3rem)",overflowY:"auto"}}>
         <div style={{fontSize:"4rem",marginBottom:"0.5rem"}}>{fx.icon}</div>
         <h3 style={{fontFamily:"'Cinzel',serif",fontSize:"1.5rem",color:fx.color,marginBottom:"0.55rem"}}>{fx.title}</h3>
         <p style={{color:"rgba(255,255,255,0.65)",fontSize:"0.95rem",lineHeight:1.5,marginBottom:showOrgCard?"1rem":"0"}}>{fx.desc}</p>

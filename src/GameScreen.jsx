@@ -487,7 +487,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
           // Phase 1: Dramatic ALL-PLAYERS alert
           return(
             <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.95)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,padding:"1.5rem"}}>
-              <div style={{maxWidth:"36rem",width:"100%",textAlign:"center",animation:"popIn 0.5s ease"}}>
+              <div style={{maxWidth:"36rem",width:"100%",textAlign:"center",animation:"popIn 0.5s ease",maxHeight:"calc(100vh - 3rem)",overflowY:"auto",paddingRight:"0.25rem"}}>
                 <div style={{fontSize:"4rem",animation:"chaosFloat 1s ease-in-out infinite",marginBottom:"1rem"}}>🚨</div>
                 <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"1.4rem",color:"#f87171",letterSpacing:"0.1em",marginBottom:"0.5rem",textShadow:"0 0 30px rgba(248,113,113,0.8)"}}>
                   ECOSYSTEM EMERGENCY
