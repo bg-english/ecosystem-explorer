@@ -370,7 +370,10 @@ const ECOSYSTEMS = {
         {clue:"I never drink water. I get all my moisture from the seeds I eat.",answer:"Kangaroo Rat",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Kangaroo_rat_mg_0065.jpg/300px-Kangaroo_rat_mg_0065.jpg",emoji:"🐭",opts:["Kangaroo Rat","Rattlesnake","Gila Monster","Desert Locust"]},
         {clue:"I move in an S-pattern to avoid the hot sand. My venom is deadly.",answer:"Rattlesnake",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Western_diamondback_rattlesnake.jpg/300px-Western_diamondback_rattlesnake.jpg",emoji:"🐍",opts:["Rattlesnake","Coyote","Gila Monster","Great Horned Owl"]},
         {clue:"I am highly adaptable. I hunt alone or in packs depending on prey size.",answer:"Coyote",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Canis_latrans_standing.jpg/300px-Canis_latrans_standing.jpg",emoji:"🐺",opts:["Great Horned Owl","Coyote","Gila Monster","Rattlesnake"]},
-      ],
+        {clue:"I am an arachnid with eight legs and a venomous stinger on my tail. I glow under UV light.",answer:"Scorpion",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Arizona_bark_scorpion.jpg/300px-Arizona_bark_scorpion.jpg",emoji:"🦂",opts:["Scorpion", "Tarantula", "Gila Monster", "Desert Locust"]},
+        {clue:"I am the largest lizard in North America. My bite delivers venom through grooved teeth.",answer:"Gila Monster",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Heloderma_suspectum_%28Gila_monster%29.jpg/300px-Heloderma_suspectum_%28Gila_monster%29.jpg",emoji:"🦎",opts:["Gila Monster", "Rattlesnake", "Roadrunner", "Kangaroo Rat"]},
+        {clue:"I run on two legs at 32 km/h. I eat rattlesnakes, scorpions, and lizards.",answer:"Roadrunner",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Roadrunner_new_mexico_3.jpg/300px-Roadrunner_new_mexico_3.jpg",emoji:"🐦",opts:["Roadrunner", "Great Horned Owl", "Coyote", "Hawk"]},
+        {clue:"I am a large, fluffy spider. I am feared but rarely dangerous to humans. I hunt at night.",answer:"Tarantula",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Aphonopelma_seemanni.jpg/300px-Aphonopelma_seemanni.jpg",emoji:"🕷️",opts:["Tarantula", "Scorpion", "Desert Locust", "Gila Monster"]}],
       foodchain:[
         {q:"Sun → Cactus → Mouse → ???",opts:["Grass", "Cactus", "Hawk", "Sun"],a:2,exp:"Hawks eat mice — they are the apex predator in this chain."},
         {q:"Sun → Grass → Grasshopper → ???",opts:["Hawk", "Lizard", "Cactus", "Sun"],a:1,exp:"Lizards eat grasshoppers in the desert food chain."},
@@ -406,16 +409,28 @@ const ECOSYSTEMS = {
         {word:"NOCTURNAL",clue:"Active at night to avoid desert heat"}
       ],
       match:[
-        {pairs:[{term:"Desert",def:"A dry place with very little water"},{term:"Cactus",def:"Stores water in its thick stem"},{term:"Producer",def:"Makes food using sunlight"},{term:"Consumer",def:"Eats other organisms for energy"}]},
-        {pairs:[{term:"Herbivore",def:"Eats only plants"},{term:"Carnivore",def:"Eats only meat"},{term:"Predator",def:"Hunts and eats other animals"},{term:"Prey",def:"Hunted and eaten by another animal"}]},
-        {pairs:[{term:"Food chain",def:"Order in which living things eat each other"},{term:"Decomposer",def:"Breaks down dead plants and animals"},{term:"Adaptation",def:"Feature that helps survive in a habitat"},{term:"Habitat",def:"Natural home of a living thing"}]},
-        {pairs:[{term:"Hawk",def:"Large bird that hunts from the sky"},{term:"Rattlesnake",def:"Carnivore that eats small mammals"},{term:"Scorpion",def:"Desert animal with poisonous stinger"},{term:"Kangaroo Rat",def:"Never drinks water"}]},
-        {pairs:[{term:"Apex Predator",def:"Top of the food chain, no enemies"},{term:"Energy",def:"What living things need to survive"},{term:"Omnivore",def:"Eats both plants and animals"},{term:"Sun",def:"First source of energy in all food chains"}]}
+        {pairs:[{term:"Desert",def:"A dry biome with less than 250mm of rain per year"},{term:"Cactus",def:"Stores water in its thick stem to survive drought"},{term:"Producer",def:"An organism that makes its own food using sunlight"},{term:"Consumer",def:"An organism that must eat other organisms for energy"}]},
+        {pairs:[{term:"Herbivore",def:"An animal that eats only plants"},{term:"Carnivore",def:"An animal that eats only other animals"},{term:"Predator",def:"An animal that hunts and kills other animals"},{term:"Prey",def:"An animal that is hunted by another animal"}]},
+        {pairs:[{term:"Food chain",def:"A sequence showing who eats whom in an ecosystem"},{term:"Decomposer",def:"An organism that breaks down dead matter"},{term:"Adaptation",def:"A feature that helps an organism survive in its environment"},{term:"Habitat",def:"The natural environment where an organism lives"}]},
+        {pairs:[{term:"Hawk",def:"Apex predator that hunts from the air"},{term:"Rattlesnake",def:"Venomous snake that detects heat to hunt prey"},{term:"Scorpion",def:"Nocturnal arachnid with a venomous stinger"},{term:"Kangaroo Rat",def:"Never drinks water — gets moisture from seeds"}]},
+        {pairs:[{term:"Apex Predator",def:"Top of the food chain with no natural enemies"},{term:"Energy",def:"Flows from producers up through each trophic level"},{term:"Omnivore",def:"An animal that eats both plants and animals"},{term:"Sun",def:"The original source of energy for all ecosystems"}]},
+        {pairs:[{term:"Nocturnal",def:"Active at night to avoid extreme daytime heat"},{term:"Diurnal",def:"Active during the day"},{term:"Dormancy",def:"A resting state to survive extreme conditions"},{term:"Estivation",def:"Summer dormancy to survive heat and drought"}]},
+        {pairs:[{term:"Trophic level",def:"A position in the food chain based on energy source"},{term:"Biomass",def:"The total mass of living organisms in an area"},{term:"Ecosystem",def:"All organisms and their environment in one area"},{term:"Biome",def:"A large region defined by its climate and organisms"}]},
+        {pairs:[{term:"Photosynthesis",def:"Converting sunlight into food using water and CO₂"},{term:"Respiration",def:"Breaking down food to release energy"},{term:"Nitrogen cycle",def:"The movement of nitrogen through organisms and soil"},{term:"Carbon cycle",def:"The movement of carbon through air, life, and earth"}]},
+        {pairs:[{term:"Coyote",def:"Highly adaptable omnivore at the top of the desert"},{term:"Gila Monster",def:"One of the only venomous lizards in North America"},{term:"Roadrunner",def:"Fast ground bird that hunts snakes and lizards"},{term:"Jackrabbit",def:"Large-eared herbivore that releases heat through its ears"}]},
+        {pairs:[{term:"Water cycle",def:"The path water takes through evaporation and rain"},{term:"Keystone species",def:"A species whose removal causes ecosystem collapse"},{term:"Symbiosis",def:"A close interaction between two different species"},{term:"Niche",def:"An organism's specific role and position in its ecosystem"}]}
       ],
       unscramble:[
-        {words:["energy","flows","from","producers","to","consumers"],ans:"energy flows from producers to consumers",hint:"Energy transfer in ecosystems"},
-        {words:["decomposers","recycle","nutrients","back","into","the","soil"],ans:"decomposers recycle nutrients back into the soil",hint:"Role of decomposers"},
-        {words:["adaptations","help","organisms","survive","in","extreme","environments"],ans:"adaptations help organisms survive in extreme environments",hint:"Survival in the desert"},
+        {words:["energy", "flows", "from", "producers", "to", "consumers"],ans:"energy flows from producers to consumers",hint:"Energy transfer in ecosystems"},
+        {words:["decomposers", "recycle", "nutrients", "back", "into", "the", "soil"],ans:"decomposers recycle nutrients back into the soil",hint:"Role of decomposers"},
+        {words:["adaptations", "help", "organisms", "survive", "in", "extreme", "environments"],ans:"adaptations help organisms survive in extreme environments",hint:"Survival in the desert"},
+        {words:["the", "saguaro", "cactus", "stores", "water", "in", "its", "stem"],ans:"the saguaro cactus stores water in its stem",hint:"Desert plant adaptation"},
+        {words:["nocturnal", "animals", "are", "active", "at", "night", "to", "avoid", "heat"],ans:"nocturnal animals are active at night to avoid heat",hint:"Desert animal behavior"},
+        {words:["the", "kangaroo", "rat", "never", "needs", "to", "drink", "water"],ans:"the kangaroo rat never needs to drink water",hint:"Unique desert adaptation"},
+        {words:["a", "food", "chain", "starts", "with", "a", "producer"],ans:"a food chain starts with a producer",hint:"Food chain basics"},
+        {words:["apex", "predators", "control", "the", "populations", "of", "other", "animals"],ans:"apex predators control the populations of other animals",hint:"Role of apex predators"},
+        {words:["deserts", "cover", "one", "third", "of", "all", "land", "on", "Earth"],ans:"deserts cover one third of all land on Earth",hint:"Desert biome facts"},
+        {words:["reptiles", "use", "the", "sun", "to", "regulate", "their", "body", "temperature"],ans:"reptiles use the sun to regulate their body temperature",hint:"Ectotherm biology"}
       ],
       truefalse:[
         {statement:"A cactus is a producer.",answer:true,correction:""},
@@ -495,7 +510,10 @@ const ECOSYSTEMS = {
         {clue:"I am the most powerful cat in the Americas. I can crack turtle shells.",answer:"Jaguar",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Standing_jaguar.jpg/300px-Standing_jaguar.jpg",emoji:"🐆",opts:["Jaguar","Boa Constrictor","Harpy Eagle","Howler Monkey"]},
         {clue:"My bright colors warn predators. My toxins come from my diet.",answer:"Poison Dart Frog",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Dendrobates_azureus_edit2.jpg/300px-Dendrobates_azureus_edit2.jpg",emoji:"🐸",opts:["Poison Dart Frog","Leafcutter Ant","Toucan","Howler Monkey"]},
         {clue:"I am the largest eagle in the Americas. I snatch monkeys right from the canopy.",answer:"Harpy Eagle",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Harpia_harpyja_-_Houston_Zoo.jpg/300px-Harpia_harpyja_-_Houston_Zoo.jpg",emoji:"🦅",opts:["Harpy Eagle","Toucan","Jaguar","Boa Constrictor"]},
-      ],
+        {clue:"I am the world's largest rodent. I live near rivers and am hunted by jaguars and anacondas.",answer:"Capybara",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Capybara_%28Hydrochoerus_hydrochaeris%29.JPG/300px-Capybara_%28Hydrochoerus_hydrochaeris%29.JPG",emoji:"🐾",opts:["Capybara", "Giant Anteater", "Tapir", "Howler Monkey"]},
+        {clue:"I use my enormous sticky tongue to eat 35,000 ants and termites every day.",answer:"Giant Anteater",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Giant_anteater_Belize_Zoo.jpg/300px-Giant_anteater_Belize_Zoo.jpg",emoji:"🐜",opts:["Giant Anteater", "Capybara", "Tapir", "Sloth"]},
+        {clue:"I am the slowest mammal on Earth. I hang upside down and move so slowly algae grows on my fur.",answer:"Three-toed Sloth",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Three-toed_sloth_%28Bradypus_variegatus%29_Horizontes_crop.jpg/300px-Three-toed_sloth_%28Bradypus_variegatus%29_Horizontes_crop.jpg",emoji:"🦥",opts:["Three-toed Sloth", "Howler Monkey", "Capybara", "Giant Anteater"]},
+        {clue:"I am the world's largest snake by mass. I can swallow a deer whole and live near water.",answer:"Green Anaconda",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Eunectes_murinus_%28anaconda%29.jpg/300px-Eunectes_murinus_%28anaconda%29.jpg",emoji:"🐍",opts:["Green Anaconda", "Boa Constrictor", "Caiman", "Capybara"]}],
       foodchain:[
         {q:"Leaves → Caterpillar → ??? → Jaguar",opts:["Tree", "Eagle", "Frog", "Sun"],a:2,exp:"Frogs eat caterpillars and are eaten by larger predators."},
         {q:"Which organism forms the BASE of the rainforest food chain?",opts:["Jaguar", "Leafcutter Ant", "Kapok Tree", "Toucan"],a:2,exp:"Trees (producers) form the foundation — they capture solar energy."},
@@ -531,16 +549,28 @@ const ECOSYSTEMS = {
         {word:"OMNIVORE",clue:"Eats both plants and animals"}
       ],
       match:[
-        {pairs:[{term:"Rainforest",def:"Forest with very heavy rainfall"},{term:"Canopy",def:"Top layer receiving most sunlight"},{term:"Photosynthesis",def:"Plants making food from sunlight"},{term:"Jaguar",def:"Apex predator of the rainforest"}]},
-        {pairs:[{term:"Monkey",def:"Omnivore primate in trees"},{term:"Parrot",def:"Colorful bird eating fruits and seeds"},{term:"Tree frog",def:"Small amphibian eating insects"},{term:"Caterpillar",def:"Leaf-eating larva, primary consumer"}]},
-        {pairs:[{term:"Food web",def:"Many food chains connected together"},{term:"Primary consumer",def:"Eats plants directly"},{term:"Secondary consumer",def:"Eats primary consumers"},{term:"Biodiversity",def:"Variety of different living things"}]},
-        {pairs:[{term:"Leaf",def:"Flat green plant part used in photosynthesis"},{term:"Fruit",def:"Sweet plant part containing seeds"},{term:"Eagle",def:"Large bird of prey at the food chain top"},{term:"Trophic level",def:"Step showing where organism gets energy"}]},
-        {pairs:[{term:"Nutrient",def:"Substance plants and animals need to grow"},{term:"Decomposer",def:"Returns nutrients to the soil"},{term:"Top predator",def:"No natural enemies"},{term:"Omnivore",def:"Eats both plants and animals"}]}
+        {pairs:[{term:"Rainforest",def:"A dense forest with over 2000mm of rainfall per year"},{term:"Canopy",def:"The dense layer of treetops that blocks most light"},{term:"Photosynthesis",def:"The process by which plants convert sunlight into food"},{term:"Jaguar",def:"The apex predator of the Amazon with the strongest bite"}]},
+        {pairs:[{term:"Howler Monkey",def:"Uses loud calls to mark territory in the canopy"},{term:"Toucan",def:"Large-beaked bird that eats fruit and seeds"},{term:"Tree frog",def:"Amphibian adapted to life high in the rainforest"},{term:"Leafcutter Ant",def:"Farms fungi underground using cut leaf pieces"}]},
+        {pairs:[{term:"Food web",def:"Interconnected food chains showing all feeding relationships"},{term:"Primary consumer",def:"An organism that eats producers directly"},{term:"Secondary consumer",def:"An organism that eats primary consumers"},{term:"Biodiversity",def:"The variety of all living species in an ecosystem"}]},
+        {pairs:[{term:"Epiphyte",def:"A plant that grows on another without harming it"},{term:"Kapok Tree",def:"Tallest tree of the emergent layer, reaches 70 meters"},{term:"Harpy Eagle",def:"Largest eagle in the Americas, hunts monkeys"},{term:"Trophic level",def:"A feeding position in the food chain"}]},
+        {pairs:[{term:"Nutrient",def:"A substance absorbed by organisms for growth and energy"},{term:"Decomposer",def:"Breaks down dead matter and returns nutrients to soil"},{term:"Apex predator",def:"Top carnivore with no natural predators"},{term:"Omnivore",def:"An animal that eats both plants and animals"}]},
+        {pairs:[{term:"Understory",def:"The layer below the canopy with shade-tolerant plants"},{term:"Emergent layer",def:"The very top of the rainforest with tallest trees"},{term:"Forest floor",def:"The darkest layer where decomposition happens"},{term:"Shrub layer",def:"Low plants and young trees between floor and understory"}]},
+        {pairs:[{term:"Mutualism",def:"A relationship where both species benefit"},{term:"Parasitism",def:"One species benefits while the other is harmed"},{term:"Commensalism",def:"One species benefits and the other is unaffected"},{term:"Competition",def:"Two species competing for the same limited resource"}]},
+        {pairs:[{term:"Boa Constrictor",def:"Kills prey by squeezing until it cannot breathe"},{term:"Poison Dart Frog",def:"Bright colors warn predators of its toxic skin"},{term:"Forest Fungi",def:"Decomposes dead wood and returns nutrients"},{term:"Epiphytic Orchid",def:"Producer that grows on trees in the canopy"}]},
+        {pairs:[{term:"Transpiration",def:"Water released through plant leaves into the air"},{term:"Deforestation",def:"The large-scale clearing of forests by humans"},{term:"Carbon sink",def:"An ecosystem that absorbs more CO₂ than it releases"},{term:"Habitat fragmentation",def:"When habitats are broken into isolated pieces"}]},
+        {pairs:[{term:"Keystone species",def:"A species whose removal causes ecosystem collapse"},{term:"Indicator species",def:"A species that shows the health of an ecosystem"},{term:"Top predator",def:"Controls all populations below it in the food chain"},{term:"Niche",def:"The specific role and space occupied by a species"}]}
       ],
       unscramble:[
-        {words:["rainforests","contain","50%","of","all","species","on","Earth"],ans:"rainforests contain 50% of all species on Earth",hint:"Rainforest biodiversity"},
-        {words:["the","emergent","layer","receives","the","most","direct","sunlight"],ans:"the emergent layer receives the most direct sunlight",hint:"Layers of the rainforest"},
-        {words:["decomposers","break","down","dead","matter","and","return","nutrients"],ans:"decomposers break down dead matter and return nutrients",hint:"Role of decomposers"},
+        {words:["rainforests", "contain", "50%", "of", "all", "species", "on", "Earth"],ans:"rainforests contain 50% of all species on Earth",hint:"Rainforest biodiversity"},
+        {words:["the", "emergent", "layer", "receives", "the", "most", "direct", "sunlight"],ans:"the emergent layer receives the most direct sunlight",hint:"Layers of the rainforest"},
+        {words:["decomposers", "break", "down", "dead", "matter", "and", "return", "nutrients"],ans:"decomposers break down dead matter and return nutrients",hint:"Role of decomposers"},
+        {words:["the", "jaguar", "is", "the", "apex", "predator", "of", "the", "amazon"],ans:"the jaguar is the apex predator of the amazon",hint:"Rainforest food chain top"},
+        {words:["epiphytes", "grow", "on", "other", "plants", "without", "harming", "them"],ans:"epiphytes grow on other plants without harming them",hint:"Rainforest plant relationships"},
+        {words:["leafcutter", "ants", "farm", "fungi", "in", "underground", "chambers"],ans:"leafcutter ants farm fungi in underground chambers",hint:"Insect behavior in rainforest"},
+        {words:["the", "forest", "floor", "receives", "less", "than", "2%", "of", "sunlight"],ans:"the forest floor receives less than 2% of sunlight",hint:"Light in the rainforest"},
+        {words:["poison", "dart", "frogs", "get", "their", "toxins", "from", "their", "diet"],ans:"poison dart frogs get their toxins from their diet",hint:"Amphibian defense mechanism"},
+        {words:["biodiversity", "is", "highest", "near", "the", "equator"],ans:"biodiversity is highest near the equator",hint:"Global biodiversity pattern"},
+        {words:["the", "boa", "constrictor", "kills", "by", "squeezing", "its", "prey"],ans:"the boa constrictor kills by squeezing its prey",hint:"Snake hunting method"}
       ],
       truefalse:[
         {statement:"Jaguars eat only plants in the rainforest.",answer:false,correction:"Jaguars are carnivores that eat animals."},
@@ -621,7 +651,10 @@ const ECOSYSTEMS = {
         {clue:"I am the fastest land animal at 120 km/h. I must eat quickly before my kill is stolen.",answer:"Cheetah",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Cheetah_portrait.jpg/300px-Cheetah_portrait.jpg",emoji:"🐆",opts:["Cheetah","Lion","Spotted Hyena","Gazelle"]},
         {clue:"I am the only truly social big cat. My group coordinates hunts of very large prey.",answer:"Lion",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namibia.jpg/300px-Lion_waiting_in_Namibia.jpg",emoji:"🦁",opts:["Lion","Cheetah","Spotted Hyena","Leopard"]},
         {clue:"No two of us share the same pattern. I migrate with Wildebeest because I prefer different grass.",answer:"Zebra",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Plains_Zebra_Equus_quagga.jpg/300px-Plains_Zebra_Equus_quagga.jpg",emoji:"🦓",opts:["Zebra","Wildebeest","Gazelle","Elephant"]},
-      ],
+        {clue:"I am the tallest animal on Earth. My long neck lets me reach leaves 6 meters off the ground.",answer:"Giraffe",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Giraffe_Mikumi_National_Park.jpg/300px-Giraffe_Mikumi_National_Park.jpg",emoji:"🦒",opts:["Giraffe", "Elephant", "Wildebeest", "Ostrich"]},
+        {clue:"I am the world's largest bird. I cannot fly but I can run at 70 km/h and kick hard enough to kill a lion.",answer:"Ostrich",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Ostrich_2_edit.jpg/300px-Ostrich_2_edit.jpg",emoji:"🐦",opts:["Ostrich", "Secretary Bird", "Vulture", "Marabou Stork"]},
+        {clue:"I am a spotted predator. I drag my prey into trees so lions and hyenas cannot steal it.",answer:"Leopard",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Leopard_portrait.jpg/300px-Leopard_portrait.jpg",emoji:"🐆",opts:["Leopard", "Cheetah", "Lion", "Serval"]},
+        {clue:"I have a striped coat and a powerful bite that can crush bone. I am both predator and scavenger.",answer:"Spotted Hyena",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Crocuta_crocuta_-Tanzania-8.jpg/300px-Crocuta_crocuta_-Tanzania-8.jpg",emoji:"🐕",opts:["Spotted Hyena", "Wild Dog", "Jackal", "Lion"]}],
       foodchain:[
         {q:"What does the Lion primarily hunt?",opts:["Acacia leaves", "Termites", "Wildebeest and Zebras", "Only Gazelles"],a:2,exp:"Lions are social hunters targeting large herbivores."},
         {q:"What is the Cheetah's preferred prey?",opts:["Lion", "Elephant", "Thomson's Gazelle", "Wildebeest"],a:2,exp:"Cheetahs use their speed to catch fast gazelles on open plains."},
@@ -657,16 +690,28 @@ const ECOSYSTEMS = {
         {word:"BIODIVERSITY",clue:"The variety of life in an ecosystem"}
       ],
       match:[
-        {pairs:[{term:"Savanna",def:"Flat grassy land with few trees in Africa"},{term:"Grass",def:"Main producer in the savanna"},{term:"Zebra",def:"Striped herbivore that eats grass"},{term:"Lion",def:"Apex predator, king of the savanna"}]},
-        {pairs:[{term:"Cheetah",def:"Fastest land animal"},{term:"Elephant",def:"Uproots trees, keystone species"},{term:"Hyena",def:"Hunts 95% of its own food"},{term:"Vulture",def:"Scavenger eating dead animals"}]},
-        {pairs:[{term:"Migration",def:"Seasonal movement to find food and water"},{term:"Scavenger",def:"Eats animals it did not kill"},{term:"Apex predator",def:"Top of food chain, no enemies"},{term:"Dry season",def:"Long period of very little rain"}]},
-        {pairs:[{term:"Acacia tree",def:"Thorny tree common in the savanna"},{term:"Dung beetle",def:"Decomposer recycling animal waste"},{term:"Giraffe",def:"Eats leaves from tall trees"},{term:"Wildebeest",def:"Migrating primary consumer"}]},
-        {pairs:[{term:"Producer",def:"Savanna Grass"},{term:"Decomposer",def:"Termite"},{term:"Primary Consumer",def:"Wildebeest"},{term:"Tertiary Consumer",def:"Lion"}]}
+        {pairs:[{term:"Savanna",def:"A tropical grassland with scattered trees and two seasons"},{term:"Grass",def:"The main producer feeding all savanna herbivores"},{term:"Zebra",def:"Each individual has a unique stripe pattern"},{term:"Lion",def:"The only truly social big cat, hunts in groups"}]},
+        {pairs:[{term:"Cheetah",def:"Fastest land animal — hunts at 120 km/h"},{term:"Elephant",def:"Keystone species that uproots trees to create habitat"},{term:"Spotted Hyena",def:"Powerful scavenger and predator with a strong bite"},{term:"Vulture",def:"Scavenger that cleans up carcasses to prevent disease"}]},
+        {pairs:[{term:"Migration",def:"Seasonal movement of animals to find food and water"},{term:"Scavenger",def:"An animal that feeds on dead animals killed by others"},{term:"Apex predator",def:"Top of the food chain with no natural predators"},{term:"Dry season",def:"The months with no rain when food and water are scarce"}]},
+        {pairs:[{term:"Acacia tree",def:"Has thorns and symbiotic ants to deter herbivores"},{term:"Dung beetle",def:"Decomposes animal dung and recycles nutrients"},{term:"Giraffe",def:"Longest neck reaches the highest acacia leaves"},{term:"Wildebeest",def:"Migrates 1,800 km in a circle following the rains"}]},
+        {pairs:[{term:"Producer",def:"Makes its own food using sunlight"},{term:"Decomposer",def:"Breaks down dead organic matter into nutrients"},{term:"Primary Consumer",def:"Eats producers — herbivores like zebra and gazelle"},{term:"Tertiary Consumer",def:"Top predator — lion, cheetah, or leopard"}]},
+        {pairs:[{term:"Wet season",def:"The rainy months when grass grows and animals give birth"},{term:"Keystone species",def:"A species whose loss would transform the ecosystem"},{term:"Symbiosis",def:"A close interaction between two different species"},{term:"Oxpecker",def:"Bird that eats ticks and parasites off large mammals"}]},
+        {pairs:[{term:"Leopard",def:"Solitary, nocturnal cat that drags prey into trees"},{term:"Warthog",def:"Omnivore that kneels to dig for roots and bulbs"},{term:"Secretary Bird",def:"Hunts and kills snakes by stomping with its feet"},{term:"Mongoose",def:"Fast predator immune to many snake venoms"}]},
+        {pairs:[{term:"Trophic cascade",def:"How a change at one trophic level affects all others"},{term:"Biodiversity",def:"The variety of species living in an ecosystem"},{term:"Carnivore",def:"An animal that eats only other animals"},{term:"Herbivore",def:"An animal that eats only plants"}]},
+        {pairs:[{term:"Food web",def:"Interconnected food chains in an ecosystem"},{term:"Energy pyramid",def:"Shows how energy decreases at each trophic level"},{term:"Nutrient cycle",def:"The flow of nutrients through organisms and soil"},{term:"Biome",def:"A large region defined by climate and dominant organisms"}]},
+        {pairs:[{term:"Commensalism",def:"One species benefits, the other is unaffected"},{term:"Mutualism",def:"Both species in the relationship benefit"},{term:"Predation",def:"One organism kills and eats another"},{term:"Competition",def:"Two species competing for the same limited resource"}]}
       ],
       unscramble:[
-        {words:["elephants","are","a","keystone","species","that","shapes","the","landscape"],ans:"elephants are a keystone species that shapes the landscape",hint:"Ecological role of the elephant"},
-        {words:["wet","and","dry","seasons","drive","the","migrations"],ans:"wet and dry seasons drive the migrations",hint:"Savanna seasonal cycles"},
-        {words:["the","lion","is","the","apex","predator","of","the","african","savanna"],ans:"the lion is the apex predator of the african savanna",hint:"Savanna food chain top"},
+        {words:["elephants", "are", "a", "keystone", "species", "that", "shapes", "the", "landscape"],ans:"elephants are a keystone species that shapes the landscape",hint:"Elephant ecological role"},
+        {words:["wet", "and", "dry", "seasons", "drive", "the", "great", "migrations"],ans:"wet and dry seasons drive the great migrations",hint:"Savanna seasonal cycles"},
+        {words:["the", "lion", "is", "the", "apex", "predator", "of", "the", "african", "savanna"],ans:"the lion is the apex predator of the african savanna",hint:"Savanna food chain top"},
+        {words:["acacia", "trees", "have", "thorns", "to", "protect", "themselves", "from", "herbivores"],ans:"acacia trees have thorns to protect themselves from herbivores",hint:"Plant defense adaptation"},
+        {words:["wildebeest", "and", "zebra", "migrate", "together", "for", "safety"],ans:"wildebeest and zebra migrate together for safety",hint:"Savanna migration strategy"},
+        {words:["the", "cheetah", "is", "the", "fastest", "land", "animal", "on", "Earth"],ans:"the cheetah is the fastest land animal on Earth",hint:"Speed adaptation in savanna"},
+        {words:["vultures", "are", "scavengers", "that", "clean", "up", "dead", "animals"],ans:"vultures are scavengers that clean up dead animals",hint:"Role of scavengers"},
+        {words:["grass", "is", "the", "main", "producer", "in", "the", "savanna", "ecosystem"],ans:"grass is the main producer in the savanna ecosystem",hint:"Savanna producers"},
+        {words:["symbiosis", "means", "two", "species", "living", "and", "benefiting", "together"],ans:"symbiosis means two species living and benefiting together",hint:"Ecological relationships"},
+        {words:["the", "oxpecker", "bird", "eats", "parasites", "off", "large", "mammals"],ans:"the oxpecker bird eats parasites off large mammals",hint:"Mutualism in the savanna"}
       ],
       truefalse:[
         {statement:"The lion is a herbivore.",answer:false,correction:"Lions are carnivores — they eat other animals."},
@@ -750,7 +795,10 @@ const ECOSYSTEMS = {
         {clue:"I have 8 arms, 3 hearts, and blue blood. I can change color instantly.",answer:"Octopus",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Day_Octopus_%28Octopus_cyanea%29.jpg/300px-Day_Octopus_%28Octopus_cyanea%29.jpg",emoji:"🐙",opts:["Octopus","Squid","Jellyfish","Crab"]},
         {clue:"I am the largest animal ever to live on Earth. I eat the smallest thing in the ocean.",answer:"Blue Whale",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Kongo_Blue_Whale.jpg/300px-Kongo_Blue_Whale.jpg",emoji:"🐋",opts:["Blue Whale","Great White Shark","Orca","Giant Squid"]},
         {clue:"I have no brain or bones but I have killed more people than sharks. I drift with currents.",answer:"Jellyfish",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Lion%27s_mane_jellyfish_in_Gullmarn_fjord_at_Sämstad_2013.jpg/300px-Lion%27s_mane_jellyfish_in_Gullmarn_fjord_at_Sämstad_2013.jpg",emoji:"🪼",opts:["Jellyfish","Octopus","Sea Anemone","Coral"]},
-      ],
+        {clue:"I am a fish with a hammer-shaped head. My wide-set eyes give me nearly 360-degree vision.",answer:"Hammerhead Shark",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Scalloped_hammerhead_shark.jpg/300px-Scalloped_hammerhead_shark.jpg",emoji:"🦈",opts:["Hammerhead Shark", "Great White Shark", "Manta Ray", "Barracuda"]},
+        {clue:"I am the fastest fish in the ocean at 130 km/h. I have a long pointed bill I use to stun prey.",answer:"Sailfish",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Sailfish_leaping.jpg/300px-Sailfish_leaping.jpg",emoji:"🐟",opts:["Sailfish", "Tuna", "Swordfish", "Barracuda"]},
+        {clue:"I filter hundreds of litres of water to eat plankton. I am the largest fish in the ocean.",answer:"Whale Shark",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Whale_shark_Georgia_aquarium.jpg/300px-Whale_shark_Georgia_aquarium.jpg",emoji:"🦈",opts:["Whale Shark", "Blue Whale", "Manta Ray", "Great White Shark"]},
+        {clue:"I am a flat, winged ray that feeds on plankton. I have no stinger and can leap out of the water.",answer:"Manta Ray",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Manta_birostris-Thailand4.jpg/300px-Manta_birostris-Thailand4.jpg",emoji:"🐟",opts:["Manta Ray", "Hammerhead Shark", "Stingray", "Whale Shark"]}],
       foodchain:[
         {q:"Which organism forms the BASE of the ocean food chain?",opts:["Shark", "Seal", "Phytoplankton", "Tuna"],a:2,exp:"Phytoplankton are the ocean's primary producers — all energy starts here."},
         {q:"Sun → Phytoplankton → Zooplankton → ???",opts:["Sun", "Phytoplankton", "Small fish", "Shark"],a:2,exp:"Small fish eat zooplankton — they are secondary consumers."},
@@ -786,16 +834,28 @@ const ECOSYSTEMS = {
         {word:"TROPHIC",clue:"Relating to feeding levels in a food chain"}
       ],
       match:[
-        {pairs:[{term:"Ocean",def:"Largest ecosystem on Earth"},{term:"Phytoplankton",def:"Microscopic ocean producers"},{term:"Zooplankton",def:"Tiny animals eating phytoplankton"},{term:"Algae",def:"Plant-like organism doing photosynthesis"}]},
-        {pairs:[{term:"Krill",def:"Small crustaceans eaten by whales"},{term:"Food web",def:"Many interconnected food chains"},{term:"Great white shark",def:"Apex predator of the ocean"},{term:"Seal",def:"Marine mammal, prey for sharks"}]},
-        {pairs:[{term:"Tuna",def:"Fast secondary consumer in the ocean"},{term:"Whale",def:"Largest ocean animal"},{term:"Octopus",def:"Eight-armed carnivore eating crabs"},{term:"Energy pyramid",def:"Shows energy decreasing at each level"}]},
-        {pairs:[{term:"Photosynthesis",def:"How ocean producers make food"},{term:"Trophic level",def:"Position in the food chain"},{term:"Apex predator",def:"Top of food chain, no enemies"},{term:"Marine",def:"Relating to the ocean or sea"}]},
-        {pairs:[{term:"Primary production",def:"Food creation by phytoplankton"},{term:"Biodiversity",def:"Variety of organisms in ecosystem"},{term:"Salt water",def:"Type of water in the ocean"},{term:"Decomposer",def:"Breaks down dead ocean matter"}]}
+        {pairs:[{term:"Ocean",def:"The saltwater body covering 71% of Earth's surface"},{term:"Phytoplankton",def:"Microscopic algae that produce 50% of Earth's oxygen"},{term:"Zooplankton",def:"Tiny animals that eat phytoplankton and feed fish"},{term:"Kelp",def:"A large brown algae that forms underwater forests"}]},
+        {pairs:[{term:"Krill",def:"Small crustaceans eaten by whales, seals, and penguins"},{term:"Food web",def:"The network of all feeding relationships in an ecosystem"},{term:"Great White Shark",def:"Apex predator that controls seal populations"},{term:"Seal",def:"Marine mammal that feeds on fish and is hunted by sharks"}]},
+        {pairs:[{term:"Tuna",def:"Fast, migratory predatory fish that hunts in schools"},{term:"Blue Whale",def:"Largest animal ever — eats up to 4 tonnes of krill per day"},{term:"Octopus",def:"Has 8 arms, 3 hearts, blue blood, and can change color"},{term:"Energy pyramid",def:"Shows how energy decreases at each trophic level"}]},
+        {pairs:[{term:"Photosynthesis",def:"Phytoplankton use sunlight to produce food and oxygen"},{term:"Trophic level",def:"A feeding position in the food chain"},{term:"Apex predator",def:"Top consumer that regulates all lower populations"},{term:"Bioluminescence",def:"Light produced by deep-sea organisms for survival"}]},
+        {pairs:[{term:"Primary production",def:"The creation of organic matter by phytoplankton"},{term:"Biodiversity",def:"The variety of life in an ecosystem"},{term:"Decomposer",def:"Marine bacteria that break down dead organisms"},{term:"Upwelling",def:"Cold, nutrient-rich water rising to the surface"}]},
+        {pairs:[{term:"Sunlight zone",def:"Top ocean layer (0–200m) where photosynthesis occurs"},{term:"Twilight zone",def:"Ocean layer (200–1000m) with little light"},{term:"Midnight zone",def:"Deep ocean with no light and extreme pressure"},{term:"Abyssal zone",def:"The deepest ocean floor, nearly without life"}]},
+        {pairs:[{term:"Coral reef",def:"A diverse marine ecosystem built by coral polyps"},{term:"Estuary",def:"Where a river meets the ocean — high biodiversity"},{term:"Mangrove",def:"Coastal trees with roots in saltwater"},{term:"Sea grass bed",def:"Underwater meadows providing food and shelter"}]},
+        {pairs:[{term:"Overfishing",def:"Removing fish faster than they can reproduce"},{term:"Ocean acidification",def:"CO₂ dissolves in seawater making it more acidic"},{term:"Plastic pollution",def:"Human-made debris that harms marine organisms"},{term:"Dead zone",def:"An area of ocean with too little oxygen to support life"}]},
+        {pairs:[{term:"Jellyfish",def:"Has no brain, bones, or heart — drifts with currents"},{term:"Sea turtle",def:"Ancient reptile that navigates thousands of miles to nest"},{term:"Manta ray",def:"Filter feeder that strains plankton through gill plates"},{term:"Orca",def:"Highly intelligent social apex predator"}]},
+        {pairs:[{term:"Commensalism",def:"One species benefits and the other is unaffected"},{term:"Mutualism",def:"Both species in the relationship benefit each other"},{term:"Symbiosis",def:"A close long-term relationship between two species"},{term:"Parasitism",def:"One organism benefits while the other is harmed"}]}
       ],
       unscramble:[
-        {words:["phytoplankton","produce","half","of","all","the","oxygen","on","Earth"],ans:"phytoplankton produce half of all the oxygen on Earth",hint:"Ocean producers"},
-        {words:["the","ocean","covers","more","than","70","percent","of","Earth"],ans:"the ocean covers more than 70 percent of Earth",hint:"Ocean facts"},
-        {words:["energy","flows","from","phytoplankton","to","krill","to","whales"],ans:"energy flows from phytoplankton to krill to whales",hint:"Ocean food chain"},
+        {words:["phytoplankton", "produce", "half", "of", "all", "the", "oxygen", "on", "Earth"],ans:"phytoplankton produce half of all the oxygen on Earth",hint:"Ocean producers"},
+        {words:["the", "ocean", "covers", "more", "than", "70", "percent", "of", "Earth"],ans:"the ocean covers more than 70 percent of Earth",hint:"Ocean facts"},
+        {words:["energy", "flows", "from", "phytoplankton", "to", "krill", "to", "whales"],ans:"energy flows from phytoplankton to krill to whales",hint:"Ocean food chain"},
+        {words:["the", "blue", "whale", "is", "the", "largest", "animal", "ever", "on", "Earth"],ans:"the blue whale is the largest animal ever on Earth",hint:"Ocean apex organism"},
+        {words:["zooplankton", "eat", "phytoplankton", "and", "are", "eaten", "by", "fish"],ans:"zooplankton eat phytoplankton and are eaten by fish",hint:"Secondary consumer in the ocean"},
+        {words:["ocean", "currents", "distribute", "heat", "and", "nutrients", "around", "the", "world"],ans:"ocean currents distribute heat and nutrients around the world",hint:"Ocean physical processes"},
+        {words:["deep", "sea", "organisms", "use", "bioluminescence", "to", "survive", "in", "darkness"],ans:"deep sea organisms use bioluminescence to survive in darkness",hint:"Adaptation to deep ocean"},
+        {words:["the", "octopus", "has", "three", "hearts", "and", "blue", "blood"],ans:"the octopus has three hearts and blue blood",hint:"Unique ocean animal facts"},
+        {words:["overfishing", "destroys", "the", "balance", "of", "ocean", "food", "chains"],ans:"overfishing destroys the balance of ocean food chains",hint:"Human impact on ocean"},
+        {words:["marine", "bacteria", "decompose", "dead", "organisms", "and", "return", "nutrients"],ans:"marine bacteria decompose dead organisms and return nutrients",hint:"Ocean decomposer role"}
       ],
       truefalse:[
         {statement:"Phytoplankton are the main producers in the ocean.",answer:true,correction:""},
@@ -950,7 +1010,10 @@ const ECOSYSTEMS = {
         {clue:"I am an ancient reptile that has barely changed in 37 million years. I am the apex predator of these marshes.",answer:"American Alligator",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/American_Alligator.jpg/300px-American_Alligator.jpg",emoji:"🐊",opts:["American Alligator","Snapping Turtle","River Otter","Osprey"]},
         {clue:"I dive feet-first into the water at 60 km/h to catch fish. I am one of the world's most widespread birds.",answer:"Osprey",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Osprey_2012.jpg/300px-Osprey_2012.jpg",emoji:"🦅",opts:["Osprey","Great Blue Heron","Mink","American Alligator"]},
         {clue:"I am a mammal that can smell underwater by exhaling then inhaling. I build slides in mud just for fun.",answer:"River Otter",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/River_otter.jpg/300px-River_otter.jpg",emoji:"🦦",opts:["River Otter","Snapping Turtle","Mink","Crayfish"]},
-      ],
+        {clue:"I build dams that flood forests and create wetland habitat for dozens of other species.",answer:"North American Beaver",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/American_Beaver.jpg/300px-American_Beaver.jpg",emoji:"🦫",opts:["North American Beaver", "River Otter", "Mink", "Muskrat"]},
+        {clue:"I am a large wading bird with a blue-gray coat. I stand motionless and strike fish with my spear-like beak.",answer:"Great Blue Heron",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Great_Blue_Heron_-_Great_Meadows_NWR_%289647%29.jpg/300px-Great_Blue_Heron_-_Great_Meadows_NWR_%289647%29.jpg",emoji:"🐦",opts:["Great Blue Heron", "Osprey", "Egret", "Sandhill Crane"]},
+        {clue:"I spend most of my life underwater as a larva, then emerge as an aerial predator. I can see nearly 360°.",answer:"Dragonfly",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Large_red_damselfly_edit2.jpg/300px-Large_red_damselfly_edit2.jpg",emoji:"🐉",opts:["Dragonfly", "Damselfly", "Water Strider", "Mayfly"]},
+        {clue:"I am an ancient turtle with a powerful hooked jaw. I can stay underwater for hours using cloacal bursae.",answer:"Snapping Turtle",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Chelydra_serpentina_-_Raleigh%2C_North_Carolina.jpg/300px-Chelydra_serpentina_-_Raleigh%2C_North_Carolina.jpg",emoji:"🐢",opts:["Snapping Turtle", "American Alligator", "Painted Turtle", "Bullfrog"]}],
       foodchain:[
         {q:"What does the American Alligator primarily eat?",opts:["Cattails", "Fish and turtles", "Insects only", "Duckweed"],a:1,exp:"Alligators are apex predators eating fish, turtles, and other large animals."},
         {q:"Which organism forms the BASE of the wetland food chain?",opts:["Osprey", "Alligator", "Cattail", "Heron"],a:2,exp:"Cattails and aquatic plants are the primary producers of the wetland."},
@@ -986,16 +1049,28 @@ const ECOSYSTEMS = {
         {word:"ECOSYSTEM",clue:"Community of organisms and environment"}
       ],
       match:[
-        {pairs:[{term:"Wetland",def:"Filters water and prevents floods"},{term:"Emergent plants",def:"Plants with roots in water, leaves above"},{term:"Amphibian",def:"Breathes through skin and lungs"},{term:"Keystone species",def:"Has huge effect on whole ecosystem"}]},
-        {pairs:[{term:"Cattail",def:"Emergent wetland producer"},{term:"Osprey",def:"Dives feet-first at 60 km/h to fish"},{term:"Alligator",def:"Ancient apex predator"},{term:"Marsh Bacteria",def:"Decomposes organic matter"}]},
-        {pairs:[{term:"Dragonfly",def:"Predatory insect living near water"},{term:"Great blue heron",def:"Large wading bird eating fish and frogs"},{term:"Beaver",def:"Builds dams creating wetland habitat"},{term:"Otter",def:"Carnivorous mammal swimming and eating fish"}]},
-        {pairs:[{term:"Eutrophication",def:"Excess nutrients reducing oxygen in water"},{term:"Bioaccumulation",def:"Buildup of toxins at higher trophic levels"},{term:"Dissolved oxygen",def:"Oxygen in water aquatic life needs"},{term:"Riparian zone",def:"Area along river and wetland banks"}]},
-        {pairs:[{term:"Carbon storage",def:"Why wetlands fight climate change"},{term:"Nutrient cycling",def:"Movement of nutrients through ecosystem"},{term:"Food web complexity",def:"Many overlapping feeding relationships"},{term:"Trophic cascade",def:"Losing key species disrupts whole web"}]}
+        {pairs:[{term:"Wetland",def:"An ecosystem where water covers or saturates the soil"},{term:"Emergent plants",def:"Plants rooted underwater with stems above the surface"},{term:"Amphibian",def:"Lives in water and on land — breathes through skin and lungs"},{term:"Keystone species",def:"A species whose removal disrupts the entire ecosystem"}]},
+        {pairs:[{term:"Cattail",def:"Emergent plant that filters water and shelters wildlife"},{term:"Osprey",def:"Dives feet-first at 60 km/h to catch fish"},{term:"American Alligator",def:"Apex predator unchanged for 37 million years"},{term:"Marsh Bacteria",def:"Decomposes organic matter and recycles nutrients"}]},
+        {pairs:[{term:"Dragonfly",def:"Larvae live underwater; adults are aerial insect predators"},{term:"Great Blue Heron",def:"Stands still in water and strikes fish with its beak"},{term:"Beaver",def:"Builds dams that create wetland habitat for other species"},{term:"River Otter",def:"Playful apex predator that hunts fish in rivers"}]},
+        {pairs:[{term:"Eutrophication",def:"Excess nutrients cause algae bloom and oxygen depletion"},{term:"Bioaccumulation",def:"Toxins build up in organisms as they move up the food chain"},{term:"Dissolved oxygen",def:"The amount of oxygen in water — vital for aquatic life"},{term:"Riparian zone",def:"The vegetated area alongside rivers and wetlands"}]},
+        {pairs:[{term:"Carbon storage",def:"Wetlands trap carbon underground, slowing climate change"},{term:"Nutrient cycling",def:"Wetlands move nutrients from water into soil and plants"},{term:"Trophic cascade",def:"A change at one level ripples through the food web"},{term:"Flood control",def:"Wetlands absorb excess rainwater like a sponge"}]},
+        {pairs:[{term:"Peat",def:"Partially decomposed plant matter that stores carbon"},{term:"Bog",def:"An acidic wetland dominated by sphagnum moss"},{term:"Marsh",def:"A shallow wetland dominated by grasses and reeds"},{term:"Swamp",def:"A wetland dominated by trees and woody plants"}]},
+        {pairs:[{term:"Bioindicator",def:"A species whose presence signals ecosystem health"},{term:"Macroinvertebrate",def:"Small animals without backbones used to measure water quality"},{term:"pH",def:"A measure of how acidic or basic water is"},{term:"Turbidity",def:"How cloudy or murky the water is"}]},
+        {pairs:[{term:"Snapping Turtle",def:"Ancient omnivore that scavenges and hunts in wetlands"},{term:"Mink",def:"Semi-aquatic predator that hunts fish and small mammals"},{term:"Crayfish",def:"Bottom-feeding decomposer and prey of herons"},{term:"Duckweed",def:"Tiny floating producer that covers the water surface"}]},
+        {pairs:[{term:"Water filtration",def:"Wetland plants remove pollutants and excess nutrients"},{term:"Habitat corridor",def:"A strip connecting isolated habitats for wildlife movement"},{term:"Restoration",def:"Returning a degraded ecosystem to its natural state"},{term:"Invasive species",def:"A non-native species that harms native ecosystems"}]},
+        {pairs:[{term:"Primary producer",def:"An organism that converts sunlight into food"},{term:"Herbivore",def:"An animal that eats plants and algae"},{term:"Detritivore",def:"An organism that feeds on dead plant and animal matter"},{term:"Apex predator",def:"Top consumer that controls all other populations"}]}
       ],
       unscramble:[
-        {words:["wetlands","filter","water","and","prevent","floods","and","store","carbon"],ans:"wetlands filter water and prevent floods and store carbon",hint:"Ecological services of wetlands"},
-        {words:["amphibians","breathe","through","their","skin","and","lungs"],ans:"amphibians breathe through their skin and lungs",hint:"Amphibian biology"},
-        {words:["over","50%","of","wetlands","have","been","destroyed","by","humans"],ans:"over 50% of wetlands have been destroyed by humans",hint:"Conservation crisis"},
+        {words:["wetlands", "filter", "water", "and", "prevent", "floods", "and", "store", "carbon"],ans:"wetlands filter water and prevent floods and store carbon",hint:"Ecological services of wetlands"},
+        {words:["amphibians", "breathe", "through", "their", "skin", "and", "lungs"],ans:"amphibians breathe through their skin and lungs",hint:"Amphibian biology"},
+        {words:["over", "50%", "of", "wetlands", "have", "been", "destroyed", "by", "humans"],ans:"over 50% of wetlands have been destroyed by humans",hint:"Conservation crisis"},
+        {words:["cattails", "provide", "shelter", "and", "food", "for", "wetland", "animals"],ans:"cattails provide shelter and food for wetland animals",hint:"Wetland plant role"},
+        {words:["the", "alligator", "is", "an", "apex", "predator", "of", "freshwater", "wetlands"],ans:"the alligator is an apex predator of freshwater wetlands",hint:"Wetland food chain top"},
+        {words:["mangrove", "roots", "protect", "coastlines", "from", "storm", "surges"],ans:"mangrove roots protect coastlines from storm surges",hint:"Coastal wetland role"},
+        {words:["the", "osprey", "dives", "at", "60", "km", "per", "hour", "to", "catch", "fish"],ans:"the osprey dives at 60 km per hour to catch fish",hint:"Wetland bird predator"},
+        {words:["wetland", "plants", "absorb", "excess", "nutrients", "from", "the", "water"],ans:"wetland plants absorb excess nutrients from the water",hint:"Wetland water filtration"},
+        {words:["frogs", "are", "bioindicators", "of", "ecosystem", "health"],ans:"frogs are bioindicators of ecosystem health",hint:"Using species to measure health"},
+        {words:["decomposition", "in", "wetlands", "releases", "nutrients", "back", "to", "producers"],ans:"decomposition in wetlands releases nutrients back to producers",hint:"Nutrient cycling in wetlands"}
       ],
       truefalse:[
         {statement:"Wetlands filter water and prevent floods.",answer:true,correction:""},
@@ -1078,7 +1153,10 @@ const ECOSYSTEMS = {
         {clue:"I am the apex predator of the Arctic. I can smell a seal through 1 meter of ice.",answer:"Polar Bear",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Polar_Bear_-_Alaska_%28cropped%29.jpg/300px-Polar_Bear_-_Alaska_%28cropped%29.jpg",emoji:"🐻‍❄️",opts:["Polar Bear","Arctic Fox","Snowy Owl","Walrus"]},
         {clue:"I migrate up to 5,000 km. My hooves act like snowshoes and shovels to find lichen.",answer:"Caribou",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Rangifer_tarandus_caribou.jpg/300px-Rangifer_tarandus_caribou.jpg",emoji:"🦌",opts:["Caribou","Musk Ox","Arctic Hare","Lemming"]},
         {clue:"I am pure white and silent. I hunt lemmings in the Arctic day and night.",answer:"Snowy Owl",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Snowy_Owl_%28240866707%29.jpeg/300px-Snowy_Owl_%28240866707%29.jpeg",emoji:"🦉",opts:["Snowy Owl","Arctic Fox","Polar Bear","Caribou"]},
-      ],
+        {clue:"I am a large white whale also called the 'canary of the sea' because of my many vocalizations.",answer:"Beluga Whale",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Beluga_Whale_Mystic_Aquarium_%2853%29.jpg/300px-Beluga_Whale_Mystic_Aquarium_%2853%29.jpg",emoji:"🐳",opts:["Beluga Whale", "Narwhal", "Orca", "Bowhead Whale"]},
+        {clue:"I have a long spiral tusk that can reach 3 meters. Ancient sailors called me the 'unicorn of the sea'.",answer:"Narwhal",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Narwhal_painting.jpg/300px-Narwhal_painting.jpg",emoji:"🦄",opts:["Narwhal", "Beluga Whale", "Walrus", "Orca"]},
+        {clue:"I have two large ivory tusks and use them to haul myself onto ice. I gather in huge herds on Arctic shores.",answer:"Walrus",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Walrus_-_Kamchatka%2C_Russia.jpg/300px-Walrus_-_Kamchatka%2C_Russia.jpg",emoji:"🦭",opts:["Walrus", "Polar Bear", "Narwhal", "Harp Seal"]},
+        {clue:"I am a small, plump bird that cannot fly. I use my wings as flippers to swim at 40 km/h underwater.",answer:"Little Auk",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Alle_alle.jpg/300px-Alle_alle.jpg",emoji:"🐧",opts:["Little Auk", "Puffin", "Snowy Owl", "Arctic Tern"]}],
       foodchain:[
         {q:"Sun → Lichen → Lemming → ???",opts:["Lichen", "Sun", "Arctic Fox", "Musk Ox"],a:2,exp:"Arctic foxes are the main predators of lemmings."},
         {q:"Which organism forms the BASE of the Arctic tundra food chain?",opts:["Polar Bear", "Lemming", "Lichen/Grass", "Arctic Fox"],a:2,exp:"Lichen and tundra grasses are the primary producers capturing solar energy."},
@@ -1114,16 +1192,28 @@ const ECOSYSTEMS = {
         {word:"CONSUMER",clue:"Eats other organisms"}
       ],
       match:[
-        {pairs:[{term:"Arctic Tundra",def:"Cold treeless ecosystem with permafrost"},{term:"Permafrost",def:"Permanently frozen ground under the surface"},{term:"Lichen",def:"Primary producer growing on rocks"},{term:"Lemming",def:"Key prey animal in the tundra"}]},
-        {pairs:[{term:"Arctic hare",def:"Herbivore prey for foxes and owls"},{term:"Arctic fox",def:"Predator eating lemmings and hares"},{term:"Snowy owl",def:"White bird of prey hunting lemmings"},{term:"Polar bear",def:"Apex predator eating seals and fish"}]},
-        {pairs:[{term:"Insulation",def:"Body feature keeping heat inside"},{term:"Hibernation",def:"Long sleep during winter"},{term:"Camouflage",def:"Colors blending into environment"},{term:"Migration",def:"Seasonal movement to find food"}]},
-        {pairs:[{term:"Food scarcity",def:"Very little food available in winter"},{term:"Trophic cascade",def:"Removing one species changes whole web"},{term:"Primary producer",def:"Makes food from sunlight in tundra"},{term:"Energy transfer",def:"Movement of energy through food chain"}]},
-        {pairs:[{term:"Caribou",def:"Migrates across tundra eating lichen"},{term:"Musk ox",def:"Large herbivore with thick fur"},{term:"Adaptation",def:"Feature helping survive extreme cold"},{term:"Food web",def:"All feeding relationships in tundra"}]}
+        {pairs:[{term:"Arctic Tundra",def:"A cold, treeless biome with permafrost and low rainfall"},{term:"Permafrost",def:"Permanently frozen ground that holds stored carbon"},{term:"Lichen",def:"The main producer of the tundra, eaten by caribou"},{term:"Lemming",def:"Small rodent whose population cycles drive the food web"}]},
+        {pairs:[{term:"Arctic Hare",def:"White-furred herbivore that runs in zigzags to escape"},{term:"Arctic Fox",def:"Changes coat from white to brown with the seasons"},{term:"Snowy Owl",def:"Silent aerial predator that hunts lemmings day and night"},{term:"Polar Bear",def:"Apex predator that hunts seals on sea ice"}]},
+        {pairs:[{term:"Insulation",def:"Blubber and thick fur that trap body heat"},{term:"Hibernation",def:"A deep winter sleep to conserve energy"},{term:"Camouflage",def:"White coloring that hides animals in snow"},{term:"Migration",def:"Seasonal travel to find food and warmer conditions"}]},
+        {pairs:[{term:"Food scarcity",def:"Limited food supply during Arctic winter months"},{term:"Trophic cascade",def:"How removing one species affects the whole food web"},{term:"Primary producer",def:"Organisms like lichen that make food from sunlight"},{term:"Energy transfer",def:"Only ~10% of energy passes to the next trophic level"}]},
+        {pairs:[{term:"Caribou",def:"Migrates up to 5,000 km following lichen and grass"},{term:"Musk Ox",def:"Prehistoric mammal with a thick double-layered coat"},{term:"Arctic Wolf",def:"Hunts caribou and musk ox in cooperative packs"},{term:"Tundra Bacteria",def:"Decomposes dead matter to recycle nutrients"}]},
+        {pairs:[{term:"Sea ice",def:"Frozen ocean surface used by polar bears for hunting"},{term:"Arctic summer",def:"Period of 24-hour sunlight and rapid plant growth"},{term:"Polar night",def:"Period of 24-hour darkness during Arctic winter"},{term:"Thermoregulation",def:"Controlling body temperature despite cold conditions"}]},
+        {pairs:[{term:"Countercurrent exchange",def:"Blood vessels that recycle heat to warm cold extremities"},{term:"Torpor",def:"A light sleep to save energy during harsh conditions"},{term:"Mosses",def:"Small plants that carpet tundra during the short summer"},{term:"Sedges",def:"Grass-like wetland plants eaten by geese and caribou"}]},
+        {pairs:[{term:"Keystone species",def:"A species whose loss would transform the ecosystem"},{term:"Indicator species",def:"Species sensitive to change that signal ecosystem health"},{term:"Biodiversity",def:"The variety of all living species in an ecosystem"},{term:"Food web",def:"All feeding relationships in an ecosystem combined"}]},
+        {pairs:[{term:"Global warming",def:"Rise in Earth's temperature due to greenhouse gases"},{term:"Ice sheet",def:"A thick permanent ice cap covering Greenland and Antarctica"},{term:"Carbon release",def:"Permafrost melting releases stored CO₂ into the atmosphere"},{term:"Sea level rise",def:"Melting Arctic ice contributing to rising ocean levels"}]},
+        {pairs:[{term:"Adaptation",def:"A trait evolved to improve survival in a specific habitat"},{term:"Natural selection",def:"Survival and reproduction of best-adapted individuals"},{term:"Niche",def:"The specific role an organism plays in its ecosystem"},{term:"Ecosystem services",def:"Benefits an ecosystem provides to humans and other species"}]}
       ],
       unscramble:[
-        {words:["the","arctic","tundra","has","permafrost","and","very","cold","temperatures"],ans:"the arctic tundra has permafrost and very cold temperatures",hint:"Arctic tundra definition"},
-        {words:["polar","bears","hunt","seals","on","arctic","sea","ice"],ans:"polar bears hunt seals on arctic sea ice",hint:"Arctic apex predator"},
-        {words:["caribou","migrate","thousands","of","kilometers","to","find","food"],ans:"caribou migrate thousands of kilometers to find food",hint:"Arctic migration"},
+        {words:["the", "arctic", "tundra", "has", "permafrost", "and", "very", "cold", "temperatures"],ans:"the arctic tundra has permafrost and very cold temperatures",hint:"Arctic tundra definition"},
+        {words:["polar", "bears", "hunt", "seals", "on", "arctic", "sea", "ice"],ans:"polar bears hunt seals on arctic sea ice",hint:"Arctic apex predator"},
+        {words:["caribou", "migrate", "thousands", "of", "kilometers", "to", "find", "food"],ans:"caribou migrate thousands of kilometers to find food",hint:"Arctic migration"},
+        {words:["lichen", "is", "the", "main", "producer", "in", "the", "arctic", "tundra"],ans:"lichen is the main producer in the arctic tundra",hint:"Arctic primary producer"},
+        {words:["the", "arctic", "fox", "changes", "color", "with", "the", "seasons"],ans:"the arctic fox changes color with the seasons",hint:"Camouflage adaptation"},
+        {words:["lemming", "populations", "cycle", "up", "and", "down", "every", "few", "years"],ans:"lemming populations cycle up and down every few years",hint:"Arctic population dynamics"},
+        {words:["permafrost", "stores", "large", "amounts", "of", "carbon", "underground"],ans:"permafrost stores large amounts of carbon underground",hint:"Arctic climate role"},
+        {words:["the", "snowy", "owl", "is", "a", "silent", "predator", "of", "the", "arctic"],ans:"the snowy owl is a silent predator of the arctic",hint:"Arctic bird predator"},
+        {words:["global", "warming", "is", "melting", "arctic", "ice", "at", "record", "rates"],ans:"global warming is melting arctic ice at record rates",hint:"Climate change in the Arctic"},
+        {words:["blubber", "keeps", "arctic", "mammals", "warm", "in", "freezing", "water"],ans:"blubber keeps arctic mammals warm in freezing water",hint:"Cold adaptation in mammals"}
       ],
       truefalse:[
         {statement:"The Arctic tundra is a cold, treeless ecosystem.",answer:true,correction:""},
@@ -1210,7 +1300,10 @@ const ECOSYSTEMS = {
         {clue:"I am immune to anemone stings. I live inside their tentacles in a famous symbiotic partnership.",answer:"Clownfish",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Amphiprion_ocellaris_%28Clown_anemonefish%29_in_Entacmaea_quadricolor_%28Bubble_anemone%29.jpg/300px-Amphiprion_ocellaris_%28Clown_anemonefish%29_in_Entacmaea_quadricolor_%28Bubble_anemone%29.jpg",emoji:"🐠",opts:["Clownfish","Parrotfish","Grouper","Moray Eel"]},
         {clue:"I eat living coral and produce the white sand of tropical beaches as waste.",answer:"Parrotfish",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Sparisoma_cretense_01.jpg/300px-Sparisoma_cretense_01.jpg",emoji:"🐡",opts:["Parrotfish","Sea Urchin","Crown-of-Thorns Starfish","Clownfish"]},
         {clue:"I am an apex predator. I keep reef fish populations balanced. Without me, the reef collapses.",answer:"Reef Shark",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/White_shark.jpg/300px-White_shark.jpg",emoji:"🦈",opts:["Reef Shark","Barracuda","Moray Eel","Grouper"]},
-      ],
+        {clue:"I am an ancient reptile that navigates thousands of miles using Earth's magnetic field to return to my birthplace.",answer:"Green Sea Turtle",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Chelonia_mydas_is_going_for_the_air.jpg/300px-Chelonia_mydas_is_going_for_the_air.jpg",emoji:"🐢",opts:["Green Sea Turtle", "Hawksbill Turtle", "Leatherback Turtle", "Loggerhead Turtle"]},
+        {clue:"I am a fast, elongated silver predator. I patrol open reef water and am known for my sharp teeth.",answer:"Barracuda",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Barracuda_laban.jpg/300px-Barracuda_laban.jpg",emoji:"🐟",opts:["Barracuda", "Moray Eel", "Tuna", "Wahoo"]},
+        {clue:"I hide in coral crevices by day and hunt at night. I work with groupers to flush out prey.",answer:"Moray Eel",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Gymnothorax_javanicus.jpg/300px-Gymnothorax_javanicus.jpg",emoji:"🐍",opts:["Moray Eel", "Barracuda", "Grouper", "Lionfish"]},
+        {clue:"I am covered in venomous spines and am an invasive predator destroying Atlantic and Caribbean reefs.",answer:"Lionfish",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Pterois_volitans_Manado-e.jpg/300px-Pterois_volitans_Manado-e.jpg",emoji:"🐡",opts:["Lionfish", "Scorpionfish", "Stonefish", "Pufferfish"]}],
       foodchain:[
         {q:"What does the Reef Shark primarily eat?",opts:["Seagrass", "Zooxanthellae", "Fish and cephalopods", "Sea urchins only"],a:2,exp:"Reef sharks are apex predators eating large fish and squid."},
         {q:"Which organism forms the BASE of the coral reef food chain?",opts:["Barracuda", "Reef Shark", "Parrotfish", "Zooxanthellae"],a:3,exp:"Zooxanthellae (and algae) are the primary producers — all energy starts here."},
@@ -1246,16 +1339,28 @@ const ECOSYSTEMS = {
         {word:"PHOTOSYNTHESIS",clue:"How zooxanthellae make food inside coral"}
       ],
       match:[
-        {pairs:[{term:"Zooxanthellae",def:"Algae inside coral doing photosynthesis"},{term:"Coral bleaching",def:"Coral losing color and food in warm water"},{term:"Parrotfish",def:"Grazes algae, produces reef sand"},{term:"Clownfish",def:"Lives in anemone, famous mutualism"}]},
-        {pairs:[{term:"Mutualism",def:"Both species benefit from relationship"},{term:"Sea urchin",def:"Spiny grazer controlling algae"},{term:"Reef shark",def:"Apex predator keeping balance"},{term:"Crown-of-Thorns",def:"Starfish eating coral polyps"}]},
-        {pairs:[{term:"Seagrass",def:"Nursery habitat and food for turtles"},{term:"Marine bacteria",def:"Decomposes dead matter in reef"},{term:"Moray eel",def:"Secondary consumer hiding in coral"},{term:"Grouper",def:"Secondary consumer hunting reef fish"}]},
-        {pairs:[{term:"Trophic cascade",def:"Removing sharks disrupts whole reef"},{term:"Ocean acidification",def:"Dissolves coral skeletons"},{term:"Detritivore",def:"Eats dead organic matter"},{term:"Symbiosis",def:"Close relationship between two species"}]},
-        {pairs:[{term:"Primary production",def:"Food made by zooxanthellae and algae"},{term:"Biodiversity hotspot",def:"25% of marine species in 1% of ocean"},{term:"Keystone species",def:"Species whose removal disrupts whole web"},{term:"Energy pyramid",def:"Shows energy decreasing at higher levels"}]}
+        {pairs:[{term:"Zooxanthellae",def:"Photosynthetic algae living inside coral tissue"},{term:"Coral bleaching",def:"Coral expels zooxanthellae due to heat stress — turns white"},{term:"Parrotfish",def:"Bites coral to eat algae — produces reef sand as waste"},{term:"Clownfish",def:"Immune to anemone stings — lives in tentacles for shelter"}]},
+        {pairs:[{term:"Mutualism",def:"A relationship where both species benefit each other"},{term:"Sea Urchin",def:"Grazes on algae to keep the reef clean and healthy"},{term:"Reef Shark",def:"Apex predator that controls reef fish populations"},{term:"Crown-of-Thorns Starfish",def:"Eats coral polyps — causes major reef damage in outbreaks"}]},
+        {pairs:[{term:"Seagrass",def:"Underwater producer that shelters juvenile fish and turtles"},{term:"Marine Bacteria",def:"Decomposes dead organisms and recycles nutrients"},{term:"Moray Eel",def:"Hides in reef crevices and ambushes prey at night"},{term:"Grouper",def:"Large secondary consumer that hunts smaller reef fish"}]},
+        {pairs:[{term:"Trophic cascade",def:"Removing one species ripples through the entire food web"},{term:"Ocean acidification",def:"CO₂ dissolves in water making it harder to build coral skeletons"},{term:"Detritivore",def:"Feeds on dead organic matter on the reef floor"},{term:"Symbiosis",def:"A long-term interaction between two different species"}]},
+        {pairs:[{term:"Primary production",def:"Zooxanthellae convert sunlight into food for coral"},{term:"Biodiversity hotspot",def:"An area with extremely high species richness"},{term:"Keystone species",def:"A species whose loss would collapse the reef ecosystem"},{term:"Energy pyramid",def:"Shows how energy decreases at each trophic level"}]},
+        {pairs:[{term:"Coral polyp",def:"A tiny animal that secretes calcium carbonate to build reefs"},{term:"Calcium carbonate",def:"The mineral coral polyps use to construct reef structures"},{term:"Atoll",def:"A ring-shaped reef formed around a sunken volcanic island"},{term:"Fringing reef",def:"A reef that grows directly from a coastline"}]},
+        {pairs:[{term:"Green Sea Turtle",def:"Grazes on seagrass and helps maintain reef ecosystems"},{term:"Barracuda",def:"Fast, elongated predator that hunts in open reef water"},{term:"Cleaner Wrasse",def:"Removes parasites from larger fish in a mutualistic deal"},{term:"Sea Anemone",def:"Provides shelter for clownfish with its stinging tentacles"}]},
+        {pairs:[{term:"Overfishing",def:"Removing fish faster than the reef can replace them"},{term:"Sunscreen pollution",def:"Chemical sunscreens damage coral DNA and cause bleaching"},{term:"Sedimentation",def:"Mud from land smothers coral and blocks sunlight"},{term:"Marine protected area",def:"A zone where fishing and development are restricted"}]},
+        {pairs:[{term:"Thermocline",def:"A sharp temperature boundary between warm and cold water"},{term:"Photic zone",def:"The upper ocean layer where enough light exists for photosynthesis"},{term:"Nutrient cycling",def:"The movement of nutrients from dead organisms back into the reef"},{term:"Benthic zone",def:"The bottom of the ocean or reef where organisms live on the substrate"}]},
+        {pairs:[{term:"Commensalism",def:"One species benefits and the other is unaffected"},{term:"Parasitism",def:"One organism benefits while harming the other"},{term:"Competition",def:"Two species competing for the same limited resource"},{term:"Predation",def:"One organism kills and eats another organism"}]}
       ],
       unscramble:[
-        {words:["coral","reefs","support","25%","of","all","marine","species"],ans:"coral reefs support 25% of all marine species",hint:"Coral reef biodiversity"},
-        {words:["zooxanthellae","provide","energy","to","coral","through","photosynthesis"],ans:"zooxanthellae provide energy to coral through photosynthesis",hint:"Coral symbiosis"},
-        {words:["rising","temperatures","cause","coral","bleaching","and","reef","death"],ans:"rising temperatures cause coral bleaching and reef death",hint:"Climate change threat"},
+        {words:["coral", "reefs", "support", "25%", "of", "all", "marine", "species"],ans:"coral reefs support 25% of all marine species",hint:"Coral reef biodiversity"},
+        {words:["zooxanthellae", "provide", "energy", "to", "coral", "through", "photosynthesis"],ans:"zooxanthellae provide energy to coral through photosynthesis",hint:"Coral symbiosis"},
+        {words:["rising", "temperatures", "cause", "coral", "bleaching", "and", "reef", "death"],ans:"rising temperatures cause coral bleaching and reef death",hint:"Climate change threat"},
+        {words:["the", "parrotfish", "produces", "white", "sand", "by", "eating", "coral"],ans:"the parrotfish produces white sand by eating coral",hint:"Coral reef sand origin"},
+        {words:["clownfish", "are", "immune", "to", "the", "sting", "of", "sea", "anemones"],ans:"clownfish are immune to the sting of sea anemones",hint:"Famous reef symbiosis"},
+        {words:["coral", "polyps", "build", "reefs", "by", "secreting", "calcium", "carbonate"],ans:"coral polyps build reefs by secreting calcium carbonate",hint:"How reefs are built"},
+        {words:["reef", "sharks", "keep", "fish", "populations", "balanced", "on", "the", "reef"],ans:"reef sharks keep fish populations balanced on the reef",hint:"Apex predator reef role"},
+        {words:["sea", "urchins", "graze", "on", "algae", "and", "keep", "the", "reef", "clean"],ans:"sea urchins graze on algae and keep the reef clean",hint:"Reef maintenance organism"},
+        {words:["symbiosis", "is", "a", "relationship", "where", "two", "species", "benefit", "each", "other"],ans:"symbiosis is a relationship where two species benefit each other",hint:"Definition of symbiosis"},
+        {words:["the", "moray", "eel", "hunts", "fish", "in", "cracks", "and", "crevices", "of", "the", "reef"],ans:"the moray eel hunts fish in cracks and crevices of the reef",hint:"Reef predator hunting strategy"}
       ],
       truefalse:[
         {statement:"Coral reefs are among the most biodiverse ecosystems on Earth.",answer:true,correction:""},
@@ -2378,6 +2483,7 @@ function NarrativeScreen({ onDone }) {
       {Array.from({length:30}).map((_,i)=>(
         <div key={i} style={{position:"absolute",left:`${(i*37)%100}%`,top:`${(i*61)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.15,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none"}} />
       ))}
+      <button onClick={onDone} style={{position:"absolute",top:16,right:20,background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.35)",fontFamily:"'Cinzel',serif",fontSize:11,padding:"6px 14px",cursor:"pointer",letterSpacing:"0.1em",zIndex:10}} title="Skip narrative">Skip →</button>
       <div style={{display:"flex",gap:8,marginBottom:22,alignItems:"center"}}>
         {["The Story","The Why"].map((label,i)=>(
           <div key={i} style={{display:"flex",alignItems:"center",gap:8}}>
@@ -2689,13 +2795,64 @@ function SpinnerScreen({ teams, onDone }) {
 }
 
 // ── CHALLENGE COMPONENTS ───────────────────────────
-function TriviaChallenge({ data, onResult }) {
+
+// ── TIMER BAR ──────────────────────────────────────
+function TimerBar({ timeLimit, onExpire, paused }) {
+  const [timeLeft, setTimeLeft] = useState(timeLimit);
+  const expiredRef = useRef(false);
+  const pausedRef  = useRef(paused);
+  useEffect(() => { pausedRef.current = paused; }, [paused]);
+
+  useEffect(() => {
+    const iv = setInterval(() => {
+      if (pausedRef.current) return;
+      setTimeLeft(t => {
+        if (t <= 1) {
+          clearInterval(iv);
+          if (!expiredRef.current) { expiredRef.current = true; onExpire(); }
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(iv);
+  }, []);
+
+  const pct = timeLeft / timeLimit;
+  const color = pct > 0.5 ? "#4ade80" : pct > 0.25 ? "#fbbf24" : "#f87171";
+  const urgent = pct <= 0.25;
+
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
+        <span style={{ fontSize:10, color:"rgba(255,255,255,0.3)", letterSpacing:"0.15em", fontFamily:"'Cinzel',serif" }}>TIME</span>
+        <span style={{
+          fontFamily:"'Cinzel',serif", fontSize:13, fontWeight:700,
+          color, animation: urgent ? "chaosFloat 0.6s ease-in-out infinite" : "none",
+        }}>{timeLeft}s</span>
+      </div>
+      <div style={{ height:4, background:"rgba(255,255,255,0.06)", borderRadius:2, overflow:"hidden" }}>
+        <div style={{
+          height:"100%", width:`${pct*100}%`,
+          background: `linear-gradient(90deg, ${color}, ${color}aa)`,
+          borderRadius:2,
+          transition:"width 0.9s linear, background 0.5s",
+          boxShadow: urgent ? `0 0 8px ${color}` : "none",
+        }} />
+      </div>
+    </div>
+  );
+}
+
+function TriviaChallenge({ data, onResult, timeLimit=30 }) {
   const [sel,setSel]=useState(null);
   const [answered,setAnswered]=useState(false);
   const submit=idx=>{if(answered)return;setSel(idx);setAnswered(true);setTimeout(()=>onResult(idx===data.a),1500);};
+  const handleExpire=()=>{if(!answered){setAnswered(true);setSel(-1);setTimeout(()=>onResult(false),1200);}};
   const LETTERS=["A","B","C","D"];
   return(
     <div>
+      <TimerBar timeLimit={timeLimit} onExpire={handleExpire} paused={answered} />
       <p style={{fontSize:16,color:"rgba(255,255,255,0.95)",lineHeight:1.65,fontFamily:"'Libre Baskerville',serif",fontWeight:700,marginBottom:20,padding:"0 2px"}}>{data.q}</p>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
         {data.opts.map((opt,i)=>{
@@ -2732,11 +2889,12 @@ function TriviaChallenge({ data, onResult }) {
   );
 }
 
-function IdentifyChallenge({ data, onResult }) {
+function IdentifyChallenge({ data, onResult, timeLimit=30 }) {
   const [sel,setSel]=useState(null);
   const [answered,setAnswered]=useState(false);
   const [imgFailed,setImgFailed]=useState(false);
   const submit=opt=>{if(answered)return;setSel(opt);setAnswered(true);setTimeout(()=>onResult(opt===data.answer),1500);};
+  const handleExpire=()=>{if(!answered){setAnswered(true);setSel(null);setTimeout(()=>onResult(false),1200);}};
   const showPhoto=data.img&&!imgFailed;
   return(
     <div>
@@ -2756,6 +2914,7 @@ function IdentifyChallenge({ data, onResult }) {
           <div style={{fontSize:52,marginBottom:8,animation:"float 2s ease-in-out infinite"}}>{data.emoji}</div>
         )}
         <div style={{background:"rgba(0,0,0,0.3)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:"12px 16px",fontSize:14,color:"rgba(255,255,255,0.9)",lineHeight:1.6,fontStyle:"italic"}}>"{data.clue}"</div>
+        <div style={{marginTop:10}}><TimerBar timeLimit={timeLimit} onExpire={handleExpire} paused={answered} /></div>
         <div style={{marginTop:8,fontSize:11,color:"rgba(255,255,255,0.4)",letterSpacing:"0.2em"}}>WHICH ORGANISM AM I?</div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
@@ -2769,7 +2928,7 @@ function IdentifyChallenge({ data, onResult }) {
   );
 }
 
-function TrueFalseChallenge({ data, onResult }) {
+function TrueFalseChallenge({ data, onResult, timeLimit=20 }) {
   const [sel,setSel]=useState(null);
   const [answered,setAnswered]=useState(false);
   const submit=val=>{
@@ -2778,10 +2937,12 @@ function TrueFalseChallenge({ data, onResult }) {
     const correct=val===data.answer;
     setTimeout(()=>onResult(correct),1400);
   };
+  const handleExpire=()=>{if(!answered){setAnswered(true);setSel(null);setTimeout(()=>onResult(false),1200);}};
   const isTrue=sel===true,isFalse=sel===false;
   const showTrue=answered&&data.answer===true,showFalse=answered&&data.answer===false;
   return(
     <div>
+      <TimerBar timeLimit={timeLimit} onExpire={handleExpire} paused={answered} />
       <p style={{fontSize:16,color:"#fff",lineHeight:1.6,fontFamily:"'Libre Baskerville',serif",marginBottom:22,textAlign:"center",padding:"0 8px"}}>{data.statement}</p>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
         <button onClick={()=>submit(true)} style={{
@@ -2805,7 +2966,7 @@ function TrueFalseChallenge({ data, onResult }) {
   );
 }
 
-function HangmanChallenge({ data, onResult }) {
+function HangmanChallenge({ data, onResult, timeLimit=60 }) {
   const [guessed,setGuessed]=useState(new Set());
   const word=data.word.toUpperCase();
   const wrong=[...guessed].filter(l=>!word.includes(l));
@@ -2813,9 +2974,11 @@ function HangmanChallenge({ data, onResult }) {
   const failed=wrong.length>=6;
   const done=useRef(false);
   useEffect(()=>{if((solved||failed)&&!done.current){done.current=true;setTimeout(()=>onResult(solved),800);}},[solved,failed]);
+  const handleExpire=()=>{if(!done.current&&!solved&&!failed){done.current=true;setTimeout(()=>onResult(false),800);}};
   const parts=["🗿","🎭","🦷","💀","👻","☠️"];
   return(
     <div>
+      <TimerBar timeLimit={timeLimit} onExpire={handleExpire} paused={solved||failed} />
       <p style={{textAlign:"center",fontSize:13,color:"rgba(255,255,255,0.55)",marginBottom:6,fontStyle:"italic"}}>Hint: {data.clue}</p>
       <div style={{textAlign:"center",fontSize:28,fontFamily:"'Cinzel',serif",marginBottom:14,letterSpacing:"0.2em"}}>
         {word.split("").map((l,i)=>(
@@ -2838,21 +3001,25 @@ function HangmanChallenge({ data, onResult }) {
   );
 }
 
-function MatchChallenge({ data, onResult }) {
+function MatchChallenge({ data, onResult, timeLimit=30 }) {
   const terms=data.pairs.map(p=>p.term);
   const defs=useMemo(()=>shuffle(data.pairs.map(p=>p.def)),[]);
   const [selTerm,setSelTerm]=useState(null);
   const [matched,setMatched]=useState({});
   const [errors,setErrors]=useState(0);
   const done=useRef(false);
+  const [isDone,setIsDone]=useState(false);
+  const finish=(result)=>{if(done.current)return;done.current=true;setIsDone(true);setTimeout(()=>onResult(result),600);};
   const handleDef=def=>{
     if(!selTerm||done.current)return;
     const correct=data.pairs.find(p=>p.term===selTerm)?.def;
-    if(def===correct){const newM={...matched,[selTerm]:def};setMatched(newM);setSelTerm(null);if(Object.keys(newM).length===data.pairs.length&&!done.current){done.current=true;setTimeout(()=>onResult(true),600);}}
-    else{const e=errors+1;setErrors(e);setSelTerm(null);if(e>=3&&!done.current){done.current=true;setTimeout(()=>onResult(false),600);}}
+    if(def===correct){const newM={...matched,[selTerm]:def};setMatched(newM);setSelTerm(null);if(Object.keys(newM).length===data.pairs.length)finish(true);}
+    else{const e=errors+1;setErrors(e);setSelTerm(null);if(e>=3)finish(false);}
   };
+  const handleExpire=()=>finish(false);
   return(
     <div>
+      <TimerBar timeLimit={timeLimit} onExpire={handleExpire} paused={isDone} />
       <p style={{textAlign:"center",fontSize:12,color:"rgba(255,255,255,0.5)",marginBottom:14}}>Click a TERM → then its DEFINITION · {errors}/3 errors</p>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
         <div style={{display:"flex",flexDirection:"column",gap:7}}>
@@ -2878,7 +3045,7 @@ function MatchChallenge({ data, onResult }) {
   );
 }
 
-function UnscrambleChallenge({ data, onResult }) {
+function UnscrambleChallenge({ data, onResult, timeLimit=45 }) {
   const [bank,setBank]=useState(()=>shuffle(data.words));
   const [answer,setAnswer]=useState([]);
   const [checked,setChecked]=useState(false);
@@ -2886,8 +3053,10 @@ function UnscrambleChallenge({ data, onResult }) {
   const addWord=(w,i)=>{if(checked)return;setAnswer(p=>[...p,w]);setBank(p=>p.filter((_,idx)=>idx!==i));};
   const removeWord=i=>{if(checked)return;setBank(p=>[...p,answer[i]]);setAnswer(p=>p.filter((_,idx)=>idx!==i));};
   const check=()=>{const ok=answer.join(" ").toLowerCase()===data.ans.toLowerCase();setCorrect(ok);setChecked(true);setTimeout(()=>onResult(ok),1200);};
+  const handleExpire=()=>{if(!checked){setChecked(true);setCorrect(false);setTimeout(()=>onResult(false),1200);}};
   return(
     <div>
+      <TimerBar timeLimit={timeLimit} onExpire={handleExpire} paused={checked} />
       <p style={{textAlign:"center",fontSize:13,color:"rgba(255,255,255,0.5)",marginBottom:4,fontStyle:"italic"}}>Hint: {data.hint}</p>
       <p style={{textAlign:"center",fontSize:11,color:"rgba(255,255,255,0.3)",marginBottom:14}}>Click the words to build the sentence in order</p>
       <div style={{minHeight:50,background:"rgba(0,0,0,0.3)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:12,padding:"10px 14px",display:"flex",flexWrap:"wrap",gap:6,marginBottom:10,alignItems:"center"}}>
@@ -3373,13 +3542,13 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
 
         {/* ── Challenge content ── */}
         <div style={{padding:"1.4rem 1.5rem"}}>
-          {cell.type==="trivia"&&<TriviaChallenge data={challenge} onResult={setResult} />}
-          {cell.type==="foodchain"&&<TriviaChallenge data={{...challenge,exp:"That's how energy flows in this food chain!"}} onResult={setResult} />}
-          {cell.type==="identify"&&<IdentifyChallenge data={challenge} onResult={setResult} />}
-          {cell.type==="hangman"&&<HangmanChallenge data={challenge} onResult={setResult} />}
-          {cell.type==="match"&&<MatchChallenge data={challenge} onResult={setResult} />}
-          {cell.type==="unscramble"&&<UnscrambleChallenge data={challenge} onResult={setResult} />}
-          {cell.type==="truefalse"&&<TrueFalseChallenge data={challenge} onResult={setResult} />}
+          {cell.type==="trivia"&&<TriviaChallenge data={challenge} onResult={setResult} timeLimit={30} />}
+          {cell.type==="foodchain"&&<TriviaChallenge data={{...challenge,exp:"That's how energy flows in this food chain!"}} onResult={setResult} timeLimit={45} />}
+          {cell.type==="identify"&&<IdentifyChallenge data={challenge} onResult={setResult} timeLimit={30} />}
+          {cell.type==="hangman"&&<HangmanChallenge data={challenge} onResult={setResult} timeLimit={60} />}
+          {cell.type==="match"&&<MatchChallenge data={challenge} onResult={setResult} timeLimit={30} />}
+          {cell.type==="unscramble"&&<UnscrambleChallenge data={challenge} onResult={setResult} timeLimit={45} />}
+          {cell.type==="truefalse"&&<TrueFalseChallenge data={challenge} onResult={setResult} timeLimit={20} />}
           {cell.type==="foodweb"&&<FoodWebChallenge ecosystem={ecosystem} onResult={setResult} />}
         </div>
       </div>
@@ -3388,17 +3557,49 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
 }
 
 // ── WILDCARD MODAL ─────────────────────────────────
-function WildcardModal({ cell, onDone }) {
+function WildcardModal({ cell, resolved, teams, curIdx, onDone }) {
   useEffect(()=>{ SFX.wildcard(); },[]);
-  const effects={advance:{icon:"⏩",title:"Move Forward!",desc:`Move forward ${cell.val} extra spaces`,color:"#4ade80"},back:{icon:"⏪",title:"Move Back!",desc:`Go back ${cell.val} spaces`,color:"#f87171"},skip:{icon:"⏭️",title:"Lose a Turn!",desc:"You skip your next turn",color:"#fbbf24"},free:{icon:"🎁",title:"Free Organism!",desc:"You get an organism without a challenge!",color:"#c084fc"},steal:{icon:"🦅",title:"Steal an Organism!",desc:"Take an organism from the team with the most",color:"#fb923c"},double:{icon:"✨",title:"Double Reward!",desc:"Your next correct answer counts as 2",color:"#38bdf8"}};
+
+  // Build rich description based on precomputed resolved info
+  const freeDesc = resolved?.org
+    ? `You earned: ${resolved.org.emoji} ${resolved.org.name}!`
+    : "All organisms already collected!";
+  const stealDesc = resolved?.org
+    ? `You steal ${resolved.org.emoji} ${resolved.org.name} from ${resolved.fromTeam?.name || "another team"}!`
+    : "No organisms to steal yet.";
+
+  const effects={
+    advance:{icon:"⏩",title:"Move Forward!",desc:`Move forward ${cell.val} extra space${cell.val>1?"s":""}!`,color:"#4ade80"},
+    back:   {icon:"⏪",title:"Move Back!",   desc:`Go back ${cell.val} space${cell.val>1?"s":""}!`,color:"#f87171"},
+    skip:   {icon:"⏭️",title:"Lose a Turn!", desc:"You skip your next turn.",color:"#fbbf24"},
+    free:   {icon:"🎁",title:"Free Organism!",desc:freeDesc,color:"#c084fc"},
+    steal:  {icon:"🦅",title:"Steal an Organism!",desc:stealDesc,color:"#fb923c"},
+    double: {icon:"✨",title:"Double Reward!",desc:"Your next correct answer earns 2 organisms!",color:"#38bdf8"},
+  };
   const fx=effects[cell.fx]||{icon:"⚡",title:"Wildcard",desc:"Special effect",color:"#e879f9"};
+
+  // Show organism card for free/steal when resolved
+  const showOrgCard = (cell.fx==="free"||cell.fx==="steal") && resolved?.org;
+
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
-      <div style={{background:"#0a0f1a",border:`2px solid ${fx.color}55`,borderRadius:"1.3rem",padding:"2.6rem 2.2rem",maxWidth:"28rem",textAlign:"center",animation:"popIn 0.5s ease",boxShadow:`0 0 60px ${fx.color}33`}}>
+      <div style={{background:"#0a0f1a",border:`2px solid ${fx.color}55`,borderRadius:"1.3rem",padding:"2.6rem 2.2rem",maxWidth:"30rem",width:"90%",textAlign:"center",animation:"popIn 0.5s ease",boxShadow:`0 0 60px ${fx.color}33`}}>
         <div style={{fontSize:"4rem",marginBottom:"0.5rem"}}>{fx.icon}</div>
-        <h3 style={{fontFamily:"'Cinzel',serif",fontSize:"1.5rem",color:fx.color,marginBottom:"0.65rem"}}>{fx.title}</h3>
-        <p style={{color:"rgba(255,255,255,0.65)",fontSize:"0.95rem",lineHeight:1.5}}>{fx.desc}</p>
-        <button onClick={onDone} style={{marginTop:"1.4rem",padding:"0.85rem 2.2rem",background:`${fx.color}33`,border:`1.5px solid ${fx.color}55`,borderRadius:"0.8rem",color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.9rem",cursor:"pointer",letterSpacing:"0.1em"}}>Continue →</button>
+        <h3 style={{fontFamily:"'Cinzel',serif",fontSize:"1.5rem",color:fx.color,marginBottom:"0.55rem"}}>{fx.title}</h3>
+        <p style={{color:"rgba(255,255,255,0.65)",fontSize:"0.95rem",lineHeight:1.5,marginBottom:showOrgCard?"1rem":"0"}}>{fx.desc}</p>
+        {showOrgCard&&(
+          <div style={{background:`${fx.color}12`,border:`1px solid ${fx.color}44`,borderRadius:"0.9rem",padding:"0.9rem 1.1rem",display:"flex",alignItems:"center",gap:"0.9rem",textAlign:"left",margin:"0 auto",maxWidth:"22rem"}}>
+            <span style={{fontSize:"2.4rem",flexShrink:0}}>{resolved.org.emoji}</span>
+            <div>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.95rem",color:"#fff",fontWeight:700}}>{resolved.org.name}</div>
+              {resolved.org.role&&<div style={{fontSize:"0.78rem",color:`${fx.color}cc`,marginTop:2}}>{resolved.org.role}</div>}
+              {cell.fx==="steal"&&resolved.fromTeam&&(
+                <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.4)",marginTop:3}}>from {resolved.fromTeam.name}</div>
+              )}
+            </div>
+          </div>
+        )}
+        <button onClick={onDone} style={{marginTop:"1.5rem",padding:"0.85rem 2.2rem",background:`${fx.color}33`,border:`1.5px solid ${fx.color}55`,borderRadius:"0.8rem",color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.9rem",cursor:"pointer",letterSpacing:"0.1em"}}>Continue →</button>
       </div>
     </div>
   );
@@ -3556,6 +3757,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const [diceVal,setDiceVal]=useState(null);
   const [rolling,setRolling]=useState(false);
   const [activeCell,setActiveCell]=useState(null);
+  const [wildcardResolved,setWildcardResolved]=useState(null); // precomputed steal/free info
   const [pendingOrg,setPendingOrg]=useState(null);
   const [turn,setTurn]=useState(1);
   const [narrativePopup, setNarrativePopup] = useState(null);
@@ -3670,7 +3872,22 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     const cell=board[newPos];
     setTimeout(()=>{
       if(cell.type==="center"){showWow("victory", ()=>setPhase("center"));}
-      else if(cell.type==="wildcard"){setActiveCell(cell);setPhase("wildcard");}
+      else if(cell.type==="wildcard"){
+          // precompute steal/free so modal can show organism name
+          let resolved=null;
+          if(cell.fx==="free"){
+            const uncol=getUncollected(teams[curIdx]);
+            if(uncol.length>0){const org=pick(uncol);resolved={org};}
+          } else if(cell.fx==="steal"){
+            const rich=[...teams].filter((_,i)=>i!==curIdx).sort((a,b)=>b.organisms.length-a.organisms.length)[0];
+            if(rich&&rich.organisms.length>0){
+              const org=rich.organisms[rich.organisms.length-1];
+              resolved={org,fromTeam:rich};
+            }
+          }
+          setWildcardResolved(resolved);
+          setActiveCell(cell);setPhase("wildcard");
+        }
       else if(cell.type==="start"){nextTurn();}
       else{
           // foodweb: fall back to trivia if The Builder is not assigned on this team
@@ -3687,13 +3904,14 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
 
   const handleWildcardDone=()=>{
     const cell=activeCell;if(!cell){nextTurn();return;}
+    const res=wildcardResolved;
     if(cell.fx==="advance")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],position:Math.min(u[curIdx].position+cell.val,N_BOARD-1)};return u;});
     else if(cell.fx==="back")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],position:Math.max(0,u[curIdx].position-cell.val)};return u;});
     else if(cell.fx==="skip")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],skipNext:true};return u;});
-    else if(cell.fx==="free"){const uncol=getUncollected(teams[curIdx]);if(uncol.length>0){const org=pick(uncol);setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,org]};return u;});}}
-    else if(cell.fx==="steal"){const rich=[...teams].filter((_,i)=>i!==curIdx).sort((a,b)=>b.organisms.length-a.organisms.length)[0];if(rich&&rich.organisms.length>0){const st=rich.organisms[rich.organisms.length-1];setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,st]};u[rich.id]={...u[rich.id],organisms:u[rich.id].organisms.filter(o=>o.id!==st.id)};return u;});}}
+    else if(cell.fx==="free"&&res?.org)setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,res.org]};return u;});
+    else if(cell.fx==="steal"&&res?.org&&res?.fromTeam){setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,res.org]};u[res.fromTeam.id]={...u[res.fromTeam.id],organisms:u[res.fromTeam.id].organisms.filter(o=>o.id!==res.org.id)};return u;});}
     else if(cell.fx==="double")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],doubleNext:true};return u;});
-    setActiveCell(null);nextTurn();
+    setActiveCell(null);setWildcardResolved(null);nextTurn();
   };
 
   const handleChallengeResult=(won,org)=>{
@@ -3931,7 +4149,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
       </div>
 
       {phase==="challenge"&&activeCell&&<ChallengeModal cell={activeCell} ecosystem={ecosystem} team={curTeam} pendingOrganism={pendingOrg} onResult={handleChallengeResult} challenge={activeChallenge} />}
-      {phase==="wildcard"&&activeCell&&<WildcardModal cell={activeCell} onDone={handleWildcardDone} />}
+      {phase==="wildcard"&&activeCell&&<WildcardModal cell={activeCell} resolved={wildcardResolved} teams={teams} curIdx={curIdx} onDone={handleWildcardDone} />}
       {wowModal&&<WowFactsModal fact={wowModal.fact} ecosystem={ecosystem} context={wowModal.context} onDone={handleWowDone} />}
 
       {/* ── RESTORATION MODAL ── */}
