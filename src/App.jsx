@@ -1833,6 +1833,46 @@ const GS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { font-size: clamp(14px, 1.4vw, 22px); }
   body { overflow-x: hidden; }
+
+  /* 📱 REGLAS RESPONSIVE (MÓVILES Y TABLETS) 📱 */
+  @media (max-width: 768px) {
+    html { font-size: 13px !important; }
+    
+    /* Forzar a que los contenedores de ancho fijo se adapten a la pantalla */
+    div[style*="width: 800px"], 
+    div[style*="width: 900px"], 
+    div[style*="width: 700px"], 
+    div[style*="width: 600px"], 
+    div[style*="width: 400px"],
+    div[style*="width: 60%"] {
+      width: 100% !important;
+      max-width: 92vw !important;
+      min-width: unset !important;
+      padding-left: 10px !important;
+      padding-right: 10px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+    
+    /* Apilar los elementos que estaban en fila horizontal */
+    div[style*="flex-direction: row"] {
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 15px !important;
+    }
+    
+    /* Reducir los márgenes excesivos en pantallas pequeñas */
+    div[style*="padding: 40px"], 
+    div[style*="padding: 24px"] {
+      padding: 15px !important;
+    }
+    
+    button {
+      max-width: 100% !important;
+    }
+  }
+
+  /* ANIMACIONES ORIGINALES */
   @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
   @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
   @keyframes popIn { 0%{opacity:0;transform:scale(0.4)} 70%{transform:scale(1.1)} 100%{opacity:1;transform:scale(1)} }
