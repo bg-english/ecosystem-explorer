@@ -3133,6 +3133,70 @@ function UnscrambleChallenge({ data, onResult, timeLimit=45 }) {
   );
 }
 
+// ── ORG CARD (module-level — must NOT be defined inside FoodWebChallenge
+//    or React will unmount/remount it on every timer tick causing image flicker) ──
+function OrgCard({ org, imgLookup, submitted, isSelected, onClick, compact, correctState }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const img = imgLookup[org.name];
+  const showImg = img && !imgFailed;
+  const borderColor = correctState === "correct" ? "#4ade80"
+                    : correctState === "wrong"   ? "#f87171"
+                    : isSelected                 ? "#fb923c"
+                    : "rgba(255,255,255,0.15)";
+  const bg = correctState === "correct" ? "rgba(34,197,94,0.18)"
+           : correctState === "wrong"   ? "rgba(239,68,68,0.18)"
+           : isSelected                 ? "rgba(251,146,60,0.22)"
+           : "rgba(255,255,255,0.06)";
+  return (
+    <div onClick={onClick} style={{
+      display:"flex", flexDirection: compact ? "row" : "column",
+      alignItems:"center",
+      gap: compact ? 5 : 3,
+      padding: compact ? "4px 8px" : "6px 8px",
+      borderRadius:10,
+      background: bg,
+      border:"1.5px solid "+borderColor,
+      cursor: submitted ? "default" : "pointer",
+      transition:"all 0.15s",
+      transform: isSelected ? "scale(1.06)" : "scale(1)",
+      boxShadow: isSelected ? "0 0 10px rgba(251,146,60,0.4)" : "none",
+      animation: correctState ? "popIn 0.3s ease" : undefined,
+      minWidth: compact ? 0 : 68,
+      maxWidth: compact ? 160 : 80,
+      flexShrink: 0,
+    }}>
+      {showImg ? (
+        <img src={img} alt={org.name} style={{
+          width: compact ? 26 : 52, height: compact ? 26 : 52,
+          objectFit:"cover", borderRadius: compact ? 5 : 8,
+          border:"1px solid rgba(255,255,255,0.1)", flexShrink:0,
+        }} onError={() => setImgFailed(true)} />
+      ) : null}
+      <span style={{
+        fontSize: showImg ? 0 : (compact ? 18 : 28),
+        display: showImg ? "none" : "flex",
+        alignItems:"center", justifyContent:"center",
+        width: compact ? 26 : 52, height: compact ? 26 : 52,
+        background:"rgba(255,255,255,0.06)", borderRadius: compact ? 5 : 8, flexShrink:0,
+      }}>{org.emoji}</span>
+      <div style={{display:"flex", flexDirection:"column", alignItems: compact ? "flex-start" : "center", gap:1, minWidth:0}}>
+        <span style={{
+          fontFamily:"'Cinzel',serif", fontSize: compact ? 10 : 9,
+          color: correctState==="correct" ? "#4ade80" : correctState==="wrong" ? "#f87171" : isSelected ? "#fdba74" : "rgba(255,255,255,0.82)",
+          fontWeight:700, textAlign: compact ? "left" : "center",
+          whiteSpace: compact ? "nowrap" : "normal",
+          overflow:"hidden", textOverflow:"ellipsis", maxWidth: compact ? 110 : 72,
+        }}>{org.name}</span>
+        {!compact && !submitted && <span style={{fontSize:8, color:"rgba(255,255,255,0.25)"}}>{org.role.split(" ")[0]}</span>}
+        {submitted && correctState==="correct" && <span style={{fontSize:9,color:"#4ade80"}}>✓</span>}
+        {submitted && correctState==="wrong"   && <span style={{fontSize:9,color:"#f87171"}}>✗ {org.role}</span>}
+        {!submitted && !compact && isSelected && <span style={{fontSize:8,color:"#fb923c"}}>selected</span>}
+      </div>
+      {!submitted && compact && <span style={{color:"rgba(255,255,255,0.18)",fontSize:9,marginLeft:2}}>×</span>}
+    </div>
+  );
+}
+
 // ── FOOD WEB CHALLENGE ─────────────────────────────
 function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
   const eco = ECOSYSTEMS[ecosystem.id];
@@ -3205,69 +3269,6 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
   const unplaced = shuffledOrgs.filter(o => !placements[o.id]);
   const allPlaced = unplaced.length === 0;
 
-  // Organism card — used both in unplaced pool and in trophic rows
-  const OrgCard = ({ org, isSelected, onClick, compact, correctState }) => {
-    const [imgFailed, setImgFailed] = useState(false);
-    const img = imgLookup[org.name];
-    const showImg = img && !imgFailed;
-    const borderColor = correctState === "correct" ? "#4ade80"
-                      : correctState === "wrong"   ? "#f87171"
-                      : isSelected                 ? "#fb923c"
-                      : "rgba(255,255,255,0.15)";
-    const bg = correctState === "correct" ? "rgba(34,197,94,0.18)"
-             : correctState === "wrong"   ? "rgba(239,68,68,0.18)"
-             : isSelected                 ? "rgba(251,146,60,0.22)"
-             : "rgba(255,255,255,0.06)";
-    return (
-      <div onClick={onClick} style={{
-        display:"flex", flexDirection: compact ? "row" : "column",
-        alignItems:"center",
-        gap: compact ? 5 : 3,
-        padding: compact ? "4px 8px" : "6px 8px",
-        borderRadius:10,
-        background: bg,
-        border:"1.5px solid "+borderColor,
-        cursor: submitted ? "default" : "pointer",
-        transition:"all 0.15s",
-        transform: isSelected ? "scale(1.06)" : "scale(1)",
-        boxShadow: isSelected ? "0 0 10px rgba(251,146,60,0.4)" : "none",
-        animation: correctState ? "popIn 0.3s ease" : undefined,
-        minWidth: compact ? 0 : 68,
-        maxWidth: compact ? 160 : 80,
-        flexShrink: 0,
-      }}>
-        {showImg ? (
-          <img src={img} alt={org.name} style={{
-            width: compact ? 26 : 52, height: compact ? 26 : 52,
-            objectFit:"cover", borderRadius: compact ? 5 : 8,
-            border:"1px solid rgba(255,255,255,0.1)", flexShrink:0,
-          }} onError={() => setImgFailed(true)} />
-        ) : null}
-        <span style={{
-          fontSize: showImg ? 0 : (compact ? 18 : 28),
-          display: showImg ? "none" : "flex",
-          alignItems:"center", justifyContent:"center",
-          width: compact ? 26 : 52, height: compact ? 26 : 52,
-          background:"rgba(255,255,255,0.06)", borderRadius: compact ? 5 : 8, flexShrink:0,
-        }}>{org.emoji}</span>
-        <div style={{display:"flex", flexDirection:"column", alignItems: compact ? "flex-start" : "center", gap:1, minWidth:0}}>
-          <span style={{
-            fontFamily:"'Cinzel',serif", fontSize: compact ? 10 : 9,
-            color: correctState==="correct" ? "#4ade80" : correctState==="wrong" ? "#f87171" : isSelected ? "#fdba74" : "rgba(255,255,255,0.82)",
-            fontWeight:700, textAlign: compact ? "left" : "center",
-            whiteSpace: compact ? "nowrap" : "normal",
-            overflow:"hidden", textOverflow:"ellipsis", maxWidth: compact ? 110 : 72,
-          }}>{org.name}</span>
-          {!compact && !submitted && <span style={{fontSize:8, color:"rgba(255,255,255,0.25)"}}>{org.role.split(" ")[0]}</span>}
-          {submitted && correctState==="correct" && <span style={{fontSize:9,color:"#4ade80"}}>✓</span>}
-          {submitted && correctState==="wrong"   && <span style={{fontSize:9,color:"#f87171"}}>✗ {org.role}</span>}
-          {!submitted && !compact && isSelected && <span style={{fontSize:8,color:"#fb923c"}}>selected</span>}
-        </div>
-        {!submitted && compact && <span style={{color:"rgba(255,255,255,0.18)",fontSize:9,marginLeft:2}}>×</span>}
-      </div>
-    );
-  };
-
   return (
     <div>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12,gap:10}}>
@@ -3288,7 +3289,7 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:7,minHeight:40}}>
             {unplaced.map(org=>(
-              <OrgCard key={org.id} org={org} isSelected={selected===org.id}
+              <OrgCard key={org.id} org={org} imgLookup={imgLookup} submitted={submitted} isSelected={selected===org.id}
                 onClick={()=>setSelected(prev=>prev===org.id?null:org.id)} compact={false} />
             ))}
             {allPlaced&&<span style={{fontSize:12,color:"#4ade80",animation:"popIn 0.4s ease",display:"flex",alignItems:"center",gap:5}}>✓ All placed! Submit when ready.</span>}
@@ -3323,7 +3324,7 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
                 {orgsHere.map(org=>{
                   const correctState = submitted ? (org.role===level.label?"correct":"wrong") : undefined;
                   return(
-                    <OrgCard key={org.id} org={org} isSelected={false} compact={true}
+                    <OrgCard key={org.id} org={org} imgLookup={imgLookup} submitted={submitted} isSelected={false} compact={true}
                       onClick={e=>{e.stopPropagation();removePlacement(org.id);}}
                       correctState={correctState} />
                   );
@@ -4449,17 +4450,17 @@ function EcosystemDestroyedScreen({ ecosystem, teams, onRestart }) {
       <div style={{...vis("0.3s"),maxWidth:"32rem",width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"1.2rem",padding:"1.6rem 2rem",marginBottom:"1.8rem",textAlign:"center",backdropFilter:"blur(4px)"}}>
         <div style={{fontSize:"1.5rem",marginBottom:"0.7rem"}}>✝️</div>
         <p style={{fontStyle:"italic",color:"rgba(255,230,200,0.85)",fontSize:"0.98rem",lineHeight:1.85,margin:"0 0 0.8rem 0",fontFamily:"'Libre Baskerville',serif"}}>
-          "No nos cansemos de hacer el bien, porque a su debido tiempo cosecharemos si no nos damos por vencidos."
+          "Let us not grow weary of doing good, for in due season we will reap, if we do not give up."
         </p>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.72rem",color:"rgba(255,200,150,0.4)",letterSpacing:"0.18em"}}>
-          GÁLATAS 6:9
+          GALATIANS 6:9
         </div>
       </div>
 
       {/* Encouragement */}
       <p style={{...vis("0.38s"),color:"rgba(255,180,180,0.5)",fontSize:"0.88rem",textAlign:"center",maxWidth:"28rem",lineHeight:1.75,marginBottom:"2rem"}}>
-        El ecosistema fue destruido... pero cada acto de cuidado importa.{" "}
-        <strong style={{color:"rgba(255,180,100,0.8)"}}>El bien siempre es más fuerte</strong> — ¡vuelve a intentarlo!
+        The ecosystem was destroyed... but every act of care matters.{" "}
+        <strong style={{color:"rgba(255,180,100,0.8)"}}>Good always prevails</strong> — try again!
       </p>
 
       {/* Teams summary */}
