@@ -1824,7 +1824,9 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
   }, []); // mount once; team data via refs
 
   return (
-    <canvas ref={canvasRef} style={{width:"100%",height:"100%",display:"block",background:"transparent"}} />
+    <div style={{ width: "100%", maxWidth: "100vw", overflowX: "auto", display: "flex", justifyContent: "center", paddingBottom: "15px", touchAction: "pan-x pan-y" }}>
+      <canvas ref={canvasRef} style={{ width: "100%", maxWidth: "1200px", minWidth: "800px", height: "auto", display: "block", background: "transparent" }} />
+    </div>
   );
 }
 
