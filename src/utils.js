@@ -2,7 +2,7 @@ const GS = `
   @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { font-size: clamp(14px, 1.4vw, 22px); }
-  body { overflow-x: hidden; }
+  body { overflow-x: hidden; overflow-y: auto; }
 
   /* 📱 RESPONSIVE RULES 📱 */
   @media (max-width: 768px) {
@@ -68,7 +68,6 @@ const GS = `
   @keyframes staggerIn { from{opacity:0;transform:translateY(28px) scale(0.96)} to{opacity:1;transform:translateY(0) scale(1)} }
   @keyframes pulseGlow { 0%,100%{box-shadow:0 8px 36px rgba(22,163,74,0.55),0 0 0 0 rgba(22,163,74,0.4)} 50%{box-shadow:0 8px 36px rgba(22,163,74,0.55),0 0 0 12px rgba(22,163,74,0)} }
   @keyframes splashOut { 0%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(1.06)} }
-  @keyframes slideUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
   @keyframes splashIconIn { 0%{opacity:0;transform:scale(0.2) rotate(-15deg)} 60%{transform:scale(1.15) rotate(4deg)} 100%{opacity:1;transform:scale(1) rotate(0deg)} }
   @keyframes splashLabelIn { from{opacity:0;letter-spacing:0.6em} to{opacity:1;letter-spacing:0.15em} }
   @keyframes victoryFloat { 0%{transform:translateY(0) rotate(0deg);opacity:0.7} 50%{transform:translateY(-18px) rotate(8deg);opacity:1} 100%{transform:translateY(0) rotate(0deg);opacity:0.7} }
