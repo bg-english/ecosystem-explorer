@@ -1388,6 +1388,54 @@ const ECOSYSTEMS = {
   }
 };
 // ═══════════════════════════════════════════════════
+// ORG_IMGS — fallback images for organisms not in identify pools
+// ═══════════════════════════════════════════════════
+const ORG_IMGS = {
+  "Acacia Tree":             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Acacia_in_Masai_Mara.jpg/300px-Acacia_in_Masai_Mara.jpg",
+  "American Mink":           "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Mink_-_East_Anglia.jpg/300px-Mink_-_East_Anglia.jpg",
+  "Arctic Hare":             "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Arctic_Hare_%28Lepus_arcticus%29.jpg/300px-Arctic_Hare_%28Lepus_arcticus%29.jpg",
+  "Arctic Lichen":           "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Cladonia_rangiferina_HD.jpg/300px-Cladonia_rangiferina_HD.jpg",
+  "Arctic Moss":             "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Calliergon_giganteum.jpg/300px-Calliergon_giganteum.jpg",
+  "Arctic Wolf":             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Arctic_Wolf_%28Canis_lupus_arctos%29.jpg/300px-Arctic_Wolf_%28Canis_lupus_arctos%29.jpg",
+  "Bluefin Tuna":            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Pacific_bluefin_tuna.jpg/300px-Pacific_bluefin_tuna.jpg",
+  "Boa Constrictor":         "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Boa_constrictor_%28Boa_constrictor%29.jpg/300px-Boa_constrictor_%28Boa_constrictor%29.jpg",
+  "Crayfish":                "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Procambarus_clarkii.jpg/300px-Procambarus_clarkii.jpg",
+  "Crown-of-Thorns Starfish":"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/CSIRO_ScienceImage_2917_Crown_of_Thorns_Starfish.jpg/300px-CSIRO_ScienceImage_2917_Crown_of_Thorns_Starfish.jpg",
+  "Desert Locust":           "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Locust_-_melbourne_zoo.jpg/300px-Locust_-_melbourne_zoo.jpg",
+  "Duckweed":                "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Lemna_minor_E.jpg/300px-Lemna_minor_E.jpg",
+  "Epiphytic Orchid":        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Maxillaria_variabilis.jpg/300px-Maxillaria_variabilis.jpg",
+  "Forest Fungi":            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Amanita_muscaria_3_vliegenzwammen_op_rij.jpg/300px-Amanita_muscaria_3_vliegenzwammen_op_rij.jpg",
+  "Giant Squid":             "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Giant_squid_LACM.jpg/300px-Giant_squid_LACM.jpg",
+  "Great Horned Owl":        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Bubo_virginianus_06.jpg/300px-Bubo_virginianus_06.jpg",
+  "Great White Shark":       "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/White_shark.jpg/300px-White_shark.jpg",
+  "Green Tree Frog":         "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Litoria_caerulea_White%27s_tree_frog.jpg/300px-Litoria_caerulea_White%27s_tree_frog.jpg",
+  "Grouper":                 "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Giant_grouper_hobbyaquarist.jpg/300px-Giant_grouper_hobbyaquarist.jpg",
+  "Howler Monkey":           "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Alouatta_seniculus.jpg/300px-Alouatta_seniculus.jpg",
+  "Kelp Forest":             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Kelp_forest_at_Monterey_Bay_Aquarium.jpg/300px-Kelp_forest_at_Monterey_Bay_Aquarium.jpg",
+  "Krill":                   "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Euphausia_superba.jpg/300px-Euphausia_superba.jpg",
+  "Leafcutter Ant":          "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Leafcutter_Ants.jpg/300px-Leafcutter_Ants.jpg",
+  "Lemming":                 "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Lemming-Norway.jpg/300px-Lemming-Norway.jpg",
+  "Leopard Seal":            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Leopard_seal_%28Hydrurga_leptonyx%29.jpg/300px-Leopard_seal_%28Hydrurga_leptonyx%29.jpg",
+  "Marine Bacteria":         "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/E_coli_at_10000x%2C_original.jpg/300px-E_coli_at_10000x%2C_original.jpg",
+  "Marsh Bacteria":          "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/E_coli_at_10000x%2C_original.jpg/300px-E_coli_at_10000x%2C_original.jpg",
+  "Mosquito Larva":          "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Culex_mosquito_larvae.jpg/300px-Culex_mosquito_larvae.jpg",
+  "Musk Ox":                 "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Musk_ox_2.jpg/300px-Musk_ox_2.jpg",
+  "Orca":                    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Killerwhales_jumping.jpg/300px-Killerwhales_jumping.jpg",
+  "Sardine":                 "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Sardines_in_Aquarium.jpg/300px-Sardines_in_Aquarium.jpg",
+  "Savanna Grass":           "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Themeda_triandra_Savanna.jpg/300px-Themeda_triandra_Savanna.jpg",
+  "Sea Turtle":              "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Chelonia_mydas_is_going_for_the_air.jpg/300px-Chelonia_mydas_is_going_for_the_air.jpg",
+  "Sea Urchin":              "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Sea_urchin_on_the_sea_bottom.jpg/300px-Sea_urchin_on_the_sea_bottom.jpg",
+  "Seagrass":                "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Seagrass_Posidonia.jpg/300px-Seagrass_Posidonia.jpg",
+  "Soil Bacteria":           "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/E_coli_at_10000x%2C_original.jpg/300px-E_coli_at_10000x%2C_original.jpg",
+  "Termite":                 "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Termite_-_Coptotermes_formosanus_shiraki_USGov_k8204-7.jpg/300px-Termite_-_Coptotermes_formosanus_shiraki_USGov_k8204-7.jpg",
+  "Thomson's Gazelle":       "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Eudorcas_thomsonii.jpg/300px-Eudorcas_thomsonii.jpg",
+  "Toucan":                  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Toucan_Can%C3%A7%C3%A3o.jpg/300px-Toucan_Can%C3%A7%C3%A3o.jpg",
+  "Tundra Bacteria":         "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/E_coli_at_10000x%2C_original.jpg/300px-E_coli_at_10000x%2C_original.jpg",
+  "Wildebeest":              "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Wildebeest_herds_in_the_Serengeti%2C_Tanzania.jpg/300px-Wildebeest_herds_in_the_Serengeti%2C_Tanzania.jpg",
+  "Wolverine":               "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Wolverine_-_Glutton.jpg/300px-Wolverine_-_Glutton.jpg",
+};
+
+// ═══════════════════════════════════════════════════
 // ISOMETRIC BOARD (Canvas — Prisma Quest engine)
 // ═══════════════════════════════════════════════════
 
@@ -3083,6 +3131,13 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
     { label:"Decomposer",         icon:"🦠", color:"#a78bfa", desc:"Breaks down dead organic matter" },
   ];
 
+  // Build image lookup: identify answers + ORG_IMGS fallback
+  const imgLookup = useMemo(() => {
+    const m = { ...ORG_IMGS };
+    (eco.challenges.identify || []).forEach(item => { if (item.img) m[item.answer] = item.img; });
+    return m;
+  }, [eco]);
+
   const [shuffledOrgs] = useState(() => shuffle([...eco.organisms]));
   const [placements, setPlacements] = useState({});
   const [selected, setSelected] = useState(null);
@@ -3135,6 +3190,67 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
   const unplaced = shuffledOrgs.filter(o => !placements[o.id]);
   const allPlaced = unplaced.length === 0;
 
+  // Organism card — used both in unplaced pool and in trophic rows
+  const OrgCard = ({ org, isSelected, onClick, compact, correctState }) => {
+    const img = imgLookup[org.name];
+    const borderColor = correctState === "correct" ? "#4ade80"
+                      : correctState === "wrong"   ? "#f87171"
+                      : isSelected                 ? "#fb923c"
+                      : "rgba(255,255,255,0.15)";
+    const bg = correctState === "correct" ? "rgba(34,197,94,0.18)"
+             : correctState === "wrong"   ? "rgba(239,68,68,0.18)"
+             : isSelected                 ? "rgba(251,146,60,0.22)"
+             : "rgba(255,255,255,0.06)";
+    return (
+      <div onClick={onClick} style={{
+        display:"flex", flexDirection: compact ? "row" : "column",
+        alignItems:"center",
+        gap: compact ? 5 : 3,
+        padding: compact ? "4px 8px" : "6px 8px",
+        borderRadius:10,
+        background: bg,
+        border:"1.5px solid "+borderColor,
+        cursor: submitted ? "default" : "pointer",
+        transition:"all 0.15s",
+        transform: isSelected ? "scale(1.06)" : "scale(1)",
+        boxShadow: isSelected ? "0 0 10px rgba(251,146,60,0.4)" : "none",
+        animation: correctState ? "popIn 0.3s ease" : undefined,
+        minWidth: compact ? 0 : 68,
+        maxWidth: compact ? 160 : 80,
+        flexShrink: 0,
+      }}>
+        {img ? (
+          <img src={img} alt={org.name} style={{
+            width: compact ? 26 : 52, height: compact ? 26 : 52,
+            objectFit:"cover", borderRadius: compact ? 5 : 8,
+            border:"1px solid rgba(255,255,255,0.1)", flexShrink:0,
+          }} onError={e => { e.target.style.display="none"; e.target.nextSibling.style.display="flex"; }} />
+        ) : null}
+        <span style={{
+          fontSize: img ? (compact ? 0 : 0) : (compact ? 18 : 28),
+          display: img ? "none" : "flex",
+          alignItems:"center", justifyContent:"center",
+          width: compact ? 26 : 52, height: compact ? 26 : 52,
+          background:"rgba(255,255,255,0.06)", borderRadius: compact ? 5 : 8, flexShrink:0,
+        }}>{org.emoji}</span>
+        <div style={{display:"flex", flexDirection:"column", alignItems: compact ? "flex-start" : "center", gap:1, minWidth:0}}>
+          <span style={{
+            fontFamily:"'Cinzel',serif", fontSize: compact ? 10 : 9,
+            color: correctState==="correct" ? "#4ade80" : correctState==="wrong" ? "#f87171" : isSelected ? "#fdba74" : "rgba(255,255,255,0.82)",
+            fontWeight:700, textAlign: compact ? "left" : "center",
+            whiteSpace: compact ? "nowrap" : "normal",
+            overflow:"hidden", textOverflow:"ellipsis", maxWidth: compact ? 110 : 72,
+          }}>{org.name}</span>
+          {!compact && !submitted && <span style={{fontSize:8, color:"rgba(255,255,255,0.25)"}}>{org.role.split(" ")[0]}</span>}
+          {submitted && correctState==="correct" && <span style={{fontSize:9,color:"#4ade80"}}>✓</span>}
+          {submitted && correctState==="wrong"   && <span style={{fontSize:9,color:"#f87171"}}>✗ {org.role}</span>}
+          {!submitted && !compact && isSelected && <span style={{fontSize:8,color:"#fb923c"}}>selected</span>}
+        </div>
+        {!submitted && compact && <span style={{color:"rgba(255,255,255,0.18)",fontSize:9,marginLeft:2}}>×</span>}
+      </div>
+    );
+  };
+
   return (
     <div>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12,gap:10}}>
@@ -3153,21 +3269,10 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
           <div style={{fontSize:10,letterSpacing:"0.2em",color:"rgba(255,255,255,0.35)",marginBottom:6}}>
             ORGANISMS TO PLACE ({unplaced.length} remaining)
           </div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:6,minHeight:36}}>
+          <div style={{display:"flex",flexWrap:"wrap",gap:7,minHeight:40}}>
             {unplaced.map(org=>(
-              <button key={org.id} onClick={()=>setSelected(prev=>prev===org.id?null:org.id)} style={{
-                padding:"6px 11px",borderRadius:10,cursor:"pointer",
-                background:selected===org.id?"rgba(251,146,60,0.28)":"rgba(255,255,255,0.07)",
-                border:"1.5px solid "+(selected===org.id?"#fb923c":"rgba(255,255,255,0.12)"),
-                color:"#fff",fontSize:13,
-                transform:selected===org.id?"scale(1.06)":"scale(1)",
-                transition:"all 0.15s",
-                display:"flex",alignItems:"center",gap:6,
-                boxShadow:selected===org.id?"0 0 10px rgba(251,146,60,0.35)":"none",
-              }}>
-                <span>{org.emoji}</span>
-                <span style={{fontFamily:"'Cinzel',serif",fontSize:10,color:selected===org.id?"#fdba74":"rgba(255,255,255,0.75)"}}>{org.name}</span>
-              </button>
+              <OrgCard key={org.id} org={org} isSelected={selected===org.id}
+                onClick={()=>setSelected(prev=>prev===org.id?null:org.id)} compact={false} />
             ))}
             {allPlaced&&<span style={{fontSize:12,color:"#4ade80",animation:"popIn 0.4s ease",display:"flex",alignItems:"center",gap:5}}>✓ All placed! Submit when ready.</span>}
           </div>
@@ -3199,24 +3304,11 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
               </div>
               <div style={{display:"flex",flexWrap:"wrap",gap:5,flex:1}}>
                 {orgsHere.map(org=>{
-                  const correct=submitted&&org.role===level.label;
-                  const wrong=submitted&&org.role!==level.label;
+                  const correctState = submitted ? (org.role===level.label?"correct":"wrong") : undefined;
                   return(
-                    <div key={org.id} onClick={e=>{e.stopPropagation();removePlacement(org.id);}} style={{
-                      padding:"4px 8px",borderRadius:7,
-                      background:correct?"rgba(34,197,94,0.22)":wrong?"rgba(239,68,68,0.22)":"rgba(255,255,255,0.1)",
-                      border:"1px solid "+(correct?"rgba(34,197,94,0.33)":wrong?"rgba(239,68,68,0.33)":"rgba(255,255,255,0.18)"),
-                      fontSize:12,color:"#fff",
-                      cursor:submitted?"default":"pointer",
-                      display:"flex",alignItems:"center",gap:4,
-                      animation:"popIn 0.3s ease",
-                    }}>
-                      <span>{org.emoji}</span>
-                      <span style={{fontSize:10,fontFamily:"'Cinzel',serif",color:correct?"#4ade80":wrong?"#f87171":"rgba(255,255,255,0.8)"}}>{org.name}</span>
-                      {correct&&<span style={{color:"#4ade80",fontSize:11}}>✓</span>}
-                      {wrong&&<span style={{color:"#f87171",fontSize:11}}>✗</span>}
-                      {!submitted&&<span style={{color:"rgba(255,255,255,0.2)",fontSize:9,marginLeft:1}}>×</span>}
-                    </div>
+                    <OrgCard key={org.id} org={org} isSelected={false} compact={true}
+                      onClick={e=>{e.stopPropagation();removePlacement(org.id);}}
+                      correctState={correctState} />
                   );
                 })}
                 {orgsHere.length===0&&isClickable&&(
@@ -3274,7 +3366,6 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
     </div>
   );
 }
-
 // ── WOW FACTS MODAL ────────────────────────────────
 function WowFactsModal({ fact, ecosystem, context, onDone }) {
   const eco = ECOSYSTEMS[ecosystem.id];
