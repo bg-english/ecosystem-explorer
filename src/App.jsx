@@ -1388,54 +1388,6 @@ const ECOSYSTEMS = {
   }
 };
 // ═══════════════════════════════════════════════════
-// ORG_IMGS — fallback images for organisms not in identify pools
-// ═══════════════════════════════════════════════════
-const ORG_IMGS = {
-  "Acacia Tree":             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Acacia_in_Masai_Mara.jpg/300px-Acacia_in_Masai_Mara.jpg",
-  "American Mink":           "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Mink_-_East_Anglia.jpg/300px-Mink_-_East_Anglia.jpg",
-  "Arctic Hare":             "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Arctic_Hare_%28Lepus_arcticus%29.jpg/300px-Arctic_Hare_%28Lepus_arcticus%29.jpg",
-  "Arctic Lichen":           "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Cladonia_rangiferina_HD.jpg/300px-Cladonia_rangiferina_HD.jpg",
-  "Arctic Moss":             "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Calliergon_giganteum.jpg/300px-Calliergon_giganteum.jpg",
-  "Arctic Wolf":             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Arctic_Wolf_%28Canis_lupus_arctos%29.jpg/300px-Arctic_Wolf_%28Canis_lupus_arctos%29.jpg",
-  "Bluefin Tuna":            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Pacific_bluefin_tuna.jpg/300px-Pacific_bluefin_tuna.jpg",
-  "Boa Constrictor":         "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Boa_constrictor_%28Boa_constrictor%29.jpg/300px-Boa_constrictor_%28Boa_constrictor%29.jpg",
-  "Crayfish":                "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Procambarus_clarkii.jpg/300px-Procambarus_clarkii.jpg",
-  "Crown-of-Thorns Starfish":"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/CSIRO_ScienceImage_2917_Crown_of_Thorns_Starfish.jpg/300px-CSIRO_ScienceImage_2917_Crown_of_Thorns_Starfish.jpg",
-  "Desert Locust":           "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Locust_-_melbourne_zoo.jpg/300px-Locust_-_melbourne_zoo.jpg",
-  "Duckweed":                "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Lemna_minor_E.jpg/300px-Lemna_minor_E.jpg",
-  "Epiphytic Orchid":        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Maxillaria_variabilis.jpg/300px-Maxillaria_variabilis.jpg",
-  "Forest Fungi":            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Amanita_muscaria_3_vliegenzwammen_op_rij.jpg/300px-Amanita_muscaria_3_vliegenzwammen_op_rij.jpg",
-  "Giant Squid":             "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Giant_squid_LACM.jpg/300px-Giant_squid_LACM.jpg",
-  "Great Horned Owl":        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Bubo_virginianus_06.jpg/300px-Bubo_virginianus_06.jpg",
-  "Great White Shark":       "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/White_shark.jpg/300px-White_shark.jpg",
-  "Green Tree Frog":         "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Litoria_caerulea_White%27s_tree_frog.jpg/300px-Litoria_caerulea_White%27s_tree_frog.jpg",
-  "Grouper":                 "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Giant_grouper_hobbyaquarist.jpg/300px-Giant_grouper_hobbyaquarist.jpg",
-  "Howler Monkey":           "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Alouatta_seniculus.jpg/300px-Alouatta_seniculus.jpg",
-  "Kelp Forest":             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Kelp_forest_at_Monterey_Bay_Aquarium.jpg/300px-Kelp_forest_at_Monterey_Bay_Aquarium.jpg",
-  "Krill":                   "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Euphausia_superba.jpg/300px-Euphausia_superba.jpg",
-  "Leafcutter Ant":          "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Leafcutter_Ants.jpg/300px-Leafcutter_Ants.jpg",
-  "Lemming":                 "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Lemming-Norway.jpg/300px-Lemming-Norway.jpg",
-  "Leopard Seal":            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Leopard_seal_%28Hydrurga_leptonyx%29.jpg/300px-Leopard_seal_%28Hydrurga_leptonyx%29.jpg",
-  "Marine Bacteria":         "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/E_coli_at_10000x%2C_original.jpg/300px-E_coli_at_10000x%2C_original.jpg",
-  "Marsh Bacteria":          "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/E_coli_at_10000x%2C_original.jpg/300px-E_coli_at_10000x%2C_original.jpg",
-  "Mosquito Larva":          "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Culex_mosquito_larvae.jpg/300px-Culex_mosquito_larvae.jpg",
-  "Musk Ox":                 "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Musk_ox_2.jpg/300px-Musk_ox_2.jpg",
-  "Orca":                    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Killerwhales_jumping.jpg/300px-Killerwhales_jumping.jpg",
-  "Sardine":                 "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Sardines_in_Aquarium.jpg/300px-Sardines_in_Aquarium.jpg",
-  "Savanna Grass":           "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Themeda_triandra_Savanna.jpg/300px-Themeda_triandra_Savanna.jpg",
-  "Sea Turtle":              "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Chelonia_mydas_is_going_for_the_air.jpg/300px-Chelonia_mydas_is_going_for_the_air.jpg",
-  "Sea Urchin":              "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Sea_urchin_on_the_sea_bottom.jpg/300px-Sea_urchin_on_the_sea_bottom.jpg",
-  "Seagrass":                "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Seagrass_Posidonia.jpg/300px-Seagrass_Posidonia.jpg",
-  "Soil Bacteria":           "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/E_coli_at_10000x%2C_original.jpg/300px-E_coli_at_10000x%2C_original.jpg",
-  "Termite":                 "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Termite_-_Coptotermes_formosanus_shiraki_USGov_k8204-7.jpg/300px-Termite_-_Coptotermes_formosanus_shiraki_USGov_k8204-7.jpg",
-  "Thomson's Gazelle":       "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Eudorcas_thomsonii.jpg/300px-Eudorcas_thomsonii.jpg",
-  "Toucan":                  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Toucan_Can%C3%A7%C3%A3o.jpg/300px-Toucan_Can%C3%A7%C3%A3o.jpg",
-  "Tundra Bacteria":         "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/E_coli_at_10000x%2C_original.jpg/300px-E_coli_at_10000x%2C_original.jpg",
-  "Wildebeest":              "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Wildebeest_herds_in_the_Serengeti%2C_Tanzania.jpg/300px-Wildebeest_herds_in_the_Serengeti%2C_Tanzania.jpg",
-  "Wolverine":               "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Wolverine_-_Glutton.jpg/300px-Wolverine_-_Glutton.jpg",
-};
-
-// ═══════════════════════════════════════════════════
 // ISOMETRIC BOARD (Canvas — Prisma Quest engine)
 // ═══════════════════════════════════════════════════
 
@@ -2129,7 +2081,7 @@ function GenesisScreen({ teams, onStart }) {
                 <div style={{textAlign:"center",animation:"popIn 0.4s ease"}}>
                   <div style={{fontSize:13,color:"#f87171",marginBottom:4}}>✗ Incorrect — {chosen.name} loses their turn</div>
                   <div style={{fontSize:11,color:"rgba(200,180,120,0.5)"}}>{GENESIS_Q.ref}</div>
-                  <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginTop:6,letterSpacing:"0.2em"}}>SPINNING AGAIN…</div>
+                  <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginTop:6,letterSpacing:"0.2em"}}>GIRANDO DE NUEVO…</div>
                 </div>
               )}
             </div>
@@ -3008,21 +2960,8 @@ function TrueFalseChallenge({ data, onResult, timeLimit=20 }) {
           transform:sel===false&&!answered?"scale(1.04)":"scale(1)",
         }}>❌ FALSE</button>
       </div>
-      {answered && sel === data.answer && (
-        <div style={{padding:"11px 16px",background:"rgba(22,163,74,0.1)",border:"1px solid rgba(22,163,74,0.3)",borderRadius:10,fontSize:13,color:"rgba(134,239,172,0.9)",lineHeight:1.6}}>
-          ✓ That's correct!
-        </div>
-      )}
-      {answered && sel !== data.answer && data.correction && (
-        <div style={{padding:"11px 16px",background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:10,fontSize:13,color:"rgba(252,165,165,0.9)",lineHeight:1.6}}>
-          🔎 {data.correction}
-        </div>
-      )}
-      {answered && sel !== data.answer && !data.correction && (
-        <div style={{padding:"11px 16px",background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:10,fontSize:13,color:"rgba(252,165,165,0.9)",lineHeight:1.6}}>
-          ✗ The correct answer is {data.answer ? "TRUE" : "FALSE"}.
-        </div>
-      )}
+      {answered&&data.correction&&!data.answer&&<div style={{padding:"11px 16px",background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:10,fontSize:13,color:"rgba(252,165,165,0.9)",lineHeight:1.6}}>🔎 {data.correction}</div>}
+      {answered&&data.answer&&<div style={{padding:"11px 16px",background:"rgba(22,163,74,0.1)",border:"1px solid rgba(22,163,74,0.3)",borderRadius:10,fontSize:13,color:"rgba(134,239,172,0.9)",lineHeight:1.6}}>✓ That's correct!</div>}
     </div>
   );
 }
@@ -3133,70 +3072,6 @@ function UnscrambleChallenge({ data, onResult, timeLimit=45 }) {
   );
 }
 
-// ── ORG CARD (module-level — must NOT be defined inside FoodWebChallenge
-//    or React will unmount/remount it on every timer tick causing image flicker) ──
-function OrgCard({ org, imgLookup, submitted, isSelected, onClick, compact, correctState }) {
-  const [imgFailed, setImgFailed] = useState(false);
-  const img = imgLookup[org.name];
-  const showImg = img && !imgFailed;
-  const borderColor = correctState === "correct" ? "#4ade80"
-                    : correctState === "wrong"   ? "#f87171"
-                    : isSelected                 ? "#fb923c"
-                    : "rgba(255,255,255,0.15)";
-  const bg = correctState === "correct" ? "rgba(34,197,94,0.18)"
-           : correctState === "wrong"   ? "rgba(239,68,68,0.18)"
-           : isSelected                 ? "rgba(251,146,60,0.22)"
-           : "rgba(255,255,255,0.06)";
-  return (
-    <div onClick={onClick} style={{
-      display:"flex", flexDirection: compact ? "row" : "column",
-      alignItems:"center",
-      gap: compact ? 5 : 3,
-      padding: compact ? "4px 8px" : "6px 8px",
-      borderRadius:10,
-      background: bg,
-      border:"1.5px solid "+borderColor,
-      cursor: submitted ? "default" : "pointer",
-      transition:"all 0.15s",
-      transform: isSelected ? "scale(1.06)" : "scale(1)",
-      boxShadow: isSelected ? "0 0 10px rgba(251,146,60,0.4)" : "none",
-      animation: correctState ? "popIn 0.3s ease" : undefined,
-      minWidth: compact ? 0 : 68,
-      maxWidth: compact ? 160 : 80,
-      flexShrink: 0,
-    }}>
-      {showImg ? (
-        <img src={img} alt={org.name} style={{
-          width: compact ? 26 : 52, height: compact ? 26 : 52,
-          objectFit:"cover", borderRadius: compact ? 5 : 8,
-          border:"1px solid rgba(255,255,255,0.1)", flexShrink:0,
-        }} onError={() => setImgFailed(true)} />
-      ) : null}
-      <span style={{
-        fontSize: showImg ? 0 : (compact ? 18 : 28),
-        display: showImg ? "none" : "flex",
-        alignItems:"center", justifyContent:"center",
-        width: compact ? 26 : 52, height: compact ? 26 : 52,
-        background:"rgba(255,255,255,0.06)", borderRadius: compact ? 5 : 8, flexShrink:0,
-      }}>{org.emoji}</span>
-      <div style={{display:"flex", flexDirection:"column", alignItems: compact ? "flex-start" : "center", gap:1, minWidth:0}}>
-        <span style={{
-          fontFamily:"'Cinzel',serif", fontSize: compact ? 10 : 9,
-          color: correctState==="correct" ? "#4ade80" : correctState==="wrong" ? "#f87171" : isSelected ? "#fdba74" : "rgba(255,255,255,0.82)",
-          fontWeight:700, textAlign: compact ? "left" : "center",
-          whiteSpace: compact ? "nowrap" : "normal",
-          overflow:"hidden", textOverflow:"ellipsis", maxWidth: compact ? 110 : 72,
-        }}>{org.name}</span>
-        {!compact && !submitted && <span style={{fontSize:8, color:"rgba(255,255,255,0.25)"}}>{org.role.split(" ")[0]}</span>}
-        {submitted && correctState==="correct" && <span style={{fontSize:9,color:"#4ade80"}}>✓</span>}
-        {submitted && correctState==="wrong"   && <span style={{fontSize:9,color:"#f87171"}}>✗ {org.role}</span>}
-        {!submitted && !compact && isSelected && <span style={{fontSize:8,color:"#fb923c"}}>selected</span>}
-      </div>
-      {!submitted && compact && <span style={{color:"rgba(255,255,255,0.18)",fontSize:9,marginLeft:2}}>×</span>}
-    </div>
-  );
-}
-
 // ── FOOD WEB CHALLENGE ─────────────────────────────
 function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
   const eco = ECOSYSTEMS[ecosystem.id];
@@ -3208,13 +3083,6 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
     { label:"Decomposer",         icon:"🦠", color:"#a78bfa", desc:"Breaks down dead organic matter" },
   ];
 
-  // Build image lookup: identify answers + ORG_IMGS fallback
-  const imgLookup = useMemo(() => {
-    const m = { ...ORG_IMGS };
-    (eco.challenges.identify || []).forEach(item => { if (item.img) m[item.answer] = item.img; });
-    return m;
-  }, [eco]);
-
   const [shuffledOrgs] = useState(() => shuffle([...eco.organisms]));
   const [placements, setPlacements] = useState({});
   const [selected, setSelected] = useState(null);
@@ -3224,11 +3092,9 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
 
   const placementsRef = useRef({});
   const submittedRef = useRef(false);
-  const timerRef = useRef(null);
 
   const doSubmit = (pl) => {
     if (submittedRef.current) return;
-    clearInterval(timerRef.current);
     submittedRef.current = true;
     setSubmitted(true);
     setSelected(null);
@@ -3242,13 +3108,13 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
   };
 
   useEffect(() => {
-    timerRef.current = setInterval(() => {
+    const iv = setInterval(() => {
       setTimeLeft(t => {
-        if (t <= 1) { clearInterval(timerRef.current); doSubmit(placementsRef.current); return 0; }
+        if (t <= 1) { clearInterval(iv); doSubmit(placementsRef.current); return 0; }
         return t - 1;
       });
     }, 1000);
-    return () => clearInterval(timerRef.current);
+    return () => clearInterval(iv);
   }, []);
 
   const updatePlacement = (orgId, levelLabel) => {
@@ -3287,10 +3153,21 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
           <div style={{fontSize:10,letterSpacing:"0.2em",color:"rgba(255,255,255,0.35)",marginBottom:6}}>
             ORGANISMS TO PLACE ({unplaced.length} remaining)
           </div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:7,minHeight:40}}>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6,minHeight:36}}>
             {unplaced.map(org=>(
-              <OrgCard key={org.id} org={org} imgLookup={imgLookup} submitted={submitted} isSelected={selected===org.id}
-                onClick={()=>setSelected(prev=>prev===org.id?null:org.id)} compact={false} />
+              <button key={org.id} onClick={()=>setSelected(prev=>prev===org.id?null:org.id)} style={{
+                padding:"6px 11px",borderRadius:10,cursor:"pointer",
+                background:selected===org.id?"rgba(251,146,60,0.28)":"rgba(255,255,255,0.07)",
+                border:"1.5px solid "+(selected===org.id?"#fb923c":"rgba(255,255,255,0.12)"),
+                color:"#fff",fontSize:13,
+                transform:selected===org.id?"scale(1.06)":"scale(1)",
+                transition:"all 0.15s",
+                display:"flex",alignItems:"center",gap:6,
+                boxShadow:selected===org.id?"0 0 10px rgba(251,146,60,0.35)":"none",
+              }}>
+                <span>{org.emoji}</span>
+                <span style={{fontFamily:"'Cinzel',serif",fontSize:10,color:selected===org.id?"#fdba74":"rgba(255,255,255,0.75)"}}>{org.name}</span>
+              </button>
             ))}
             {allPlaced&&<span style={{fontSize:12,color:"#4ade80",animation:"popIn 0.4s ease",display:"flex",alignItems:"center",gap:5}}>✓ All placed! Submit when ready.</span>}
           </div>
@@ -3322,11 +3199,24 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
               </div>
               <div style={{display:"flex",flexWrap:"wrap",gap:5,flex:1}}>
                 {orgsHere.map(org=>{
-                  const correctState = submitted ? (org.role===level.label?"correct":"wrong") : undefined;
+                  const correct=submitted&&org.role===level.label;
+                  const wrong=submitted&&org.role!==level.label;
                   return(
-                    <OrgCard key={org.id} org={org} imgLookup={imgLookup} submitted={submitted} isSelected={false} compact={true}
-                      onClick={e=>{e.stopPropagation();removePlacement(org.id);}}
-                      correctState={correctState} />
+                    <div key={org.id} onClick={e=>{e.stopPropagation();removePlacement(org.id);}} style={{
+                      padding:"4px 8px",borderRadius:7,
+                      background:correct?"rgba(34,197,94,0.22)":wrong?"rgba(239,68,68,0.22)":"rgba(255,255,255,0.1)",
+                      border:"1px solid "+(correct?"rgba(34,197,94,0.33)":wrong?"rgba(239,68,68,0.33)":"rgba(255,255,255,0.18)"),
+                      fontSize:12,color:"#fff",
+                      cursor:submitted?"default":"pointer",
+                      display:"flex",alignItems:"center",gap:4,
+                      animation:"popIn 0.3s ease",
+                    }}>
+                      <span>{org.emoji}</span>
+                      <span style={{fontSize:10,fontFamily:"'Cinzel',serif",color:correct?"#4ade80":wrong?"#f87171":"rgba(255,255,255,0.8)"}}>{org.name}</span>
+                      {correct&&<span style={{color:"#4ade80",fontSize:11}}>✓</span>}
+                      {wrong&&<span style={{color:"#f87171",fontSize:11}}>✗</span>}
+                      {!submitted&&<span style={{color:"rgba(255,255,255,0.2)",fontSize:9,marginLeft:1}}>×</span>}
+                    </div>
                   );
                 })}
                 {orgsHere.length===0&&isClickable&&(
@@ -3384,6 +3274,7 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
     </div>
   );
 }
+
 // ── WOW FACTS MODAL ────────────────────────────────
 function WowFactsModal({ fact, ecosystem, context, onDone }) {
   const eco = ECOSYSTEMS[ecosystem.id];
@@ -3522,7 +3413,7 @@ function WowFactsModal({ fact, ecosystem, context, onDone }) {
 }
 
 // ── CHALLENGE MODAL ────────────────────────────────
-function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, challenge, isRestoration }) {
+function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, challenge }) {
   const eco=ECOSYSTEMS[ecosystem.id];
   const ct=CT[cell.type];
   const [result,setResult]=useState(null);
@@ -3592,7 +3483,7 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
           <h3 style={{fontFamily:"'Cinzel',serif",fontSize:"1.5rem",color:result?"#4ade80":"#f87171",marginBottom:"0.5rem"}}>{result?"Correct!":"No point this time"}</h3>
           {result&&org&&(
             <div style={{background:"rgba(34,197,94,0.1)",border:"1px solid #22c55e44",borderRadius:"0.9rem",padding:"1rem 1.2rem",margin:"1rem 0",animation:"popIn 0.5s ease 0.2s both"}}>
-              <div style={{fontSize:"0.75rem",color:"#4ade80",letterSpacing:"0.2em",marginBottom:"0.4rem"}}>✨ ORGANISM UNLOCKED</div>
+              <div style={{fontSize:"0.75rem",color:"#4ade80",letterSpacing:"0.2em",marginBottom:"0.4rem"}}>✨ ORGANISMO DESBLOQUEADO</div>
               <div style={{fontSize:"2.8rem",marginBottom:"0.3rem"}}>{org.emoji}</div>
               <div style={{fontFamily:"'Cinzel',serif",fontSize:"1rem",color:"#fff",fontWeight:700}}>{org.name}</div>
               <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.5)",marginTop:"0.3rem"}}>{org.role}</div>
@@ -3658,7 +3549,7 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
           {cell.type==="match"&&<MatchChallenge data={challenge} onResult={setResult} timeLimit={30} />}
           {cell.type==="unscramble"&&<UnscrambleChallenge data={challenge} onResult={setResult} timeLimit={45} />}
           {cell.type==="truefalse"&&<TrueFalseChallenge data={challenge} onResult={setResult} timeLimit={20} />}
-          {cell.type==="foodweb"&&<FoodWebChallenge ecosystem={ecosystem} onResult={setResult} isRestoration={isRestoration} />}
+          {cell.type==="foodweb"&&<FoodWebChallenge ecosystem={ecosystem} onResult={setResult} />}
         </div>
       </div>
     </div>
@@ -3715,7 +3606,7 @@ function WildcardModal({ cell, resolved, teams, curIdx, onDone }) {
 }
 
 // ── TEAM PANEL ─────────────────────────────────────
-const TeamPanel = React.memo(function TeamPanel({ teams, currentTeamIdx, ecosystem }) {
+function TeamPanel({ teams, currentTeamIdx, ecosystem }) {
   const eco=ECOSYSTEMS[ecosystem.id];
   return(
     <div style={{display:"flex",flexDirection:"column",gap:"0.7rem",overflowY:"auto",maxHeight:"100%"}}>
@@ -3794,6 +3685,7 @@ const TeamPanel = React.memo(function TeamPanel({ teams, currentTeamIdx, ecosyst
                     opacity:has?1:0.18,
                     transition:"all 0.4s ease",
                     boxShadow:has?`0 0 8px ${tc.bg}44`:"none",
+                    animation:has?"popIn 0.4s ease":undefined,
                   }}>{org.emoji}</div>
                 );
               })}
@@ -3803,7 +3695,7 @@ const TeamPanel = React.memo(function TeamPanel({ teams, currentTeamIdx, ecosyst
       })}
     </div>
   );
-});
+}
 
 // ── DICE ───────────────────────────────────────────
 const DICE_DOTS = {
@@ -3932,19 +3824,11 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     return pool[idx];
   };
 
-  // Non-repeating WOW facts queue (one shuffled deck per ecosystem)
-  const wowQueues = useRef({});
-
   // Show a random WOW fact for the current ecosystem, then run callback on dismiss
   const showWow = (context, callback) => {
     const facts = WOW_FACTS[ecosystem.id] || [];
     if (facts.length === 0) { callback(); return; }
-    const ecoId = ecosystem.id;
-    if (!wowQueues.current[ecoId] || wowQueues.current[ecoId].length === 0) {
-      wowQueues.current[ecoId] = shuffle([...Array(facts.length).keys()]);
-    }
-    const idx = wowQueues.current[ecoId].pop();
-    const fact = facts[idx];
+    const fact = facts[Math.floor(Math.random() * facts.length)];
     wowCallbackRef.current = callback;
     setWowModal({ fact, context });
   };
@@ -4021,23 +3905,11 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const handleWildcardDone=()=>{
     const cell=activeCell;if(!cell){nextTurn();return;}
     const res=wildcardResolved;
-    if(cell.fx==="advance"){
-      let landedOnCenter = false;
-      setTeams(p=>{
-        const u=[...p];
-        const newPos=Math.min(u[curIdx].position+cell.val,N_BOARD-1);
-        u[curIdx]={...u[curIdx],position:newPos};
-        if(board[newPos].type==="center") landedOnCenter=true;
-        return u;
-      });
-      setActiveCell(null);setWildcardResolved(null);
-      if(landedOnCenter){showWow("victory",()=>setPhase("center"));return;}
-      nextTurn();return;
-    }
+    if(cell.fx==="advance")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],position:Math.min(u[curIdx].position+cell.val,N_BOARD-1)};return u;});
     else if(cell.fx==="back")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],position:Math.max(0,u[curIdx].position-cell.val)};return u;});
     else if(cell.fx==="skip")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],skipNext:true};return u;});
     else if(cell.fx==="free"&&res?.org)setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,res.org]};return u;});
-    else if(cell.fx==="steal"&&res?.org&&res?.fromTeam){setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,res.org]};const fromIdx=u.findIndex(t=>t.id===res.fromTeam.id);if(fromIdx!==-1){u[fromIdx]={...u[fromIdx],organisms:u[fromIdx].organisms.filter(o=>o.id!==res.org.id)};}return u;});}
+    else if(cell.fx==="steal"&&res?.org&&res?.fromTeam){setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,res.org]};u[res.fromTeam.id]={...u[res.fromTeam.id],organisms:u[res.fromTeam.id].organisms.filter(o=>o.id!==res.org.id)};return u;});}
     else if(cell.fx==="double")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],doubleNext:true};return u;});
     setActiveCell(null);setWildcardResolved(null);nextTurn();
   };
@@ -4061,12 +3933,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const nextTurn=()=>{
     setPhase("idle");setDiceVal(null);setTurn(t=>t+1);
     let next=(curIdx+1)%teams.length;
-    let safetyCounter = 0;
-    while(teams[next]?.skipNext && safetyCounter < teams.length){
-      setTeams(p=>{const u=[...p];u[next]={...u[next],skipNext:false};return u;});
-      next=(next+1)%teams.length;
-      safetyCounter++;
-    }
+    if(teams[next]?.skipNext){setTeams(p=>{const u=[...p];u[next]={...u[next],skipNext:false};return u;});next=(next+1)%teams.length;}
     setCurIdx(next);
   };
 
@@ -4281,7 +4148,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
         </div>
       </div>
 
-      {phase==="challenge"&&activeCell&&<ChallengeModal cell={activeCell} ecosystem={ecosystem} team={curTeam} pendingOrganism={pendingOrg} onResult={handleChallengeResult} challenge={activeChallenge} isRestoration={collapseEmergency !== null} />}
+      {phase==="challenge"&&activeCell&&<ChallengeModal cell={activeCell} ecosystem={ecosystem} team={curTeam} pendingOrganism={pendingOrg} onResult={handleChallengeResult} challenge={activeChallenge} />}
       {phase==="wildcard"&&activeCell&&<WildcardModal cell={activeCell} resolved={wildcardResolved} teams={teams} curIdx={curIdx} onDone={handleWildcardDone} />}
       {wowModal&&<WowFactsModal fact={wowModal.fact} ecosystem={ecosystem} context={wowModal.context} onDone={handleWowDone} />}
 
@@ -4449,17 +4316,17 @@ function EcosystemDestroyedScreen({ ecosystem, teams, onRestart }) {
       <div style={{...vis("0.3s"),maxWidth:"32rem",width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"1.2rem",padding:"1.6rem 2rem",marginBottom:"1.8rem",textAlign:"center",backdropFilter:"blur(4px)"}}>
         <div style={{fontSize:"1.5rem",marginBottom:"0.7rem"}}>✝️</div>
         <p style={{fontStyle:"italic",color:"rgba(255,230,200,0.85)",fontSize:"0.98rem",lineHeight:1.85,margin:"0 0 0.8rem 0",fontFamily:"'Libre Baskerville',serif"}}>
-          "Let us not grow weary of doing good, for in due season we will reap, if we do not give up."
+          "No nos cansemos de hacer el bien, porque a su debido tiempo cosecharemos si no nos damos por vencidos."
         </p>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:"0.72rem",color:"rgba(255,200,150,0.4)",letterSpacing:"0.18em"}}>
-          GALATIANS 6:9
+          GÁLATAS 6:9
         </div>
       </div>
 
       {/* Encouragement */}
       <p style={{...vis("0.38s"),color:"rgba(255,180,180,0.5)",fontSize:"0.88rem",textAlign:"center",maxWidth:"28rem",lineHeight:1.75,marginBottom:"2rem"}}>
-        The ecosystem was destroyed... but every act of care matters.{" "}
-        <strong style={{color:"rgba(255,180,100,0.8)"}}>Good always prevails</strong> — try again!
+        El ecosistema fue destruido... pero cada acto de cuidado importa.{" "}
+        <strong style={{color:"rgba(255,180,100,0.8)"}}>El bien siempre es más fuerte</strong> — ¡vuelve a intentarlo!
       </p>
 
       {/* Teams summary */}
@@ -4587,13 +4454,11 @@ export default function App() {
   const [ecosystem,setEcosystem]=useState(null);
   const [gameTeams,setGameTeams]=useState([]);
   const [firstTeam,setFirstTeam]=useState(0);
-  
   const handleSetupDone=(eco,teams)=>{setEcosystem(eco);setGameTeams(teams);setScreen("roles");};
   const handleRolesDone=(teamsWithRoles)=>{setGameTeams(teamsWithRoles);setScreen("genesis");};
   const handleNarrativeDone=()=>{setScreen("setup");};
   const handleGenesisDone=idx=>{setFirstTeam(idx);setScreen("game");};
   const handleRestart=()=>{setScreen("welcome");setEcosystem(null);setGameTeams([]);setFirstTeam(0);};
-  
   return(
     <>
       <style>{GS}</style>
@@ -4602,7 +4467,7 @@ export default function App() {
       {screen==="setup"&&<SetupScreen onStart={handleSetupDone} />}
       {screen==="roles"&&gameTeams.length>0&&<RolesScreen teams={gameTeams} onDone={handleRolesDone} />}
       {screen==="genesis"&&gameTeams.length>0&&<GenesisScreen teams={gameTeams} ecosystem={ecosystem} onStart={handleGenesisDone} />}
-      {screen==="game"&&<GameScreen teams={gameTeams} ecosystem={ecosystem} firstTeam={firstTeam} onRestart={handleRestart} />}
+      {screen==="game"&&ecosystem&&<GameScreen ecosystem={ecosystem} initTeams={gameTeams} firstTeamIdx={firstTeam} onEnd={handleRestart} />}
     </>
   );
 }
