@@ -2129,7 +2129,7 @@ function GenesisScreen({ teams, onStart }) {
                 <div style={{textAlign:"center",animation:"popIn 0.4s ease"}}>
                   <div style={{fontSize:13,color:"#f87171",marginBottom:4}}>✗ Incorrect — {chosen.name} loses their turn</div>
                   <div style={{fontSize:11,color:"rgba(200,180,120,0.5)"}}>{GENESIS_Q.ref}</div>
-                  <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginTop:6,letterSpacing:"0.2em"}}>GIRANDO DE NUEVO…</div>
+                  <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginTop:6,letterSpacing:"0.2em"}}>SPINNING AGAIN…</div>
                 </div>
               )}
             </div>
@@ -3008,8 +3008,21 @@ function TrueFalseChallenge({ data, onResult, timeLimit=20 }) {
           transform:sel===false&&!answered?"scale(1.04)":"scale(1)",
         }}>❌ FALSE</button>
       </div>
-      {answered&&data.correction&&!data.answer&&<div style={{padding:"11px 16px",background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:10,fontSize:13,color:"rgba(252,165,165,0.9)",lineHeight:1.6}}>🔎 {data.correction}</div>}
-      {answered&&data.answer&&<div style={{padding:"11px 16px",background:"rgba(22,163,74,0.1)",border:"1px solid rgba(22,163,74,0.3)",borderRadius:10,fontSize:13,color:"rgba(134,239,172,0.9)",lineHeight:1.6}}>✓ That's correct!</div>}
+      {answered && sel === data.answer && (
+        <div style={{padding:"11px 16px",background:"rgba(22,163,74,0.1)",border:"1px solid rgba(22,163,74,0.3)",borderRadius:10,fontSize:13,color:"rgba(134,239,172,0.9)",lineHeight:1.6}}>
+          ✓ That's correct!
+        </div>
+      )}
+      {answered && sel !== data.answer && data.correction && (
+        <div style={{padding:"11px 16px",background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:10,fontSize:13,color:"rgba(252,165,165,0.9)",lineHeight:1.6}}>
+          🔎 {data.correction}
+        </div>
+      )}
+      {answered && sel !== data.answer && !data.correction && (
+        <div style={{padding:"11px 16px",background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:10,fontSize:13,color:"rgba(252,165,165,0.9)",lineHeight:1.6}}>
+          ✗ The correct answer is {data.answer ? "TRUE" : "FALSE"}.
+        </div>
+      )}
     </div>
   );
 }
@@ -3147,9 +3160,11 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
 
   const placementsRef = useRef({});
   const submittedRef = useRef(false);
+  const timerRef = useRef(null);
 
   const doSubmit = (pl) => {
     if (submittedRef.current) return;
+    clearInterval(timerRef.current);
     submittedRef.current = true;
     setSubmitted(true);
     setSelected(null);
@@ -3163,13 +3178,13 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
   };
 
   useEffect(() => {
-    const iv = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setTimeLeft(t => {
-        if (t <= 1) { clearInterval(iv); doSubmit(placementsRef.current); return 0; }
+        if (t <= 1) { clearInterval(timerRef.current); doSubmit(placementsRef.current); return 0; }
         return t - 1;
       });
     }, 1000);
-    return () => clearInterval(iv);
+    return () => clearInterval(timerRef.current);
   }, []);
 
   const updatePlacement = (orgId, levelLabel) => {
@@ -3192,7 +3207,9 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
 
   // Organism card — used both in unplaced pool and in trophic rows
   const OrgCard = ({ org, isSelected, onClick, compact, correctState }) => {
+    const [imgFailed, setImgFailed] = useState(false);
     const img = imgLookup[org.name];
+    const showImg = img && !imgFailed;
     const borderColor = correctState === "correct" ? "#4ade80"
                       : correctState === "wrong"   ? "#f87171"
                       : isSelected                 ? "#fb923c"
@@ -3219,16 +3236,16 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
         maxWidth: compact ? 160 : 80,
         flexShrink: 0,
       }}>
-        {img ? (
+        {showImg ? (
           <img src={img} alt={org.name} style={{
             width: compact ? 26 : 52, height: compact ? 26 : 52,
             objectFit:"cover", borderRadius: compact ? 5 : 8,
             border:"1px solid rgba(255,255,255,0.1)", flexShrink:0,
-          }} onError={e => { e.target.style.display="none"; e.target.nextSibling.style.display="flex"; }} />
+          }} onError={() => setImgFailed(true)} />
         ) : null}
         <span style={{
-          fontSize: img ? (compact ? 0 : 0) : (compact ? 18 : 28),
-          display: img ? "none" : "flex",
+          fontSize: showImg ? 0 : (compact ? 18 : 28),
+          display: showImg ? "none" : "flex",
           alignItems:"center", justifyContent:"center",
           width: compact ? 26 : 52, height: compact ? 26 : 52,
           background:"rgba(255,255,255,0.06)", borderRadius: compact ? 5 : 8, flexShrink:0,
@@ -3504,7 +3521,7 @@ function WowFactsModal({ fact, ecosystem, context, onDone }) {
 }
 
 // ── CHALLENGE MODAL ────────────────────────────────
-function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, challenge }) {
+function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, challenge, isRestoration }) {
   const eco=ECOSYSTEMS[ecosystem.id];
   const ct=CT[cell.type];
   const [result,setResult]=useState(null);
@@ -3574,7 +3591,7 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
           <h3 style={{fontFamily:"'Cinzel',serif",fontSize:"1.5rem",color:result?"#4ade80":"#f87171",marginBottom:"0.5rem"}}>{result?"Correct!":"No point this time"}</h3>
           {result&&org&&(
             <div style={{background:"rgba(34,197,94,0.1)",border:"1px solid #22c55e44",borderRadius:"0.9rem",padding:"1rem 1.2rem",margin:"1rem 0",animation:"popIn 0.5s ease 0.2s both"}}>
-              <div style={{fontSize:"0.75rem",color:"#4ade80",letterSpacing:"0.2em",marginBottom:"0.4rem"}}>✨ ORGANISMO DESBLOQUEADO</div>
+              <div style={{fontSize:"0.75rem",color:"#4ade80",letterSpacing:"0.2em",marginBottom:"0.4rem"}}>✨ ORGANISM UNLOCKED</div>
               <div style={{fontSize:"2.8rem",marginBottom:"0.3rem"}}>{org.emoji}</div>
               <div style={{fontFamily:"'Cinzel',serif",fontSize:"1rem",color:"#fff",fontWeight:700}}>{org.name}</div>
               <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.5)",marginTop:"0.3rem"}}>{org.role}</div>
@@ -3640,7 +3657,7 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
           {cell.type==="match"&&<MatchChallenge data={challenge} onResult={setResult} timeLimit={30} />}
           {cell.type==="unscramble"&&<UnscrambleChallenge data={challenge} onResult={setResult} timeLimit={45} />}
           {cell.type==="truefalse"&&<TrueFalseChallenge data={challenge} onResult={setResult} timeLimit={20} />}
-          {cell.type==="foodweb"&&<FoodWebChallenge ecosystem={ecosystem} onResult={setResult} />}
+          {cell.type==="foodweb"&&<FoodWebChallenge ecosystem={ecosystem} onResult={setResult} isRestoration={isRestoration} />}
         </div>
       </div>
     </div>
@@ -3915,11 +3932,19 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     return pool[idx];
   };
 
+  // Non-repeating WOW facts queue (one shuffled deck per ecosystem)
+  const wowQueues = useRef({});
+
   // Show a random WOW fact for the current ecosystem, then run callback on dismiss
   const showWow = (context, callback) => {
     const facts = WOW_FACTS[ecosystem.id] || [];
     if (facts.length === 0) { callback(); return; }
-    const fact = facts[Math.floor(Math.random() * facts.length)];
+    const ecoId = ecosystem.id;
+    if (!wowQueues.current[ecoId] || wowQueues.current[ecoId].length === 0) {
+      wowQueues.current[ecoId] = shuffle([...Array(facts.length).keys()]);
+    }
+    const idx = wowQueues.current[ecoId].pop();
+    const fact = facts[idx];
     wowCallbackRef.current = callback;
     setWowModal({ fact, context });
   };
@@ -3996,11 +4021,23 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const handleWildcardDone=()=>{
     const cell=activeCell;if(!cell){nextTurn();return;}
     const res=wildcardResolved;
-    if(cell.fx==="advance")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],position:Math.min(u[curIdx].position+cell.val,N_BOARD-1)};return u;});
+    if(cell.fx==="advance"){
+      let landedOnCenter = false;
+      setTeams(p=>{
+        const u=[...p];
+        const newPos=Math.min(u[curIdx].position+cell.val,N_BOARD-1);
+        u[curIdx]={...u[curIdx],position:newPos};
+        if(board[newPos].type==="center") landedOnCenter=true;
+        return u;
+      });
+      setActiveCell(null);setWildcardResolved(null);
+      if(landedOnCenter){showWow("victory",()=>setPhase("center"));return;}
+      nextTurn();return;
+    }
     else if(cell.fx==="back")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],position:Math.max(0,u[curIdx].position-cell.val)};return u;});
     else if(cell.fx==="skip")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],skipNext:true};return u;});
     else if(cell.fx==="free"&&res?.org)setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,res.org]};return u;});
-    else if(cell.fx==="steal"&&res?.org&&res?.fromTeam){setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,res.org]};u[res.fromTeam.id]={...u[res.fromTeam.id],organisms:u[res.fromTeam.id].organisms.filter(o=>o.id!==res.org.id)};return u;});}
+    else if(cell.fx==="steal"&&res?.org&&res?.fromTeam){setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,res.org]};const fromIdx=u.findIndex(t=>t.id===res.fromTeam.id);if(fromIdx!==-1){u[fromIdx]={...u[fromIdx],organisms:u[fromIdx].organisms.filter(o=>o.id!==res.org.id)};}return u;});}
     else if(cell.fx==="double")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],doubleNext:true};return u;});
     setActiveCell(null);setWildcardResolved(null);nextTurn();
   };
@@ -4024,7 +4061,12 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const nextTurn=()=>{
     setPhase("idle");setDiceVal(null);setTurn(t=>t+1);
     let next=(curIdx+1)%teams.length;
-    if(teams[next]?.skipNext){setTeams(p=>{const u=[...p];u[next]={...u[next],skipNext:false};return u;});next=(next+1)%teams.length;}
+    let safetyCounter = 0;
+    while(teams[next]?.skipNext && safetyCounter < teams.length){
+      setTeams(p=>{const u=[...p];u[next]={...u[next],skipNext:false};return u;});
+      next=(next+1)%teams.length;
+      safetyCounter++;
+    }
     setCurIdx(next);
   };
 
@@ -4239,7 +4281,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
         </div>
       </div>
 
-      {phase==="challenge"&&activeCell&&<ChallengeModal cell={activeCell} ecosystem={ecosystem} team={curTeam} pendingOrganism={pendingOrg} onResult={handleChallengeResult} challenge={activeChallenge} />}
+      {phase==="challenge"&&activeCell&&<ChallengeModal cell={activeCell} ecosystem={ecosystem} team={curTeam} pendingOrganism={pendingOrg} onResult={handleChallengeResult} challenge={activeChallenge} isRestoration={collapseEmergency !== null} />}
       {phase==="wildcard"&&activeCell&&<WildcardModal cell={activeCell} resolved={wildcardResolved} teams={teams} curIdx={curIdx} onDone={handleWildcardDone} />}
       {wowModal&&<WowFactsModal fact={wowModal.fact} ecosystem={ecosystem} context={wowModal.context} onDone={handleWowDone} />}
 
