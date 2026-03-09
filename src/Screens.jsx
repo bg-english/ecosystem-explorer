@@ -222,14 +222,6 @@ function RolesScreen({ teams, onDone }) {
   const isAssign  = idx === ASSIGN_IDX;
   const role      = (!isIntro && !isSummary && !isAssign) ? activeRoles[idx] : null;
 
-  // ── Responsive ─────────────────────────────────
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 700);
-  useEffect(() => {
-    const h = () => setIsMobile(window.innerWidth < 700);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
-  }, []);
-
   // assignments[teamId][roleId] = playerName
   const [assignments, setAssignments] = useState(()=>{
     const a={};
@@ -310,8 +302,8 @@ function RolesScreen({ teams, onDone }) {
                 style={{height:8,borderRadius:4,background:i===idx?activeRoles[i].color:i<idx?"rgba(255,255,255,0.18)":"rgba(255,255,255,0.06)",width:i===idx?28:8,transition:"all 0.3s",cursor:"pointer"}} />
             ))}
           </div>
-          <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"300px 1fr",gap:0,background:"rgba(0,0,0,0.45)",border:`2px solid ${role.color}30`,borderRadius:20,overflow:"hidden",boxShadow:`0 0 60px ${role.color}15`}}>
-            <div style={{position:"relative",minHeight:isMobile?200:460}}>
+          <div style={{display:"grid",gridTemplateColumns:"300px 1fr",gap:0,background:"rgba(0,0,0,0.45)",border:`2px solid ${role.color}30`,borderRadius:20,overflow:"hidden",boxShadow:`0 0 60px ${role.color}15`}}>
+            <div style={{position:"relative",minHeight:460}}>
               <img src={role.img} alt={role.biblical}
                 onError={e=>{e.target.style.display="none";const fb=e.target.parentNode.querySelector(".img-fallback");if(fb)fb.style.display="flex";}}
                 style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top center",filter:"brightness(0.82) saturate(1.15)",display:"block"}} />
@@ -604,9 +596,9 @@ function NarrativeScreen({ onDone }) {
     {science:"Biodiversity makes ecosystems resilient. Less diversity = more fragility.",bridge:"One withered plant changed Jonah's entire experience of the world.",spirit:"Our moral and spiritual health directly affects the world around us — always."},
   ];
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 40% 20%,#071a0e,#020407 70%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start",padding:"48px 20px 60px"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 40% 20%,#071a0e,#020407 70%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"28px 20px",position:"relative",overflow:"hidden"}}>
       {Array.from({length:30}).map((_,i)=>(
-        <div key={i} style={{position:"fixed",left:`${(i*37)%100}%`,top:`${(i*61)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.15,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none",zIndex:0}} />
+        <div key={i} style={{position:"absolute",left:`${(i*37)%100}%`,top:`${(i*61)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.15,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none"}} />
       ))}
       <button onClick={onDone} style={{position:"absolute",top:16,right:20,background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.35)",fontFamily:"'Cinzel',serif",fontSize:11,padding:"6px 14px",cursor:"pointer",letterSpacing:"0.1em",zIndex:10}} title="Skip narrative">Skip →</button>
       <div style={{display:"flex",gap:8,marginBottom:22,alignItems:"center"}}>
@@ -644,7 +636,8 @@ function NarrativeScreen({ onDone }) {
         </div>
       )}
       {step===1&&(
-        <div style={{maxWidth:860,width:"100%",animation:"slowFade 0.6s ease"}}>
+        <div style={{maxWidth:860,width:"100%",animation:"slowFade 0.6s ease",display:"flex",flexDirection:"column",maxHeight:"calc(100vh - 120px)"}}>
+          <div style={{overflowY:"auto",flex:1,paddingRight:4}}>
           <div style={{textAlign:"center",marginBottom:18}}>
             <div style={{fontSize:11,color:"#fbbf24",letterSpacing:"0.3em",marginBottom:6}}>WHY THIS GAME EXISTS</div>
             <h2 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:"#fff",marginBottom:8}}>The Gourd of Jonah</h2>
@@ -654,8 +647,7 @@ function NarrativeScreen({ onDone }) {
             <p style={{fontStyle:"italic",color:"rgba(255,245,200,0.85)",fontSize:13,lineHeight:1.8,margin:0}}>"You had compassion on the plant for which you did not work… And should I not have compassion on Nineveh, the great city, in which there are more than 120,000 persons — and also many animals?"</p>
             <p style={{fontSize:11,color:"rgba(253,224,71,0.7)",marginTop:8,letterSpacing:"0.08em"}}>— Jonah 4:10–11</p>
           </div>
-          <div style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,0.07)",marginBottom:20,overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
-            <div style={{minWidth:520}}>
+          <div style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,0.07)",marginBottom:20}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(0,0,0,0.5)"}}>
               {[{label:"🔬 Scientific Truth",color:"#38bdf8"},{label:"🌿 The Bridge",color:"#4ade80"},{label:"✝️ Spiritual Truth",color:"#fbbf24"}].map((h,i)=>(
                 <div key={i} style={{padding:"12px 16px",borderRight:i<2?"1px solid rgba(255,255,255,0.07)":"none",textAlign:"center"}}>
@@ -670,9 +662,9 @@ function NarrativeScreen({ onDone }) {
                 <div style={{padding:"13px 16px",fontSize:12,color:"rgba(253,224,71,0.8)",lineHeight:1.65}}>{row.spirit}</div>
               </div>
             ))}
-            </div>
           </div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",paddingTop:14,flexShrink:0}}>
             <button onClick={()=>setStep(0)} style={{padding:"11px 24px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,color:"rgba(255,255,255,0.5)",fontFamily:"'Cinzel',serif",fontSize:12,cursor:"pointer"}}>← Back</button>
             <button onClick={onDone} style={{padding:"13px 44px",background:"linear-gradient(135deg,#16a34a,#15803d)",border:"none",borderRadius:12,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 6px 24px rgba(22,163,74,0.45)"}}>
               🛡️ Choose Your Ecosystem →
@@ -693,14 +685,6 @@ function SetupScreen({ onStart }) {
   const ecoList = Object.values(ECOSYSTEMS).sort((a,b)=>a.difficulty-b.difficulty);
   const diffColors = {1:"#4ade80",2:"#86efac",3:"#fbbf24",4:"#f97316",5:"#f87171"};
   const diffIcons  = {1:"🌱",2:"🌿",3:"🌳",4:"⚡",5:"🔥"};
-
-  // ── Responsive ─────────────────────────────────
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
-  useEffect(() => {
-    const h = () => setIsMobile(window.innerWidth < 640);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
-  }, []);
 
   const stars = useMemo(()=>Array.from({length:44}).map((_,i)=>({
     left:`${(i*43+7)%100}%`, top:`${(i*61+11)%100}%`,
@@ -840,7 +824,7 @@ function SetupScreen({ onStart }) {
       {step===2&&(
         <div style={{width:"100%",maxWidth:700,animation:"fadeUp 0.5s ease"}}>
           <p style={{textAlign:"center",color:"rgba(255,255,255,0.5)",marginBottom:20,fontSize:13}}>Enter team name and members (max 7)</p>
-          <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"220px 1fr",gap:16}}>
+          <div style={{display:"grid",gridTemplateColumns:"220px 1fr",gap:16}}>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {teams.map((t,i)=>(
                 <div key={i} onClick={()=>{saveEditing();setEditing({idx:i,name:t.name,players:[...t.players,""].slice(0,7)});}}
