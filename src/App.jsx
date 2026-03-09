@@ -3715,7 +3715,7 @@ function WildcardModal({ cell, resolved, teams, curIdx, onDone }) {
 }
 
 // ── TEAM PANEL ─────────────────────────────────────
-function TeamPanel({ teams, currentTeamIdx, ecosystem }) {
+const TeamPanel = React.memo(function TeamPanel({ teams, currentTeamIdx, ecosystem }) {
   const eco=ECOSYSTEMS[ecosystem.id];
   return(
     <div style={{display:"flex",flexDirection:"column",gap:"0.7rem",overflowY:"auto",maxHeight:"100%"}}>
@@ -3794,7 +3794,6 @@ function TeamPanel({ teams, currentTeamIdx, ecosystem }) {
                     opacity:has?1:0.18,
                     transition:"all 0.4s ease",
                     boxShadow:has?`0 0 8px ${tc.bg}44`:"none",
-                    animation:has?"popIn 0.4s ease":undefined,
                   }}>{org.emoji}</div>
                 );
               })}
@@ -3804,7 +3803,7 @@ function TeamPanel({ teams, currentTeamIdx, ecosystem }) {
       })}
     </div>
   );
-}
+});
 
 // ── DICE ───────────────────────────────────────────
 const DICE_DOTS = {
