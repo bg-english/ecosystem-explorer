@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TEAM_COLORS, CT } from "./constants";
 
 function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
@@ -8,14 +8,27 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
   useEffect(() => { teamsRef.current = teams; },         [teams]);
   useEffect(() => { curRef.current = currentTeamIdx; },  [currentTeamIdx]);
 
+  // ── Track container size so canvas redraws on resize ──
+  const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
+  useEffect(() => {
+    const container = canvasRef.current?.parentElement;
+    if (!container) return;
+    const measure = () => setContainerSize({ w: container.clientWidth, h: container.clientHeight });
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, []);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    if (!containerSize.w || !containerSize.h) return;
 
     // ── Hi-DPI / HD resolution fix ────────────────
     const DPR = window.devicePixelRatio || 1;
-    const W_CSS = canvas.parentElement?.clientWidth  || 900;
-    const H_CSS = canvas.parentElement?.clientHeight || 900;
+    const W_CSS = containerSize.w;
+    const H_CSS = containerSize.h;
     // Physical pixels — crisp on retina/4K/HD screens
     canvas.width  = W_CSS * DPR;
     canvas.height = H_CSS * DPR;
@@ -431,7 +444,8 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
     }
     render();
     return () => cancelAnimationFrame(animId);
-  }, []); // mount once; team data via refs
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerSize, board, gridSize, hasImage]); // re-run on resize or prop change; teams via refs
 
   return (
     <div style={{ width: "100%", height: "100%", overflow: "hidden", touchAction: "pan-x pan-y" }}>

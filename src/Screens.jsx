@@ -222,6 +222,14 @@ function RolesScreen({ teams, onDone }) {
   const isAssign  = idx === ASSIGN_IDX;
   const role      = (!isIntro && !isSummary && !isAssign) ? activeRoles[idx] : null;
 
+  // ── Responsive ─────────────────────────────────
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 700);
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 700);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+
   // assignments[teamId][roleId] = playerName
   const [assignments, setAssignments] = useState(()=>{
     const a={};
@@ -302,8 +310,8 @@ function RolesScreen({ teams, onDone }) {
                 style={{height:8,borderRadius:4,background:i===idx?activeRoles[i].color:i<idx?"rgba(255,255,255,0.18)":"rgba(255,255,255,0.06)",width:i===idx?28:8,transition:"all 0.3s",cursor:"pointer"}} />
             ))}
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"300px 1fr",gap:0,background:"rgba(0,0,0,0.45)",border:`2px solid ${role.color}30`,borderRadius:20,overflow:"hidden",boxShadow:`0 0 60px ${role.color}15`}}>
-            <div style={{position:"relative",minHeight:460}}>
+          <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"300px 1fr",gap:0,background:"rgba(0,0,0,0.45)",border:`2px solid ${role.color}30`,borderRadius:20,overflow:"hidden",boxShadow:`0 0 60px ${role.color}15`}}>
+            <div style={{position:"relative",minHeight:isMobile?200:460}}>
               <img src={role.img} alt={role.biblical}
                 onError={e=>{e.target.style.display="none";const fb=e.target.parentNode.querySelector(".img-fallback");if(fb)fb.style.display="flex";}}
                 style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top center",filter:"brightness(0.82) saturate(1.15)",display:"block"}} />
@@ -646,7 +654,8 @@ function NarrativeScreen({ onDone }) {
             <p style={{fontStyle:"italic",color:"rgba(255,245,200,0.85)",fontSize:13,lineHeight:1.8,margin:0}}>"You had compassion on the plant for which you did not work… And should I not have compassion on Nineveh, the great city, in which there are more than 120,000 persons — and also many animals?"</p>
             <p style={{fontSize:11,color:"rgba(253,224,71,0.7)",marginTop:8,letterSpacing:"0.08em"}}>— Jonah 4:10–11</p>
           </div>
-          <div style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,0.07)",marginBottom:20}}>
+          <div style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,0.07)",marginBottom:20,overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+            <div style={{minWidth:520}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(0,0,0,0.5)"}}>
               {[{label:"🔬 Scientific Truth",color:"#38bdf8"},{label:"🌿 The Bridge",color:"#4ade80"},{label:"✝️ Spiritual Truth",color:"#fbbf24"}].map((h,i)=>(
                 <div key={i} style={{padding:"12px 16px",borderRight:i<2?"1px solid rgba(255,255,255,0.07)":"none",textAlign:"center"}}>
@@ -661,6 +670,7 @@ function NarrativeScreen({ onDone }) {
                 <div style={{padding:"13px 16px",fontSize:12,color:"rgba(253,224,71,0.8)",lineHeight:1.65}}>{row.spirit}</div>
               </div>
             ))}
+            </div>
           </div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <button onClick={()=>setStep(0)} style={{padding:"11px 24px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,color:"rgba(255,255,255,0.5)",fontFamily:"'Cinzel',serif",fontSize:12,cursor:"pointer"}}>← Back</button>
@@ -683,6 +693,14 @@ function SetupScreen({ onStart }) {
   const ecoList = Object.values(ECOSYSTEMS).sort((a,b)=>a.difficulty-b.difficulty);
   const diffColors = {1:"#4ade80",2:"#86efac",3:"#fbbf24",4:"#f97316",5:"#f87171"};
   const diffIcons  = {1:"🌱",2:"🌿",3:"🌳",4:"⚡",5:"🔥"};
+
+  // ── Responsive ─────────────────────────────────
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
 
   const stars = useMemo(()=>Array.from({length:44}).map((_,i)=>({
     left:`${(i*43+7)%100}%`, top:`${(i*61+11)%100}%`,
@@ -822,7 +840,7 @@ function SetupScreen({ onStart }) {
       {step===2&&(
         <div style={{width:"100%",maxWidth:700,animation:"fadeUp 0.5s ease"}}>
           <p style={{textAlign:"center",color:"rgba(255,255,255,0.5)",marginBottom:20,fontSize:13}}>Enter team name and members (max 7)</p>
-          <div style={{display:"grid",gridTemplateColumns:"220px 1fr",gap:16}}>
+          <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"220px 1fr",gap:16}}>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {teams.map((t,i)=>(
                 <div key={i} onClick={()=>{saveEditing();setEditing({idx:i,name:t.name,players:[...t.players,""].slice(0,7)});}}

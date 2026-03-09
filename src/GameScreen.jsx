@@ -24,12 +24,15 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [totalAnswers,   setTotalAnswers]   = useState(0);
   // ── Responsive ────────────────────────────────────
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  const [bpWidth, setBpWidth] = useState(() => window.innerWidth);
   useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < 768);
+    const handler = () => setBpWidth(window.innerWidth);
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
   }, []);
+  const isMobile  = bpWidth < 768;   // phones + small tablets (portrait)
+  const isXS      = bpWidth < 480;   // small phones (iPhone SE, Galaxy S)
+  const isTablet  = bpWidth >= 768 && bpWidth < 1024; // iPad portrait, mid tablets
   // ── Collapse Emergency System ──────────────────────
   const [collapseCount, setCollapseCount]       = useState(0);
   const [collapseEmergency, setCollapseEmergency] = useState(null);
@@ -216,10 +219,10 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   return(
     <div style={{height:"100vh",background:eco.bg,fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",overflow:"hidden"}}>
       {/* Top bar */}
-      <div style={{background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${isCollapsed?"rgba(239,68,68,0.35)":"rgba(255,255,255,0.06)"}`,padding:isMobile?"0.45rem 0.75rem":"0.7rem 1.4rem",display:"flex",alignItems:"center",gap:isMobile?"0.5rem":"1rem",flexShrink:0,transition:"border-color 0.5s",flexWrap:isMobile?"wrap":"nowrap",minHeight:isMobile?"auto":"unset"}}>
+      <div style={{background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${isCollapsed?"rgba(239,68,68,0.35)":"rgba(255,255,255,0.06)"}`,padding:isXS?"0.35rem 0.55rem":isMobile?"0.45rem 0.75rem":"0.7rem 1.4rem",display:"flex",alignItems:"center",gap:isXS?"0.35rem":isMobile?"0.5rem":"1rem",flexShrink:0,transition:"border-color 0.5s",flexWrap:"wrap",minHeight:"unset"}}>
         <span style={{fontSize:isMobile?"1.2rem":"1.6rem"}}>{eco.emoji}</span>
         <div style={{minWidth:0}}>
-          <div style={{fontFamily:"'Cinzel',serif",fontSize:isMobile?"0.78rem":"1rem",color:"#fff",fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{eco.name}</div>
+          <div style={{fontFamily:"'Cinzel',serif",fontSize:isXS?"0.65rem":isMobile?"0.78rem":"1rem",color:"#fff",fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:isXS?"90px":isMobile?"140px":"unset"}}>{eco.name}</div>
           <div style={{fontSize:isMobile?"0.55rem":"0.65rem",color:"rgba(255,255,255,0.4)",letterSpacing:"0.1em"}}>Turn {turn} · {curTeam?.position+1}/{N_BOARD}</div>
         </div>
         {/* Revealed elements strip — hide on very small screens */}
@@ -369,9 +372,9 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
 
         {/* Right sidebar / Mobile bottom panel */}
         <div style={{
-          width: isMobile ? "100%" : "18rem",
+          width: isMobile ? "100%" : isTablet ? "14rem" : "18rem",
           height: isMobile ? "auto" : undefined,
-          maxHeight: isMobile ? "42vh" : undefined,
+          maxHeight: isMobile ? "40vh" : undefined,
           background:"rgba(0,0,0,0.5)",
           borderLeft: isMobile ? "none" : "1px solid rgba(255,255,255,0.07)",
           borderTop: isMobile ? "1px solid rgba(255,255,255,0.1)" : "none",
@@ -418,7 +421,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
             </div>
             {/* Dice + button row */}
             <div style={{display:"flex",alignItems:"center",gap:"0.6rem"}}>
-              <div style={{width:isMobile?"4rem":"5rem",height:isMobile?"4rem":"5rem",flexShrink:0,position:"relative",isolation:"isolate"}}>
+              <div style={{width:isXS?"3.2rem":isMobile?"4rem":"5rem",height:isXS?"3.2rem":isMobile?"4rem":"5rem",flexShrink:0,position:"relative",isolation:"isolate"}}>
                 <Dice value={diceVal} rolling={rolling} teamColor={tc.bg} />
               </div>
               <button onClick={rollDice} disabled={phase!=="idle"} style={{
@@ -426,7 +429,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
                 background:phase==="idle"?`linear-gradient(135deg,${tc.bg},${tc.dark})`:"rgba(255,255,255,0.05)",
                 border:"none",borderRadius:"0.7rem",
                 color:phase==="idle"?"#fff":"rgba(255,255,255,0.3)",
-                fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:isMobile?"0.75rem":"0.85rem",
+                fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:isXS?"0.65rem":isMobile?"0.75rem":"0.85rem",
                 cursor:phase==="idle"?"pointer":"not-allowed",
                 letterSpacing:"0.08em",
                 boxShadow:phase==="idle"?`0 4px 18px ${tc.bg}66`:"none",

@@ -5,6 +5,12 @@ import { ECOSYSTEMS } from "./ecosystems";
 function WowFactsModal({ fact, ecosystem, context, onDone }) {
   const eco = ECOSYSTEMS[ecosystem.id];
   const [phase, setPhase] = useState("in");
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
   useEffect(() => {
     const t = setTimeout(() => setPhase("ready"), 800);
     if (context === "victory") SFX.victory();
@@ -73,7 +79,7 @@ function WowFactsModal({ fact, ecosystem, context, onDone }) {
         </div>
 
         {/* Two panels */}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",width:"100%"}}>
+        <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:"1rem",width:"100%"}}>
           {/* Science panel */}
           <div style={{
             background:"rgba(14,30,50,0.8)",
@@ -223,8 +229,8 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
     );
   }
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200,padding:"1.5rem"}}>
-      <div style={{background:"#090e18",border:`1.5px solid ${ct.color}44`,borderRadius:"1.4rem",padding:"0",maxWidth:"46rem",width:"100%",boxShadow:`0 0 60px ${ct.color}18, 0 24px 60px rgba(0,0,0,0.7)`,maxHeight:"90vh",overflowY:"auto",animation:"fadeUp 0.3s ease"}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",display:"flex",alignItems:"flex-end",justifyContent:"center",zIndex:200,padding:"0",paddingTop:"env(safe-area-inset-top, 0px)"}}>
+      <div style={{background:"#090e18",border:`1.5px solid ${ct.color}44`,borderRadius:"1.4rem 1.4rem 0 0",padding:"0",width:"100%",maxWidth:"46rem",boxShadow:`0 0 60px ${ct.color}18, 0 -8px 40px rgba(0,0,0,0.7)`,maxHeight:"92dvh",overflowY:"auto",animation:"slideUp 0.3s cubic-bezier(0.34,1.2,0.64,1)"}}>
 
         {/* ── Header ── */}
         <div style={{padding:"1.2rem 1.5rem 1rem",borderBottom:`1px solid rgba(255,255,255,0.07)`}}>
