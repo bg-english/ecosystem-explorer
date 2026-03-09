@@ -4587,11 +4587,13 @@ export default function App() {
   const [ecosystem,setEcosystem]=useState(null);
   const [gameTeams,setGameTeams]=useState([]);
   const [firstTeam,setFirstTeam]=useState(0);
+  
   const handleSetupDone=(eco,teams)=>{setEcosystem(eco);setGameTeams(teams);setScreen("roles");};
   const handleRolesDone=(teamsWithRoles)=>{setGameTeams(teamsWithRoles);setScreen("genesis");};
   const handleNarrativeDone=()=>{setScreen("setup");};
   const handleGenesisDone=idx=>{setFirstTeam(idx);setScreen("game");};
   const handleRestart=()=>{setScreen("welcome");setEcosystem(null);setGameTeams([]);setFirstTeam(0);};
+  
   return(
     <>
       <style>{GS}</style>
@@ -4600,7 +4602,7 @@ export default function App() {
       {screen==="setup"&&<SetupScreen onStart={handleSetupDone} />}
       {screen==="roles"&&gameTeams.length>0&&<RolesScreen teams={gameTeams} onDone={handleRolesDone} />}
       {screen==="genesis"&&gameTeams.length>0&&<GenesisScreen teams={gameTeams} ecosystem={ecosystem} onStart={handleGenesisDone} />}
-      {screen==="game"&&ecosystem&&<GameScreen ecosystem={ecosystem} initTeams={gameTeams} firstTeamIdx={firstTeam} onEnd={handleRestart} />}
+      {screen==="game"&&<GameScreen teams={gameTeams} ecosystem={ecosystem} firstTeam={firstTeam} onRestart={handleRestart} />}
     </>
   );
 }
