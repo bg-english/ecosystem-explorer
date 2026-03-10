@@ -341,7 +341,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
         <div style={{
           width: isMobile ? "100%" : isTablet ? "14rem" : "18rem",
           height: isMobile ? "auto" : undefined,
-          maxHeight: isMobile ? "40vh" : undefined,
+          maxHeight: isMobile ? (isXS ? "28vh" : "32vh") : undefined,
           background:"rgba(0,0,0,0.5)",
           borderLeft: isMobile ? "none" : "1px solid rgba(255,255,255,0.07)",
           borderTop: isMobile ? "1px solid rgba(255,255,255,0.1)" : "none",

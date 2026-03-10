@@ -95,7 +95,11 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
 
     // ── Build spiral path & screen positions ──────────
     const hexPath = generateHexSpiral(N);
-    const PAD = 44;
+
+    // Adaptive padding: shrinks on small screens so tiles always fit
+    const PAD = Math.max(14, Math.min(36, Math.min(CW, CH) * 0.045));
+    // Reserve bottom space for the legend (2 rows × 20px + margin)
+    const LEGEND_H = 48;
 
     // Compute positions at size=1 for auto-fit
     const raw = hexPath.map(([q, r]) => hexToPixel(q, r, 1));
@@ -104,11 +108,13 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
     const minY = Math.min(...allY), maxY = Math.max(...allY);
     const scale = Math.min(
       (CW - PAD * 2) / (maxX - minX),
-      (CH - PAD * 2) / (maxY - minY)
+      (CH - PAD * 2 - LEGEND_H) / (maxY - minY)   // ← reserve legend space
     );
     const hexR = scale; // circumradius in px
     const OX = PAD + (CW - PAD * 2 - (maxX - minX) * scale) / 2 - minX * scale;
-    const OY = PAD + (CH - PAD * 2 - (maxY - minY) * scale) / 2 - minY * scale;
+    // Shift board up so it doesn't sit on top of the legend
+    const boardH = (maxY - minY) * scale;
+    const OY = PAD + (CH - PAD * 2 - LEGEND_H - boardH) / 2 - minY * scale;
 
     // Final steps with screen coords
     const steps = hexPath.map(([q, r], idx) => {
@@ -419,21 +425,36 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
     // Legend
     function drawLegend() {
       const types  = ["trivia","identify","foodchain","hangman","match","unscramble","wildcard"];
-      const cols   = 4, itemW = CW / cols, itemH = 20;
-      const startX = 8, startY = CH - itemH * Math.ceil(types.length / cols) - 6;
+      const cols   = 4;
+      const itemW  = Math.min(CW / cols, 118);
+      const itemH  = 20;
+      const rows   = Math.ceil(types.length / cols);
+      const legendH = rows * itemH + 10;
+      const startY = CH - legendH;
+      const totalW = cols * itemW;
+      const startX = (CW - totalW) / 2;
+
+      // Semi-transparent background panel
+      ctx.save();
+      ctx.fillStyle = "rgba(0,0,0,0.55)";
+      ctx.beginPath();
+      ctx.roundRect(startX - 8, startY - 4, totalW + 16, legendH + 6, 8);
+      ctx.fill();
+      ctx.restore();
+
       types.forEach((type, i) => {
         const col  = i % cols, row = Math.floor(i / cols);
-        const x = startX + col * itemW, y = startY + row * itemH;
+        const x = startX + col * itemW, y = startY + row * itemH + 6;
         const c = CT[type];
         ctx.beginPath();
-        ctx.arc(x + 9, y + 8, 7, 0, Math.PI * 2);
+        ctx.arc(x + 7, y + 7, 5, 0, Math.PI * 2);
         ctx.fillStyle = c.color;
         ctx.fill();
         ctx.save();
-        ctx.font         = "13px Georgia,serif";
-        ctx.fillStyle    = "rgba(210,210,210,0.85)";
+        ctx.font         = `${Math.max(9, Math.min(12, CW * 0.022))}px Georgia,serif`;
+        ctx.fillStyle    = "rgba(220,220,220,0.88)";
         ctx.textBaseline = "middle";
-        ctx.fillText(`${c.icon} ${c.label}`, x + 20, y + 8.5);
+        ctx.fillText(`${c.icon} ${c.label}`, x + 16, y + 7.5);
         ctx.restore();
       });
     }
