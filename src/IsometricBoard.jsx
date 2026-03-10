@@ -97,24 +97,32 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
     const hexPath = generateHexSpiral(N);
 
     // Adaptive padding: shrinks on small screens so tiles always fit
-    const PAD = Math.max(14, Math.min(36, Math.min(CW, CH) * 0.045));
+    const PAD = Math.max(16, Math.min(32, Math.min(CW, CH) * 0.04));
     // Reserve bottom space for the legend (2 rows × 20px + margin)
-    const LEGEND_H = 48;
+    const LEGEND_H = 52;
 
     // Compute positions at size=1 for auto-fit
     const raw = hexPath.map(([q, r]) => hexToPixel(q, r, 1));
     const allX = raw.map(p => p.x), allY = raw.map(p => p.y);
     const minX = Math.min(...allX), maxX = Math.max(...allX);
     const minY = Math.min(...allY), maxY = Math.max(...allY);
+
+    // Each hex extends ~0.86 units beyond its center — add one full hex-diameter
+    // (2 * 0.86) to both axes so border tiles never get clipped
+    const HEX_EDGE = 1.72; // 2 × 0.86 (draw radius at scale=1)
+    const spanX = maxX - minX + HEX_EDGE;
+    const spanY = maxY - minY + HEX_EDGE;
+
     const scale = Math.min(
-      (CW - PAD * 2) / (maxX - minX),
-      (CH - PAD * 2 - LEGEND_H) / (maxY - minY)   // ← reserve legend space
+      (CW - PAD * 2) / spanX,
+      (CH - PAD * 2 - LEGEND_H) / spanY
     );
     const hexR = scale; // circumradius in px
-    const OX = PAD + (CW - PAD * 2 - (maxX - minX) * scale) / 2 - minX * scale;
-    // Shift board up so it doesn't sit on top of the legend
-    const boardH = (maxY - minY) * scale;
-    const OY = PAD + (CH - PAD * 2 - LEGEND_H - boardH) / 2 - minY * scale;
+
+    // Center the board (using expanded span so tiles are fully inside)
+    const OX = PAD + (CW - PAD * 2 - spanX * scale) / 2 - (minX - HEX_EDGE / 2) * scale;
+    const boardH = spanY * scale;
+    const OY = PAD + (CH - PAD * 2 - LEGEND_H - boardH) / 2 - (minY - HEX_EDGE / 2) * scale;
 
     // Final steps with screen coords
     const steps = hexPath.map(([q, r], idx) => {
