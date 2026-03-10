@@ -185,9 +185,9 @@ function HangmanChallenge({ data, onResult, timeLimit=60 }) {
     <div>
       <TimerBar timeLimit={timeLimit} onExpire={handleExpire} paused={solved||failed} />
       <p style={{textAlign:"center",fontSize:13,color:"rgba(255,255,255,0.55)",marginBottom:6,fontStyle:"italic"}}>Hint: {data.clue}</p>
-      <div style={{textAlign:"center",fontSize:28,fontFamily:"'Cinzel',serif",marginBottom:14,letterSpacing:"0.2em"}}>
+      <div style={{textAlign:"center",fontSize:"clamp(16px,5vw,28px)",fontFamily:"'Cinzel',serif",marginBottom:14,letterSpacing:"0.15em",overflowWrap:"break-word",wordBreak:"break-all"}}>
         {word.split("").map((l,i)=>(
-          <span key={i} style={{display:"inline-block",minWidth:28,marginRight:4,borderBottom:l===" "?"none":"2px solid rgba(255,255,255,0.4)",color:guessed.has(l)?"#4ade80":"transparent"}}>{guessed.has(l)||l===" "?l:"_"}</span>
+          <span key={i} style={{display:"inline-block",minWidth:"clamp(18px,4vw,28px)",marginRight:2,borderBottom:l===" "?"none":"2px solid rgba(255,255,255,0.4)",color:guessed.has(l)?"#4ade80":"transparent"}}>{guessed.has(l)||l===" "?l:"_"}</span>
         ))}
       </div>
       <div style={{textAlign:"center",marginBottom:14}}>
@@ -197,7 +197,7 @@ function HangmanChallenge({ data, onResult, timeLimit=60 }) {
       <div style={{display:"flex",flexWrap:"wrap",gap:5,justifyContent:"center"}}>
         {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l=>(
           <button key={l} disabled={guessed.has(l)||solved||failed} onClick={()=>setGuessed(prev=>new Set([...prev,l]))}
-            style={{width:32,height:32,borderRadius:7,background:guessed.has(l)?(word.includes(l)?"rgba(22,163,74,0.3)":"rgba(239,68,68,0.2)"):"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",color:guessed.has(l)?(word.includes(l)?"#4ade80":"#f87171"):"rgba(255,255,255,0.8)",fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:700,cursor:guessed.has(l)||solved||failed?"default":"pointer"}}>
+            style={{width:"clamp(26px,6vw,32px)",height:"clamp(26px,6vw,32px)",borderRadius:7,background:guessed.has(l)?(word.includes(l)?"rgba(22,163,74,0.3)":"rgba(239,68,68,0.2)"):"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",color:guessed.has(l)?(word.includes(l)?"#4ade80":"#f87171"):"rgba(255,255,255,0.8)",fontFamily:"'Cinzel',serif",fontSize:"clamp(9px,2.2vw,11px)",fontWeight:700,cursor:guessed.has(l)||solved||failed?"default":"pointer"}}>
             {l}
           </button>
         ))}
@@ -395,7 +395,7 @@ function FoodWebChallenge({ ecosystem, onResult, isRestoration }) {
                 minHeight:42,
                 boxShadow:isClickable?"0 0 8px "+level.color+"22":"none",
               }}>
-              <div style={{display:"flex",alignItems:"center",gap:6,minWidth:175,flexShrink:0}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,minWidth:"clamp(100px,30%,175px)",flexShrink:0}}>
                 <span style={{fontSize:15}}>{level.icon}</span>
                 <div>
                   <div style={{fontFamily:"'Cinzel',serif",fontSize:10,color:level.color,fontWeight:700,letterSpacing:"0.05em"}}>{level.label}</div>

@@ -8,7 +8,9 @@ import GameScreen from "./GameScreen";
 function EcosystemDestroyedScreen({ ecosystem, teams, onRestart }) {
   const eco = ECOSYSTEMS[ecosystem.id];
   const [entered, setEntered] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
   useEffect(()=>{ const t=setTimeout(()=>setEntered(true),80); return()=>clearTimeout(t); },[]);
+  useEffect(()=>{ const h=()=>setIsMobile(window.innerWidth<640); window.addEventListener("resize",h); return()=>window.removeEventListener("resize",h); },[]);
 
   const embers = useMemo(()=>Array.from({length:28}).map((_,i)=>({
     left:`${(i*37+3)%100}%`,
@@ -26,7 +28,7 @@ function EcosystemDestroyedScreen({ ecosystem, teams, onRestart }) {
   });
 
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 25%,#1a0003 0%,#0a0000 45%,#020407 100%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:24,position:"relative",overflow:"hidden"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 25%,#1a0003 0%,#0a0000 45%,#020407 100%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:"clamp(16px,4vw,24px)",position:"relative",overflow:"hidden"}}>
       {/* Rising embers */}
       {embers.map((e,i)=>(
         <div key={i} style={{
@@ -53,7 +55,7 @@ function EcosystemDestroyedScreen({ ecosystem, teams, onRestart }) {
       </div>
 
       {/* Scripture */}
-      <div style={{...vis("0.3s"),maxWidth:"32rem",width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"1.2rem",padding:"1.6rem 2rem",marginBottom:"1.8rem",textAlign:"center",backdropFilter:"blur(4px)"}}>
+      <div style={{...vis("0.3s"),maxWidth:"32rem",width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"1.2rem",padding:"clamp(1rem,3vw,1.6rem) clamp(1rem,4vw,2rem)",marginBottom:"1.8rem",textAlign:"center",backdropFilter:"blur(4px)"}}>
         <div style={{fontSize:"1.5rem",marginBottom:"0.7rem"}}>✝️</div>
         <p style={{fontStyle:"italic",color:"rgba(255,230,200,0.85)",fontSize:"0.98rem",lineHeight:1.85,margin:"0 0 0.8rem 0",fontFamily:"'Libre Baskerville',serif"}}>
           "No nos cansemos de hacer el bien, porque a su debido tiempo cosecharemos si no nos damos por vencidos."
@@ -94,7 +96,7 @@ function EcosystemDestroyedScreen({ ecosystem, teams, onRestart }) {
       </div>
 
       <div style={vis("0.55s")}>
-        <button onClick={onRestart} style={{padding:"13px 44px",background:"linear-gradient(135deg,rgba(185,28,28,0.55),rgba(127,29,29,0.75))",border:"1.5px solid rgba(248,113,113,0.4)",borderRadius:14,color:"#fca5a5",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.95rem",cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 8px 30px rgba(127,29,29,0.45)"}}>
+        <button onClick={onRestart} style={{padding:"clamp(10px,2.5vw,13px) clamp(24px,8vw,44px)",background:"linear-gradient(135deg,rgba(185,28,28,0.55),rgba(127,29,29,0.75))",border:"1.5px solid rgba(248,113,113,0.4)",borderRadius:14,color:"#fca5a5",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:"0.95rem",cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 8px 30px rgba(127,29,29,0.45)"}}>
           🌍 Try Again
         </button>
       </div>
@@ -120,7 +122,7 @@ function VictoryScreen({ teams, ecosystem, winner, onRestart }) {
   []);
 
   return(
-    <div style={{minHeight:"100vh",background:eco.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:24,position:"relative",overflow:"hidden"}}>
+    <div style={{minHeight:"100vh",background:eco.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:"clamp(16px,4vw,24px)",position:"relative",overflow:"hidden"}}>
       {particles.map((p,i)=>(
         <div key={i} style={{position:"absolute",left:p.left,top:p.top,fontSize:p.size,opacity:0.22,animation:`victoryFloat ${p.dur} ease-in-out ${p.delay} infinite`,pointerEvents:"none",userSelect:"none"}}>{p.icon}</div>
       ))}
@@ -129,7 +131,7 @@ function VictoryScreen({ teams, ecosystem, winner, onRestart }) {
       <div style={{position:"absolute",top:"30%",left:"50%",transform:"translateX(-50%)",width:"70vw",height:"50vh",background:`radial-gradient(ellipse, ${eco.glow}18 0%, transparent 70%)`,pointerEvents:"none"}} />
 
       {/* Header */}
-      <div style={{textAlign:"center",marginBottom:28,animation:"victoryTitle 0.75s cubic-bezier(0.34,1.3,0.64,1) both"}}>
+      <div style={{textAlign:"center",marginBottom:"clamp(16px,4vw,28px)",animation:"victoryTitle 0.75s cubic-bezier(0.34,1.3,0.64,1) both"}}>
         <div style={{fontSize:10,letterSpacing:"0.45em",color:eco.color,marginBottom:10,fontFamily:"'Cinzel',serif"}}>GAME COMPLETE</div>
         <div style={{fontSize:56,marginBottom:8,animation:"float 2.5s ease-in-out infinite",filter:`drop-shadow(0 0 32px ${eco.glow})`}}>{eco.emoji}</div>
         <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"clamp(22px,4vw,34px)",color:"#fff",textShadow:`0 0 48px ${eco.color}88`,marginBottom:6,textAlign:"center"}}>{sorted[0].name} Wins!</h1>
@@ -137,7 +139,7 @@ function VictoryScreen({ teams, ecosystem, winner, onRestart }) {
       </div>
 
       {/* Leaderboard */}
-      <div style={{width:"100%",maxWidth:580,display:"flex",flexDirection:"column",gap:10,marginBottom:32}}>
+      <div style={{width:"100%",maxWidth:580,display:"flex",flexDirection:"column",gap:8,marginBottom:"clamp(18px,4vw,32px)",padding:"0 clamp(0px,2vw,0px)"}}>
         {sorted.map((team,i)=>{
           const tc=TEAM_COLORS[team.colorIdx],pct=Math.round((team.organisms.length/eco.organisms.length)*100);
           const medals=["🥇","🥈","🥉"];
@@ -145,7 +147,7 @@ function VictoryScreen({ teams, ecosystem, winner, onRestart }) {
             <div key={team.id} style={{
               background:i===0?"rgba(255,255,255,0.09)":"rgba(255,255,255,0.04)",
               border:`2px solid ${i===0?tc.bg:"rgba(255,255,255,0.07)"}`,
-              borderRadius:14,padding:"13px 16px",
+              borderRadius:14,padding:"clamp(9px,2vw,13px) clamp(10px,3vw,16px)",
               display:"flex",alignItems:"center",gap:12,
               boxShadow:i===0?`0 0 24px ${tc.bg}55`:"none",
               animation:`rankSlideIn 0.5s cubic-bezier(0.34,1.2,0.64,1) ${i*0.12}s both`,
@@ -175,7 +177,7 @@ function VictoryScreen({ teams, ecosystem, winner, onRestart }) {
       <button
         onClick={onRestart}
         style={{
-          padding:"14px 44px",
+          padding:"clamp(10px,3vw,14px) clamp(24px,8vw,44px)",
           background:"linear-gradient(135deg,#16a34a,#15803d)",
           border:"none",borderRadius:14,
           color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:14,

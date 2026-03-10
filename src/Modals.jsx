@@ -33,7 +33,7 @@ function WowFactsModal({ fact, ecosystem, context, onDone }) {
       position:"fixed", inset:0,
       background:`radial-gradient(ellipse at 50% 0%, ${eco.glow}18 0%, rgba(0,0,0,0.94) 55%)`,
       display:"flex", alignItems:"center", justifyContent:"center",
-      zIndex:250, padding:"1.5rem",
+      zIndex:250, padding:"clamp(0.75rem,3vw,1.5rem)",
       animation:"slowFade 0.35s ease",
       overflowY:"auto",
     }}>
@@ -230,11 +230,11 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
     );
   }
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200,padding:"1.25rem"}}>
-      <div style={{background:"#090e18",border:`1.5px solid ${ct.color}44`,borderRadius:"1.4rem",padding:"0",width:"100%",maxWidth:"46rem",boxShadow:`0 0 60px ${ct.color}18, 0 8px 40px rgba(0,0,0,0.7)`,maxHeight:"calc(100vh - 2.5rem)",overflowY:"auto",animation:"popIn 0.3s cubic-bezier(0.34,1.2,0.64,1)"}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200,padding:"clamp(0.5rem,2vw,1.25rem)"}}>
+      <div style={{background:"#090e18",border:`1.5px solid ${ct.color}44`,borderRadius:"1.4rem",padding:"0",width:"100%",maxWidth:"46rem",boxShadow:`0 0 60px ${ct.color}18, 0 8px 40px rgba(0,0,0,0.7)`,maxHeight:"calc(100dvh - 1rem)",overflowY:"auto",animation:"popIn 0.3s cubic-bezier(0.34,1.2,0.64,1)"}}>
 
         {/* ── Header ── */}
-        <div style={{padding:"1.2rem 1.5rem 1rem",borderBottom:`1px solid rgba(255,255,255,0.07)`}}>
+        <div style={{padding:"clamp(0.75rem,2.5vw,1.2rem) clamp(0.9rem,3vw,1.5rem) clamp(0.7rem,2vw,1rem)",borderBottom:`1px solid rgba(255,255,255,0.07)`}}>
           {/* Row 1: type badge + team + prize */}
           <div style={{display:"flex",alignItems:"center",gap:"0.75rem",marginBottom:"0.75rem"}}>
             <div style={{width:"2.6rem",height:"2.6rem",borderRadius:"0.65rem",background:ct.bg,border:`1.5px solid ${ct.color}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.25rem",flexShrink:0}}>{ct.icon}</div>
@@ -274,7 +274,7 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
         </div>
 
         {/* ── Challenge content ── */}
-        <div style={{padding:"1.4rem 1.5rem"}}>
+        <div style={{padding:"clamp(0.9rem,3vw,1.4rem) clamp(0.9rem,3vw,1.5rem)"}}>
           {cell.type==="trivia"&&<TriviaChallenge data={challenge} onResult={setResult} timeLimit={30} />}
           {cell.type==="foodchain"&&<TriviaChallenge data={{...challenge,exp:"That's how energy flows in this food chain!"}} onResult={setResult} timeLimit={45} />}
           {cell.type==="identify"&&<IdentifyChallenge data={challenge} onResult={setResult} timeLimit={30} />}

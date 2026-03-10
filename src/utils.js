@@ -21,14 +21,22 @@ const GS = `
     /* Modals and panels max-width */
     [style*="maxWidth: 46rem"], [style*="maxWidth: 580px"],
     [style*="max-width: 46rem"], [style*="max-width: 580px"],
-    [style*="maxWidth: 36rem"], [style*="maxWidth: 30rem"] {
+    [style*="maxWidth: 36rem"], [style*="maxWidth: 30rem"],
+    [style*="maxWidth: 860px"], [style*="maxWidth: 820px"],
+    [style*="maxWidth: 920px"] {
       max-width: 95vw !important;
       width: 95vw !important;
     }
 
     /* Challenge modal scrollable area */
-    [style*="maxHeight: 90vh"] {
+    [style*="maxHeight: 90vh"],
+    [style*="max-height: 90vh"] {
       max-height: 94dvh !important;
+    }
+
+    /* Roles screen card grid — stack on mobile */
+    [style*="300px 1fr"] {
+      grid-template-columns: 1fr !important;
     }
 
     /* Spinner wheel */
@@ -37,18 +45,51 @@ const GS = `
       height: min(85vw, 300px) !important;
     }
 
+    /* Force table-like 3-column grids to scroll */
+    [style*="1fr 1fr 1fr"] {
+      min-width: 480px;
+    }
+
     /* Setup/roles screens with horizontal paddings */
     [style*="padding: 40px"],
     [style*="padding: 48px"] {
       padding: 16px !important;
     }
 
+    /* Ensure all overflow containers scroll properly */
+    [style*="overflowY: auto"],
+    [style*="overflow-y: auto"] {
+      -webkit-overflow-scrolling: touch;
+    }
+
     /* Grids: trivia 2-column stays, food-chain word wrap */
     button { touch-action: manipulation; }
+
+    /* Ensure no horizontal overflow breaks page layout */
+    * { max-width: 100%; }
+    img, canvas { max-width: 100%; }
   }
 
   @media (max-width: 480px) {
     html { font-size: 12px !important; }
+
+    /* Stack role card grid vertically on very small phones */
+    [style*="300px 1fr"],
+    [style*="gridTemplateColumns: 300px"] {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Make hangman keyboard buttons even smaller */
+    [style*="width:32px"],
+    [style*="width: 32px"] {
+      width: clamp(24px, 7vw, 30px) !important;
+      height: clamp(24px, 7vw, 30px) !important;
+    }
+  }
+
+  /* Large screens — make sure content centers and doesn't stretch too wide */
+  @media (min-width: 1400px) {
+    /* Nothing needed — game scales naturally */
   }
 
   /* ANIMACIONES ORIGINALES */

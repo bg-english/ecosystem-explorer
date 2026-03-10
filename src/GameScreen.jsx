@@ -219,10 +219,10 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   return(
     <div style={{height:"100vh",background:eco.bg,fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",overflow:"hidden"}}>
       {/* Top bar */}
-      <div style={{background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${isCollapsed?"rgba(239,68,68,0.35)":"rgba(255,255,255,0.06)"}`,padding:isXS?"0.35rem 0.55rem":isMobile?"0.45rem 0.75rem":"0.7rem 1.4rem",display:"flex",alignItems:"center",gap:isXS?"0.35rem":isMobile?"0.5rem":"1rem",flexShrink:0,transition:"border-color 0.5s",flexWrap:"wrap",minHeight:"unset"}}>
+      <div style={{background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${isCollapsed?"rgba(239,68,68,0.35)":"rgba(255,255,255,0.06)"}`,padding:isXS?"0.3rem 0.5rem":isMobile?"0.4rem 0.65rem":"0.65rem 1.2rem",display:"flex",alignItems:"center",gap:isXS?"0.3rem":isMobile?"0.45rem":"0.85rem",flexShrink:0,transition:"border-color 0.5s",flexWrap:"nowrap",minHeight:"unset",overflow:"hidden"}}>
         <span style={{fontSize:isMobile?"1.2rem":"1.6rem"}}>{eco.emoji}</span>
         <div style={{minWidth:0}}>
-          <div style={{fontFamily:"'Cinzel',serif",fontSize:isXS?"0.65rem":isMobile?"0.78rem":"1rem",color:"#fff",fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:isXS?"90px":isMobile?"140px":"unset"}}>{eco.name}</div>
+          <div style={{fontFamily:"'Cinzel',serif",fontSize:isXS?"0.65rem":isMobile?"0.78rem":"1rem",color:"#fff",fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:isXS?"70px":isMobile?"120px":"unset"}}>{eco.name}</div>
           <div style={{fontSize:isMobile?"0.55rem":"0.65rem",color:"rgba(255,255,255,0.4)",letterSpacing:"0.1em"}}>Turn {turn} · {curTeam?.position+1}/{N_BOARD}</div>
         </div>
         {/* Revealed elements strip — hide on very small screens */}
@@ -283,7 +283,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
 
       {/* Chapter narrative popup */}
       {narrativePopup&&(
-        <div style={{position:"fixed",top:72,left:"50%",transform:"translateX(-50%)",zIndex:150,maxWidth:540,width:"92%",background:"rgba(0,0,0,0.92)",border:`1px solid ${eco.glow}55`,borderRadius:18,overflow:"hidden",boxShadow:`0 0 40px ${eco.glow}44`,animation:"narrativeSlide 0.5s ease",backdropFilter:"blur(14px)"}}>
+        <div style={{position:"fixed",top:"clamp(56px,10vh,72px)",left:"50%",transform:"translateX(-50%)",zIndex:150,maxWidth:"min(540px,96%)",width:"92%",background:"rgba(0,0,0,0.92)",border:`1px solid ${eco.glow}55`,borderRadius:18,overflow:"hidden",boxShadow:`0 0 40px ${eco.glow}44`,animation:"narrativeSlide 0.5s ease",backdropFilter:"blur(14px)"}}>
           {narrativePopup.img&&(
             <div style={{position:"relative",height:120,overflow:"hidden"}}>
               <img
@@ -341,11 +341,11 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
         <div style={{
           width: isMobile ? "100%" : isTablet ? "14rem" : "18rem",
           height: isMobile ? "auto" : undefined,
-          maxHeight: isMobile ? (isXS ? "28vh" : "32vh") : undefined,
+          maxHeight: isMobile ? (isXS ? "32vh" : "36vh") : undefined,
           background:"rgba(0,0,0,0.5)",
           borderLeft: isMobile ? "none" : "1px solid rgba(255,255,255,0.07)",
           borderTop: isMobile ? "1px solid rgba(255,255,255,0.1)" : "none",
-          padding: isMobile ? "0.6rem 0.75rem" : "1rem 0.9rem",
+          padding: isMobile ? "0.5rem 0.65rem" : isTablet ? "0.75rem 0.75rem" : "1rem 0.9rem",
           overflowY:"auto",
           flexShrink:0,
           display:"flex",
@@ -453,7 +453,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
         if(!ce.alertShown){
           // Phase 1: Dramatic ALL-PLAYERS alert
           return(
-            <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.95)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,padding:"1.5rem"}}>
+            <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.95)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,padding:"clamp(0.75rem,3vw,1.5rem)",overflowY:"auto"}}>
               <div style={{maxWidth:"36rem",width:"100%",textAlign:"center",animation:"popIn 0.5s ease"}}>
                 <div style={{fontSize:"4rem",animation:"chaosFloat 1s ease-in-out infinite",marginBottom:"1rem"}}>🚨</div>
                 <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"1.4rem",color:"#f87171",letterSpacing:"0.1em",marginBottom:"0.5rem",textShadow:"0 0 30px rgba(248,113,113,0.8)"}}>
@@ -500,8 +500,8 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
 
         // Phase 2: Builder challenge
         return(
-          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,padding:"1.5rem"}}>
-            <div style={{background:"#0a0f1a",border:`2px solid ${tc2.bg}66`,borderRadius:"1.3rem",padding:"1.8rem",maxWidth:"48rem",width:"100%",boxShadow:`0 0 60px ${tc2.bg}33`,maxHeight:"90vh",overflowY:"auto"}}>
+          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,padding:"clamp(0.75rem,3vw,1.5rem)",overflowY:"auto"}}>
+            <div style={{background:"#0a0f1a",border:`2px solid ${tc2.bg}66`,borderRadius:"1.3rem",padding:"clamp(1rem,3vw,1.8rem)",maxWidth:"48rem",width:"100%",boxShadow:`0 0 60px ${tc2.bg}33`,maxHeight:"92dvh",overflowY:"auto"}}>
               <div style={{display:"flex",alignItems:"center",gap:"0.9rem",marginBottom:"1.2rem"}}>
                 <div style={{width:"3rem",height:"3rem",borderRadius:"0.8rem",background:"#1a0800",border:"2px solid rgba(251,146,60,0.4)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.4rem"}}>🕸️</div>
                 <div style={{flex:1}}>

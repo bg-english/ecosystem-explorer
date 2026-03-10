@@ -105,8 +105,8 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
     // ── Build spiral path & screen positions ──────────
     const hexPath = generateHexSpiral(N);
 
-    const PAD = Math.max(20, Math.min(40, Math.min(CW, CH) * 0.05));
-    const LEGEND_H = 56;
+    const PAD = Math.max(14, Math.min(36, Math.min(CW, CH) * 0.045));
+    const LEGEND_H = CW < 400 ? 76 : 56;
 
     const raw = hexPath.map(([q, r]) => hexToPixel(q, r, 1));
     const allX = raw.map(p => p.x), allY = raw.map(p => p.y);
@@ -285,7 +285,8 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
       ctx.shadowColor = "rgba(74,222,128,0.8)";
       ctx.shadowBlur  = 16;
       ctx.beginPath();
-      ctx.roundRect(cx - 30, by - 9, 60, 18, 9);
+      const badgeW = Math.max(50, Math.min(60, hexR * 2.2));
+      ctx.roundRect(cx - badgeW/2, by - 9, badgeW, 18, 9);
       ctx.fillStyle = "rgba(22,163,74,0.92)";
       ctx.fill();
       ctx.restore();
@@ -437,7 +438,7 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
     // Legend
     function drawLegend() {
       const types  = ["trivia","identify","foodchain","hangman","match","unscramble","wildcard"];
-      const cols   = 4;
+      const cols   = CW < 400 ? 2 : 4;
       const itemW  = Math.min(CW / cols, 118);
       const itemH  = 20;
       const rows   = Math.ceil(types.length / cols);

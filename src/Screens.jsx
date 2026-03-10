@@ -134,17 +134,17 @@ function GenesisScreen({ teams, onStart }) {
                   borderTop:"22px solid rgba(255,220,100,0.95)",
                   filter:"drop-shadow(0 2px 8px rgba(255,220,100,0.7))",
                 }} />
-                <div style={{width:240,height:240,borderRadius:"50%",background:`conic-gradient(${conicParts})`,transform:`rotate(${deg}deg)`,transition:spinning?"transform 4.2s cubic-bezier(0.17,0.67,0.12,1)":"none",border:"3px solid rgba(255,255,255,0.15)",position:"relative",boxShadow:"0 0 40px rgba(200,160,60,0.2), 0 0 80px rgba(200,160,60,0.08)"}}>
+                <div style={{width:"min(240px,70vw)",height:"min(240px,70vw)",borderRadius:"50%",background:`conic-gradient(${conicParts})`,transform:`rotate(${deg}deg)`,transition:spinning?"transform 4.2s cubic-bezier(0.17,0.67,0.12,1)":"none",border:"3px solid rgba(255,255,255,0.15)",position:"relative",boxShadow:"0 0 40px rgba(200,160,60,0.2), 0 0 80px rgba(200,160,60,0.08)"}}>
                   {activeTeams.map((t,i)=>{
                     const angle=(i/n+0.5/n)*360-90, rad=angle*Math.PI/180;
                     return(
-                      <div key={t.id} style={{position:"absolute",left:120+85*Math.cos(rad),top:120+85*Math.sin(rad),transform:"translate(-50%,-50%)",pointerEvents:"none",textAlign:"center"}}>
+                      <div key={t.id} style={{position:"absolute",left:`${50+35.4*Math.cos(rad)}%`,top:`${50+35.4*Math.sin(rad)}%`,transform:"translate(-50%,-50%)",pointerEvents:"none",textAlign:"center"}}>
                         <div style={{fontFamily:"'Cinzel',serif",fontSize:9,fontWeight:700,color:"#fff",textShadow:"0 1px 4px rgba(0,0,0,0.9)",whiteSpace:"nowrap",maxWidth:60,overflow:"hidden",textOverflow:"ellipsis"}}>{t.name}</div>
                       </div>
                     );
                   })}
                 </div>
-                <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:44,height:44,borderRadius:"50%",background:"#050508",border:"2px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,zIndex:5}}>📖</div>
+                <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"clamp(36px,11%,44px)",height:"clamp(36px,11%,44px)",borderRadius:"50%",background:"#050508",border:"2px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,zIndex:5}}>📖</div>
               </div>
               <button onClick={doSpin} disabled={spinning} style={{
                 padding:"13px 48px",
@@ -302,8 +302,8 @@ function RolesScreen({ teams, onDone }) {
                 style={{height:8,borderRadius:4,background:i===idx?activeRoles[i].color:i<idx?"rgba(255,255,255,0.18)":"rgba(255,255,255,0.06)",width:i===idx?28:8,transition:"all 0.3s",cursor:"pointer"}} />
             ))}
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"300px 1fr",gap:0,background:"rgba(0,0,0,0.45)",border:`2px solid ${role.color}30`,borderRadius:20,overflow:"hidden",boxShadow:`0 0 60px ${role.color}15`}}>
-            <div style={{position:"relative",minHeight:460}}>
+          <div style={{display:"grid",gridTemplateColumns:"min(300px,38%) 1fr",gap:0,background:"rgba(0,0,0,0.45)",border:`2px solid ${role.color}30`,borderRadius:20,overflow:"hidden",boxShadow:`0 0 60px ${role.color}15`,flexWrap:"wrap"}}>
+            <div style={{position:"relative",minHeight:"clamp(200px,40vh,460px)"}}>
               <img src={role.img} alt={role.biblical}
                 onError={e=>{e.target.style.display="none";const fb=e.target.parentNode.querySelector(".img-fallback");if(fb)fb.style.display="flex";}}
                 style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top center",filter:"brightness(0.82) saturate(1.15)",display:"block"}} />
@@ -316,7 +316,7 @@ function RolesScreen({ teams, onDone }) {
                 <div style={{fontSize:11,color:role.color,fontStyle:"italic",marginTop:3}}>{role.ref}</div>
               </div>
             </div>
-            <div style={{padding:"28px 26px 24px 22px",display:"flex",flexDirection:"column",gap:16}}>
+            <div style={{padding:"clamp(14px,2.5vw,28px) clamp(14px,3vw,26px) 24px clamp(12px,2vw,22px)",display:"flex",flexDirection:"column",gap:"clamp(10px,2vh,16px)",overflowY:"auto"}}>
               <div>
                 <div style={{fontSize:9,color:"rgba(255,255,255,0.3)",letterSpacing:"0.28em",marginBottom:6}}>GUARDIAN {idx+1} OF {activeRoles.length}</div>
                 <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:5}}>
@@ -428,7 +428,7 @@ function RolesScreen({ teams, onDone }) {
                 {activeRoles.map(r=>{
                   const assigned=teamAssignments[r.id]||"";
                   return(
-                    <div key={r.id} style={{display:"grid",gridTemplateColumns:"44px auto 180px",gap:12,alignItems:"center",background:assigned?`${r.color}0d`:"rgba(255,255,255,0.02)",border:`1.5px solid ${assigned?r.color+"40":"rgba(255,255,255,0.06)"}`,borderRadius:12,padding:"10px 14px",transition:"all 0.25s"}}>
+                    <div key={r.id} style={{display:"grid",gridTemplateColumns:"44px auto clamp(120px,35%,180px)",gap:8,alignItems:"center",background:assigned?`${r.color}0d`:"rgba(255,255,255,0.02)",border:`1.5px solid ${assigned?r.color+"40":"rgba(255,255,255,0.06)"}`,borderRadius:12,padding:"10px 14px",transition:"all 0.25s"}}>
                       {/* Role */}
                       <span style={{fontSize:26,textAlign:"center",filter:assigned?`drop-shadow(0 0 8px ${r.color}88)`:"none"}}>{r.emoji}</span>
                       <div>
@@ -542,7 +542,7 @@ function WelcomeScreen({ onEnter }) {
         {/* Tagline + title */}
         <div style={{...vis(3)}}>
           <div style={{fontSize:10,color:"#4ade80",letterSpacing:"0.45em",marginBottom:10,fontFamily:"'Cinzel',serif"}}>7TH GRADE SCIENCE · ECOSYSTEMS</div>
-          <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"clamp(22px,3.8vw,34px)",color:"#fff",letterSpacing:"0.06em",textShadow:"0 0 48px rgba(74,222,128,0.5)",marginBottom:0,lineHeight:1.25}}>
+          <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"clamp(20px,5.5vw,34px)",color:"#fff",letterSpacing:"0.04em",textShadow:"0 0 48px rgba(74,222,128,0.5)",marginBottom:0,lineHeight:1.25}}>
             GUARDIANS<br/>OF THE GARDEN
           </h1>
         </div>
@@ -647,8 +647,8 @@ function NarrativeScreen({ onDone }) {
               <p style={{fontStyle:"italic",color:"rgba(255,245,200,0.85)",fontSize:16,lineHeight:1.8,margin:0}}>"You had compassion on the plant for which you did not work… And should I not have compassion on Nineveh, the great city, in which there are more than 120,000 persons — and also many animals?"</p>
               <p style={{fontSize:11,color:"rgba(253,224,71,0.7)",marginTop:8,letterSpacing:"0.08em"}}>— Jonah 4:10–11</p>
             </div>
-            <div style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,0.07)",marginBottom:20}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(0,0,0,0.5)"}}>
+            <div style={{borderRadius:16,overflow:"auto",border:"1px solid rgba(255,255,255,0.07)",marginBottom:20,WebkitOverflowScrolling:"touch"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(0,0,0,0.5)",minWidth:"480px"}}>
                 {[{label:"🔬 Scientific Truth",color:"#38bdf8"},{label:"🌿 The Bridge",color:"#4ade80"},{label:"✝️ Spiritual Truth",color:"#fbbf24"}].map((h,i)=>(
                   <div key={i} style={{padding:"12px 16px",borderRight:i<2?"1px solid rgba(255,255,255,0.07)":"none",textAlign:"center"}}>
                     <div style={{fontFamily:"'Cinzel',serif",fontSize:11,color:h.color,letterSpacing:"0.12em",fontWeight:700}}>{h.label}</div>
@@ -656,7 +656,7 @@ function NarrativeScreen({ onDone }) {
                 ))}
               </div>
               {TABLE.map((row,i)=>(
-                <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:i%2===0?"rgba(255,255,255,0.02)":"rgba(0,0,0,0.2)",borderTop:"1px solid rgba(255,255,255,0.05)"}}>
+                <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:i%2===0?"rgba(255,255,255,0.02)":"rgba(0,0,0,0.2)",borderTop:"1px solid rgba(255,255,255,0.05)",minWidth:"480px"}}>
                   <div style={{padding:"13px 16px",borderRight:"1px solid rgba(255,255,255,0.05)",fontSize:14,color:"rgba(147,197,253,0.85)",lineHeight:1.65}}>{row.science}</div>
                   <div style={{padding:"13px 16px",borderRight:"1px solid rgba(255,255,255,0.05)",fontSize:14,color:"rgba(134,239,172,0.85)",lineHeight:1.65,fontStyle:"italic"}}>{row.bridge}</div>
                   <div style={{padding:"13px 16px",fontSize:14,color:"rgba(253,224,71,0.8)",lineHeight:1.65}}>{row.spirit}</div>
@@ -733,7 +733,7 @@ function SetupScreen({ onStart }) {
       {step===0&&(
         <div style={{width:"100%",maxWidth:960,animation:"fadeUp 0.5s ease"}}>
         <p style={{textAlign:"center",color:"rgba(255,255,255,0.4)",marginBottom:10,fontSize:12,letterSpacing:"0.05em"}}>Choose the ecosystem your class will explore</p>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:8}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(220px,45%),1fr))",gap:8}}>
             {ecoList.map(e=>{
               const sel=eco?.id===e.id;
               return(
@@ -926,17 +926,17 @@ function SpinnerScreen({ teams, onDone }) {
       <div style={{fontSize:12,color:"#4ade80",letterSpacing:"0.3em",marginBottom:12}}>SPIN ORDER</div>
       <h2 style={{fontFamily:"'Cinzel',serif",fontSize:26,color:"#fff",marginBottom:4}}>Who goes first?</h2>
       <p style={{color:"rgba(255,255,255,0.4)",fontSize:13,marginBottom:40}}>Spin to decide who goes first</p>
-      <div style={{position:"relative",marginBottom:40}}>
+      <div style={{position:"relative",marginBottom:"clamp(20px,5vw,40px)"}}>
         <div style={{position:"absolute",top:-18,left:"50%",transform:"translateX(-50%)",zIndex:10,fontSize:28}}>▼</div>
-        <div style={{width:300,height:300,borderRadius:"50%",background:`conic-gradient(${conicParts})`,transform:`rotate(${deg}deg)`,transition:spinning?"transform 4.2s cubic-bezier(0.17,0.67,0.12,1)":"none",border:"4px solid rgba(255,255,255,0.2)",position:"relative"}}>
+        <div style={{width:"min(300px,80vw)",height:"min(300px,80vw)",borderRadius:"50%",background:`conic-gradient(${conicParts})`,transform:`rotate(${deg}deg)`,transition:spinning?"transform 4.2s cubic-bezier(0.17,0.67,0.12,1)":"none",border:"4px solid rgba(255,255,255,0.2)",position:"relative"}}>
           {teams.map((t,i)=>{
             const angle=(i/n+0.5/n)*360-90,rad=angle*Math.PI/180;
-            return(<div key={i} style={{position:"absolute",left:150+110*Math.cos(rad),top:150+110*Math.sin(rad),transform:"translate(-50%,-50%)",textAlign:"center",pointerEvents:"none"}}>
+            return(<div key={i} style={{position:"absolute",left:150+88*Math.cos(rad),top:150+88*Math.sin(rad),transform:"translate(-50%,-50%)",textAlign:"center",pointerEvents:"none"}}>
               <div style={{fontFamily:"'Cinzel',serif",fontSize:10,fontWeight:700,color:"#fff",textShadow:"0 1px 4px rgba(0,0,0,0.8)",whiteSpace:"nowrap"}}>{t.name}</div>
             </div>);
           })}
         </div>
-        <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:50,height:50,borderRadius:"50%",background:"#0a0f1a",border:"3px solid rgba(255,255,255,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,zIndex:5}}>🌍</div>
+        <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"clamp(40px,13%,50px)",height:"clamp(40px,13%,50px)",borderRadius:"50%",background:"#0a0f1a",border:"3px solid rgba(255,255,255,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"clamp(14px,4%,20px)",zIndex:5}}>🌍</div>
       </div>
       {winner!==null?(
         <div style={{textAlign:"center",animation:"popIn 0.6s ease"}}>
