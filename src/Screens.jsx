@@ -856,12 +856,19 @@ function SetupScreen({ onStart }) {
                   <input value={editing.name} onChange={e=>setEditing(p=>({...p,name:e.target.value.toUpperCase()}))}
                     style={{width:180,background:"rgba(255,255,255,0.08)",border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:8,padding:"8px 12px",color:"#fff",fontFamily:"'Cinzel',serif",fontSize:13,outline:"none"}} placeholder="Team name..." />
                 </div>
-                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginBottom:8}}>PLAYERS (max 7)</div>
-                {Array.from({length:7}).map((_,i)=>(
-                  <input key={i} value={editing.players[i]||""} onChange={e=>{const p=[...(editing.players||[])];p[i]=e.target.value.toUpperCase();setEditing(prev=>({...prev,players:p}));}}
-                    style={{width:"100%",background:i<4?"rgba(255,255,255,0.06)":"rgba(255,255,255,0.03)",border:`1px solid rgba(255,255,255,${i<4?0.12:0.06})`,borderRadius:8,padding:"9px 12px",color:"#fff",fontFamily:"'Libre Baskerville',serif",fontSize:14,outline:"none",marginBottom:7}}
-                    placeholder={`Jugador ${i+1}${i>=4?" (opcional)":""}`} />
-                ))}
+                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginBottom:8}}>
+                  PLAYERS — one per line (max 7)
+                </div>
+                <textarea
+                  value={editing.players.filter(p=>p).join('\n')}
+                  onChange={e=>{
+                    const lines=e.target.value.split('\n').slice(0,7);
+                    setEditing(prev=>({...prev,players:lines.map(l=>l.toUpperCase())}));
+                  }}
+                  rows={7}
+                  placeholder={"Andrea López\nCarlos Mendez\nSofia Ruiz\nJuan Torres\n..."}
+                  style={{width:"100%",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"9px 12px",color:"#fff",fontFamily:"'Libre Baskerville',serif",fontSize:14,outline:"none",resize:"none",lineHeight:1.85,boxSizing:"border-box"}}
+                />
                 <button onClick={saveEditing} style={{width:"100%",marginTop:6,padding:"12px",background:`${TEAM_COLORS[editing.idx].bg}33`,border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:10,color:"#fff",fontFamily:"'Cinzel',serif",fontSize:13,cursor:"pointer",letterSpacing:"0.1em"}}>✓ Save Team</button>
               </div>
             </div>
@@ -886,12 +893,19 @@ function SetupScreen({ onStart }) {
                   <input value={editing.name} onChange={e=>setEditing(p=>({...p,name:e.target.value.toUpperCase()}))}
                     style={{width:180,background:"rgba(255,255,255,0.08)",border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:8,padding:"8px 12px",color:"#fff",fontFamily:"'Cinzel',serif",fontSize:13,outline:"none"}} placeholder="Team name..." />
                 </div>
-                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginBottom:10}}>PLAYERS (max 7)</div>
-                {Array.from({length:7}).map((_,i)=>(
-                  <input key={i} value={editing.players[i]||""} onChange={e=>{const p=[...(editing.players||[])];p[i]=e.target.value.toUpperCase();setEditing(prev=>({...prev,players:p}));}}
-                    style={{width:"100%",background:i<4?"rgba(255,255,255,0.06)":"rgba(255,255,255,0.03)",border:`1px solid rgba(255,255,255,${i<4?0.12:0.06})`,borderRadius:8,padding:"8px 12px",color:"#fff",fontFamily:"'Libre Baskerville',serif",fontSize:13,outline:"none",marginBottom:6}}
-                    placeholder={`Jugador ${i+1}${i>=4?" (opcional)":""}`} />
-                ))}
+                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginBottom:10}}>
+                  PLAYERS — one per line (max 7)
+                </div>
+                <textarea
+                  value={editing.players.filter(p=>p).join('\n')}
+                  onChange={e=>{
+                    const lines=e.target.value.split('\n').slice(0,7);
+                    setEditing(prev=>({...prev,players:lines.map(l=>l.toUpperCase())}));
+                  }}
+                  rows={7}
+                  placeholder={"Andrea López\nCarlos Mendez\nSofia Ruiz\nJuan Torres\n..."}
+                  style={{width:"100%",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 12px",color:"#fff",fontFamily:"'Libre Baskerville',serif",fontSize:13,outline:"none",resize:"none",lineHeight:1.85,boxSizing:"border-box"}}
+                />
                 <button onClick={saveEditing} style={{width:"100%",marginTop:8,padding:"10px",background:`${TEAM_COLORS[editing.idx].bg}33`,border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:10,color:"#fff",fontFamily:"'Cinzel',serif",fontSize:12,cursor:"pointer",letterSpacing:"0.1em"}}>✓ Save Team</button>
               </div>
             </div>
