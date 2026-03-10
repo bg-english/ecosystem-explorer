@@ -428,7 +428,7 @@ function RolesScreen({ teams, onDone }) {
                 {activeRoles.map(r=>{
                   const assigned=teamAssignments[r.id]||"";
                   return(
-                    <div key={r.id} style={{display:"grid",gridTemplateColumns:"44px 1fr 1fr",gap:12,alignItems:"center",background:assigned?`${r.color}0d`:"rgba(255,255,255,0.02)",border:`1.5px solid ${assigned?r.color+"40":"rgba(255,255,255,0.06)"}`,borderRadius:12,padding:"10px 14px",transition:"all 0.25s"}}>
+                    <div key={r.id} style={{display:"grid",gridTemplateColumns:"44px 1fr 160px",gap:12,alignItems:"center",background:assigned?`${r.color}0d`:"rgba(255,255,255,0.02)",border:`1.5px solid ${assigned?r.color+"40":"rgba(255,255,255,0.06)"}`,borderRadius:12,padding:"10px 14px",transition:"all 0.25s"}}>
                       {/* Role */}
                       <span style={{fontSize:26,textAlign:"center",filter:assigned?`drop-shadow(0 0 8px ${r.color}88)`:"none"}}>{r.emoji}</span>
                       <div>
