@@ -708,7 +708,10 @@ function SetupScreen({ onStart }) {
     const cleaned = editing.players.filter(p=>p.trim());
     setTeams(prev=>prev.map((t,i)=>i===editing.idx?{...t,name:editing.name||t.name,players:cleaned.length?cleaned:t.players}:t));
   };
-  const canProceed = step===0?eco:step===1?numTeams>=2:teams.every(t=>t.players.filter(p=>p.trim()).length>0);
+  // Merge editing state for the currently active team so canProceed
+  // reflects live input even before the user clicks "Save Team"
+  const getEffectivePlayers = (t, i) => i === editing.idx ? editing.players : t.players;
+  const canProceed = step===0?eco:step===1?numTeams>=2:teams.every((t,i)=>getEffectivePlayers(t,i).filter(p=>p.trim()).length>0);
 
   return (
     <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"16px 20px",position:"relative",overflow:"hidden auto"}}>
@@ -897,7 +900,13 @@ function SetupScreen({ onStart }) {
       )}
       <div style={{display:"flex",gap:14,marginTop:16,width:"100%",maxWidth:step===2?700:step===1?500:960,justifyContent:step>0?"space-between":"flex-end"}}>
         {step>0&&<button onClick={()=>{saveEditing();setStep(s=>s-1);}} style={{padding:"13px 28px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:12,color:"rgba(255,255,255,0.7)",fontFamily:"'Cinzel',serif",fontSize:13,cursor:"pointer"}}>← Back</button>}
-        <button onClick={()=>{if(!canProceed)return;if(step===2){saveEditing();setTimeout(()=>onStart(eco,teams.map(t=>({...t,players:t.players.filter(p=>p.trim())}))),50);}else{if(step===1&&teams.length===0)initTeams(numTeams);setStep(s=>s+1);}}}
+        <button onClick={()=>{if(!canProceed)return;if(step===2){
+          // Merge editing state into teams so unsaved input is never lost
+          const merged=teams.map((t,i)=>i===editing.idx
+            ?{...t,name:editing.name||t.name,players:editing.players.filter(p=>p.trim())}
+            :{...t,players:t.players.filter(p=>p.trim())});
+          onStart(eco,merged);
+        }else{if(step===1&&teams.length===0)initTeams(numTeams);setStep(s=>s+1);}}}
           style={{padding:"13px 36px",background:canProceed?"linear-gradient(135deg,#16a34a,#15803d)":"rgba(255,255,255,0.06)",border:"none",borderRadius:12,color:canProceed?"#fff":"rgba(255,255,255,0.3)",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:13,cursor:canProceed?"pointer":"not-allowed",letterSpacing:"0.1em",boxShadow:canProceed?"0 6px 20px rgba(22,163,74,0.4)":"none"}}>
           {step===2?"🚀 Launch Game!":"Next →"}
         </button>

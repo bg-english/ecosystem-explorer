@@ -1,9 +1,45 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Component } from "react";
 import { TEAM_COLORS } from "./constants";
 import { ECOSYSTEMS } from "./ecosystems";
 import { GS } from "./utils";
 import { GenesisScreen, RolesScreen, WelcomeScreen, NarrativeScreen, SetupScreen, SpinnerScreen } from "./Screens";
 import GameScreen from "./GameScreen";
+
+// ── ERROR BOUNDARY ──────────────────────────────────
+// Catches any unhandled React crash and shows a recovery screen
+// instead of leaving the user on a black screen.
+class ErrorBoundary extends Component {
+  state = { hasError: false, error: null };
+  static getDerivedStateFromError(e) { return { hasError: true, error: e }; }
+  componentDidCatch(e, info) { console.error("[Ecosystem Explorer] Crash:", e, info); }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 30%,#0d1a0e,#020407)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",gap:18,padding:24,textAlign:"center"}}>
+          <div style={{fontSize:52,filter:"drop-shadow(0 0 24px rgba(239,68,68,0.6))"}}>⚠️</div>
+          <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"clamp(18px,4vw,26px)",color:"#f87171",textShadow:"0 0 30px rgba(248,113,113,0.5)"}}>
+            Something Went Wrong
+          </div>
+          <p style={{color:"rgba(255,255,255,0.45)",fontSize:13,maxWidth:360,lineHeight:1.7,margin:0}}>
+            An unexpected error occurred. Your progress may have been lost, but the game is ready to restart.
+          </p>
+          {this.state.error?.message && (
+            <code style={{fontSize:11,color:"rgba(255,100,100,0.55)",background:"rgba(255,0,0,0.06)",border:"1px solid rgba(255,0,0,0.15)",borderRadius:8,padding:"6px 14px",maxWidth:400,wordBreak:"break-word"}}>
+              {this.state.error.message}
+            </code>
+          )}
+          <button
+            onClick={() => this.setState({ hasError: false, error: null })}
+            style={{marginTop:8,padding:"13px 40px",background:"linear-gradient(135deg,#16a34a,#15803d)",border:"none",borderRadius:14,color:"#fff",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:14,cursor:"pointer",letterSpacing:"0.1em",boxShadow:"0 6px 24px rgba(22,163,74,0.45)"}}
+          >
+            🌍 Restart Game
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function EcosystemDestroyedScreen({ ecosystem, teams, onRestart }) {
   const eco = ECOSYSTEMS[ecosystem.id];
@@ -202,7 +238,7 @@ export default function App() {
   const handleGenesisDone=idx=>{setFirstTeam(idx);setScreen("game");};
   const handleRestart=()=>{setScreen("welcome");setEcosystem(null);setGameTeams([]);setFirstTeam(0);};
   return(
-    <>
+    <ErrorBoundary>
       <style>{GS}</style>
       {screen==="welcome"&&<WelcomeScreen onEnter={()=>setScreen("narrative")} />}
       {screen==="narrative"&&<NarrativeScreen onDone={handleNarrativeDone} />}
@@ -210,6 +246,6 @@ export default function App() {
       {screen==="roles"&&gameTeams.length>0&&<RolesScreen teams={gameTeams} onDone={handleRolesDone} />}
       {screen==="genesis"&&gameTeams.length>0&&<GenesisScreen teams={gameTeams} ecosystem={ecosystem} onStart={handleGenesisDone} />}
       {screen==="game"&&ecosystem&&<GameScreen ecosystem={ecosystem} initTeams={gameTeams} firstTeamIdx={firstTeam} onEnd={handleRestart} />}
-    </>
+    </ErrorBoundary>
   );
 }

@@ -148,10 +148,11 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
             const uncol=getUncollected(teams[curIdx]);
             if(uncol.length>0){const org=pick(uncol);resolved={org};}
           } else if(cell.fx==="steal"){
-            const rich=[...teams].filter((_,i)=>i!==curIdx).sort((a,b)=>b.organisms.length-a.organisms.length)[0];
-            if(rich&&rich.organisms.length>0){
-              const org=rich.organisms[rich.organisms.length-1];
-              resolved={org,fromTeam:rich};
+            let richIdx=-1;
+            teams.forEach((t,i)=>{if(i!==curIdx&&(richIdx===-1||t.organisms.length>teams[richIdx].organisms.length))richIdx=i;});
+            if(richIdx!==-1&&teams[richIdx].organisms.length>0){
+              const org=teams[richIdx].organisms[teams[richIdx].organisms.length-1];
+              resolved={org,fromTeamIdx:richIdx};
             }
           }
           setWildcardResolved(resolved);
@@ -178,7 +179,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
     else if(cell.fx==="back")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],position:Math.max(0,u[curIdx].position-cell.val)};return u;});
     else if(cell.fx==="skip")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],skipNext:true};return u;});
     else if(cell.fx==="free"&&res?.org)setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,res.org]};return u;});
-    else if(cell.fx==="steal"&&res?.org&&res?.fromTeam){setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,res.org]};u[res.fromTeam.id]={...u[res.fromTeam.id],organisms:u[res.fromTeam.id].organisms.filter(o=>o.id!==res.org.id)};return u;});}
+    else if(cell.fx==="steal"&&res?.org&&res?.fromTeamIdx!=null){setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],organisms:[...u[curIdx].organisms,res.org]};u[res.fromTeamIdx]={...u[res.fromTeamIdx],organisms:u[res.fromTeamIdx].organisms.filter(o=>o.id!==res.org.id)};return u;});}
     else if(cell.fx==="double")setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],doubleNext:true};return u;});
     setActiveCell(null);setWildcardResolved(null);nextTurn();
   };
@@ -190,6 +191,9 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
       setCorrectAnswers(c=>c+1);
       const isDouble=teams[curIdx].doubleNext;
       setTeams(p=>{const u=[...p];const newOrgs=[...u[curIdx].organisms];if(!newOrgs.find(o=>o.id===org.id))newOrgs.push(org);if(isDouble){const u2=eco.organisms.filter(o=>!newOrgs.find(n=>n.id===o.id));if(u2.length>0)newOrgs.push(pick(u2));}u[curIdx]={...u[curIdx],organisms:newOrgs,doubleNext:false};return u;});
+    } else {
+      // Reset doubleNext even on loss — otherwise the bonus persists forever
+      if(teams[curIdx].doubleNext) setTeams(p=>{const u=[...p];u[curIdx]={...u[curIdx],doubleNext:false};return u;});
     }
     setPendingOrg(null);setActiveCell(null);
     if(won && isFoodweb){
@@ -202,7 +206,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
   const nextTurn=()=>{
     setPhase("idle");setDiceVal(null);setTurn(t=>t+1);
     let next=(curIdx+1)%teams.length;
-    if(teams[next]?.skipNext){setTeams(p=>{const u=[...p];u[next]={...u[next],skipNext:false};return u;});next=(next+1)%teams.length;}
+    while(teams[next]?.skipNext){setTeams(p=>{const u=[...p];u[next]={...u[next],skipNext:false};return u;});next=(next+1)%teams.length;}
     setCurIdx(next);
   };
 
