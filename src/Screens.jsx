@@ -258,7 +258,7 @@ function RolesScreen({ teams, onDone }) {
   const teamAssignments = assignments[teamForTab?.id]||{};
 
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",position:"relative",overflow:"hidden"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",position:"relative",overflow:"hidden auto"}}>
       {Array.from({length:30}).map((_,i)=>(
         <div key={i} style={{position:"absolute",left:`${(i*37)%100}%`,top:`${(i*53)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.2,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none"}} />
       ))}
@@ -515,7 +515,7 @@ function WelcomeScreen({ onEnter }) {
   });
 
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 30%,#071a0e 0%,#020407 65%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:"32px 20px",position:"relative",overflow:"hidden"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 30%,#071a0e 0%,#020407 65%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:"32px 20px",position:"relative",overflow:"hidden auto"}}>
       {/* Stars */}
       {Array.from({length:60}).map((_,i)=>(
         <div key={i} style={{position:"absolute",left:`${(i*43+7)%100}%`,top:`${(i*61+11)%100}%`,width:i%7===0?3:i%3===0?2:1,height:i%7===0?3:i%3===0?2:1,borderRadius:"50%",background:"#fff",opacity:i%3===0?0.4:0.15,animation:`twinkle ${2+i%4}s ease-in-out ${(i%5)*0.8}s infinite`,pointerEvents:"none"}} />
@@ -596,7 +596,7 @@ function NarrativeScreen({ onDone }) {
     {science:"Biodiversity makes ecosystems resilient. Less diversity = more fragility.",bridge:"One withered plant changed Jonah's entire experience of the world.",spirit:"Our moral and spiritual health directly affects the world around us — always."},
   ];
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 40% 20%,#071a0e,#020407 70%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"28px 20px",position:"relative",overflow:"hidden"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 40% 20%,#071a0e,#020407 70%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"28px 20px",position:"relative",overflow:"hidden auto"}}>
       {Array.from({length:30}).map((_,i)=>(
         <div key={i} style={{position:"absolute",left:`${(i*37)%100}%`,top:`${(i*61)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.15,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none"}} />
       ))}
@@ -711,7 +711,7 @@ function SetupScreen({ onStart }) {
   const canProceed = step===0?eco:step===1?numTeams>=2:teams.every(t=>t.players.filter(p=>p.trim()).length>0);
 
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",padding:"40px 20px",position:"relative",overflow:"hidden"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 20px",position:"relative",overflow:"hidden auto"}}>
       {stars.map((s,i)=>(
         <div key={i} style={{position:"absolute",left:s.left,top:s.top,width:s.sz,height:s.sz,borderRadius:"50%",background:"#fff",opacity:s.op,animation:`twinkle ${s.dur} ease-in-out ${s.delay} infinite`,pointerEvents:"none"}} />
       ))}
