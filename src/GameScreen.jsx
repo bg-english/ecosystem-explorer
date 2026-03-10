@@ -328,39 +328,6 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
             ) : (
               <div style={{position:"absolute",inset:0,background:eco.bg}} />
             )}
-            {eco.organisms.map((org, i) => {
-              // Spread across full board, corners and edges included
-              const positions = [
-                {left:"5%",  top:"12%", size:90},  {left:"78%", top:"6%",  size:80},
-                {left:"50%", top:"76%", size:100}, {left:"18%", top:"58%", size:85},
-                {left:"68%", top:"42%", size:95},  {left:"35%", top:"14%", size:75},
-                {left:"12%", top:"80%", size:88},  {left:"85%", top:"62%", size:82},
-                {left:"42%", top:"46%", size:70},  {left:"60%", top:"22%", size:92},
-                {left:"25%", top:"35%", size:78},  {left:"72%", top:"82%", size:96},
-              ];
-              const pos = positions[i % positions.length];
-              const collected = teams.some(t => t.organisms.find(o => o.id === org.id));
-              return (
-                <div key={org.id} style={{
-                  position:"absolute",
-                  left: pos.left, top: pos.top,
-                  fontSize: pos.size,
-                  opacity: collected ? 0.38 : 0,
-                  transform: collected ? "scale(1) rotate(0deg)" : "scale(0.1) rotate(-20deg)",
-                  transition: "opacity 2s ease, transform 2s cubic-bezier(0.34,1.56,0.64,1)",
-                  filter: collected
-                    ? `drop-shadow(0 0 28px ${eco.glow}) drop-shadow(0 0 8px ${eco.color}88)`
-                    : "none",
-                  pointerEvents:"none",
-                  animation: collected ? `float ${5 + (i%3)}s ease-in-out infinite` : "none",
-                  animationDelay: `${i * 0.6}s`,
-                  userSelect:"none",
-                  lineHeight:1,
-                }}>
-                  {org.emoji}
-                </div>
-              );
-            })}
             {/* Dark center vignette so board tiles in center read clearly */}
             <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0.55) 25%, rgba(0,0,0,0.1) 75%)",pointerEvents:"none"}} />
           </div>
@@ -487,7 +454,7 @@ function GameScreen({ ecosystem, initTeams, firstTeamIdx, onEnd }) {
           // Phase 1: Dramatic ALL-PLAYERS alert
           return(
             <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.95)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,padding:"1.5rem"}}>
-              <div style={{maxWidth:"36rem",width:"100%",textAlign:"center",animation:"popIn 0.5s ease",maxHeight:"calc(100vh - 3rem)",overflowY:"auto",paddingBottom:"0.5rem"}}>
+              <div style={{maxWidth:"36rem",width:"100%",textAlign:"center",animation:"popIn 0.5s ease"}}>
                 <div style={{fontSize:"4rem",animation:"chaosFloat 1s ease-in-out infinite",marginBottom:"1rem"}}>🚨</div>
                 <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"1.4rem",color:"#f87171",letterSpacing:"0.1em",marginBottom:"0.5rem",textShadow:"0 0 30px rgba(248,113,113,0.8)"}}>
                   ECOSYSTEM EMERGENCY
