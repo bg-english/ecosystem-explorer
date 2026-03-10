@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { TEAM_COLORS, CT } from "./constants";
+import desertBkg from "./assets/desert_bkg.png";
 
 // ── Hex spiral path generator ─────────────────────────────────────────────
 // Generates axial [q, r] coordinates for N tiles arranged as a hex spiral
@@ -55,11 +56,19 @@ function hexCorners(cx, cy, r) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
-  const canvasRef = useRef(null);
-  const teamsRef  = useRef(teams);
-  const curRef    = useRef(currentTeamIdx);
+  const canvasRef   = useRef(null);
+  const teamsRef    = useRef(teams);
+  const curRef      = useRef(currentTeamIdx);
+  const bgImageRef  = useRef(null);
   useEffect(() => { teamsRef.current = teams; },        [teams]);
   useEffect(() => { curRef.current = currentTeamIdx; }, [currentTeamIdx]);
+
+  // ── Preload desert background image once ──────────
+  useEffect(() => {
+    const img = new Image();
+    img.src = desertBkg;
+    img.onload = () => { bgImageRef.current = img; };
+  }, []);
 
   // ── Resize tracking ────────────────────────────────
   const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
@@ -479,8 +488,26 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
 
       ctx.clearRect(0, 0, CW, CH);
 
-      // Stars (space background — only when no image)
-      if (!hasImage) {
+      // Background: desert image or fallback star field
+      if (hasImage && bgImageRef.current) {
+        const img = bgImageRef.current;
+        // Cover-fit: crop image to fill canvas, centered
+        const imgRatio    = img.width / img.height;
+        const canvasRatio = CW / CH;
+        let sx, sy, sw, sh;
+        if (canvasRatio > imgRatio) {
+          sw = img.width;
+          sh = img.width / canvasRatio;
+          sx = 0;
+          sy = (img.height - sh) / 2;
+        } else {
+          sh = img.height;
+          sw = img.height * canvasRatio;
+          sx = (img.width - sw) / 2;
+          sy = 0;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, CW, CH);
+      } else if (!hasImage) {
         stars.forEach(s => {
           ctx.beginPath();
           ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
