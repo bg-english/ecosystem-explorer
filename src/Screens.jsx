@@ -428,7 +428,7 @@ function RolesScreen({ teams, onDone }) {
                 {activeRoles.map(r=>{
                   const assigned=teamAssignments[r.id]||"";
                   return(
-                    <div key={r.id} style={{display:"grid",gridTemplateColumns:"44px 1fr 160px",gap:12,alignItems:"center",background:assigned?`${r.color}0d`:"rgba(255,255,255,0.02)",border:`1.5px solid ${assigned?r.color+"40":"rgba(255,255,255,0.06)"}`,borderRadius:12,padding:"10px 14px",transition:"all 0.25s"}}>
+                    <div key={r.id} style={{display:"grid",gridTemplateColumns:"44px auto 180px",gap:12,alignItems:"center",background:assigned?`${r.color}0d`:"rgba(255,255,255,0.02)",border:`1.5px solid ${assigned?r.color+"40":"rgba(255,255,255,0.06)"}`,borderRadius:12,padding:"10px 14px",transition:"all 0.25s"}}>
                       {/* Role */}
                       <span style={{fontSize:26,textAlign:"center",filter:assigned?`drop-shadow(0 0 8px ${r.color}88)`:"none"}}>{r.emoji}</span>
                       <div>
@@ -622,7 +622,7 @@ function NarrativeScreen({ onDone }) {
             {STORY.map((p,i)=>(
               <p key={i} style={{
                 color:p.b&&p.i?"rgba(255,245,200,0.95)":p.b?"#fff":p.i?"rgba(255,245,200,0.85)":"rgba(255,255,255,0.72)",
-                fontSize:p.b&&!p.i?15:13,fontWeight:p.b?700:400,fontStyle:p.i?"italic":"normal",
+                fontSize:p.b&&!p.i?18:15,fontWeight:p.b?700:400,fontStyle:p.i?"italic":"normal",
                 lineHeight:1.9,marginBottom:16,
                 animation:`staggerIn 0.55s cubic-bezier(0.34,1.2,0.64,1) ${i*0.1}s both`,
                 borderLeft: p.b&&p.i ? "2px solid rgba(253,224,71,0.35)" : p.b ? "2px solid rgba(74,222,128,0.3)" : "none",
@@ -641,10 +641,10 @@ function NarrativeScreen({ onDone }) {
             <div style={{textAlign:"center",marginBottom:18}}>
               <div style={{fontSize:11,color:"#fbbf24",letterSpacing:"0.3em",marginBottom:6}}>WHY THIS GAME EXISTS</div>
               <h2 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:"#fff",marginBottom:8}}>The Gourd of Jonah</h2>
-              <p style={{color:"rgba(255,255,255,0.45)",fontSize:12,maxWidth:500,margin:"0 auto",lineHeight:1.7}}>The most profound lesson of Jonah comes not from the whale — but from a single plant. Every organism in every ecosystem is a gourd: placed by God with deliberate purpose.</p>
+              <p style={{color:"rgba(255,255,255,0.45)",fontSize:14,maxWidth:500,margin:"0 auto",lineHeight:1.7}}>The most profound lesson of Jonah comes not from the whale — but from a single plant. Every organism in every ecosystem is a gourd: placed by God with deliberate purpose.</p>
             </div>
             <div style={{background:"rgba(253,224,71,0.05)",border:"1px solid rgba(253,224,71,0.2)",borderRadius:14,padding:"14px 20px",marginBottom:18,textAlign:"center"}}>
-              <p style={{fontStyle:"italic",color:"rgba(255,245,200,0.85)",fontSize:13,lineHeight:1.8,margin:0}}>"You had compassion on the plant for which you did not work… And should I not have compassion on Nineveh, the great city, in which there are more than 120,000 persons — and also many animals?"</p>
+              <p style={{fontStyle:"italic",color:"rgba(255,245,200,0.85)",fontSize:16,lineHeight:1.8,margin:0}}>"You had compassion on the plant for which you did not work… And should I not have compassion on Nineveh, the great city, in which there are more than 120,000 persons — and also many animals?"</p>
               <p style={{fontSize:11,color:"rgba(253,224,71,0.7)",marginTop:8,letterSpacing:"0.08em"}}>— Jonah 4:10–11</p>
             </div>
             <div style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,0.07)",marginBottom:20}}>
@@ -657,9 +657,9 @@ function NarrativeScreen({ onDone }) {
               </div>
               {TABLE.map((row,i)=>(
                 <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:i%2===0?"rgba(255,255,255,0.02)":"rgba(0,0,0,0.2)",borderTop:"1px solid rgba(255,255,255,0.05)"}}>
-                  <div style={{padding:"13px 16px",borderRight:"1px solid rgba(255,255,255,0.05)",fontSize:12,color:"rgba(147,197,253,0.85)",lineHeight:1.65}}>{row.science}</div>
-                  <div style={{padding:"13px 16px",borderRight:"1px solid rgba(255,255,255,0.05)",fontSize:12,color:"rgba(134,239,172,0.85)",lineHeight:1.65,fontStyle:"italic"}}>{row.bridge}</div>
-                  <div style={{padding:"13px 16px",fontSize:12,color:"rgba(253,224,71,0.8)",lineHeight:1.65}}>{row.spirit}</div>
+                  <div style={{padding:"13px 16px",borderRight:"1px solid rgba(255,255,255,0.05)",fontSize:14,color:"rgba(147,197,253,0.85)",lineHeight:1.65}}>{row.science}</div>
+                  <div style={{padding:"13px 16px",borderRight:"1px solid rgba(255,255,255,0.05)",fontSize:14,color:"rgba(134,239,172,0.85)",lineHeight:1.65,fontStyle:"italic"}}>{row.bridge}</div>
+                  <div style={{padding:"13px 16px",fontSize:14,color:"rgba(253,224,71,0.8)",lineHeight:1.65}}>{row.spirit}</div>
                 </div>
               ))}
             </div>
@@ -851,7 +851,7 @@ function SetupScreen({ onStart }) {
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
                   <div style={{width:14,height:14,borderRadius:"50%",background:TEAM_COLORS[editing.idx].bg,flexShrink:0}} />
                   <input value={editing.name} onChange={e=>setEditing(p=>({...p,name:e.target.value.toUpperCase()}))}
-                    style={{flex:1,background:"rgba(255,255,255,0.08)",border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:8,padding:"8px 12px",color:"#fff",fontFamily:"'Cinzel',serif",fontSize:13,outline:"none"}} placeholder="Team name..." />
+                    style={{width:180,background:"rgba(255,255,255,0.08)",border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:8,padding:"8px 12px",color:"#fff",fontFamily:"'Cinzel',serif",fontSize:13,outline:"none"}} placeholder="Team name..." />
                 </div>
                 <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginBottom:8}}>PLAYERS (max 7)</div>
                 {Array.from({length:7}).map((_,i)=>(
@@ -881,7 +881,7 @@ function SetupScreen({ onStart }) {
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
                   <div style={{width:16,height:16,borderRadius:"50%",background:TEAM_COLORS[editing.idx].bg}} />
                   <input value={editing.name} onChange={e=>setEditing(p=>({...p,name:e.target.value.toUpperCase()}))}
-                    style={{flex:1,background:"rgba(255,255,255,0.08)",border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:8,padding:"8px 12px",color:"#fff",fontFamily:"'Cinzel',serif",fontSize:13,outline:"none"}} placeholder="Team name..." />
+                    style={{width:180,background:"rgba(255,255,255,0.08)",border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:8,padding:"8px 12px",color:"#fff",fontFamily:"'Cinzel',serif",fontSize:13,outline:"none"}} placeholder="Team name..." />
                 </div>
                 <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginBottom:10}}>PLAYERS (max 7)</div>
                 {Array.from({length:7}).map((_,i)=>(
@@ -895,7 +895,7 @@ function SetupScreen({ onStart }) {
           )}
         </div>
       )}
-      <div style={{display:"flex",gap:14,marginTop:16}}>
+      <div style={{display:"flex",gap:14,marginTop:16,width:"100%",maxWidth:step===2?700:step===1?500:960,justifyContent:step>0?"space-between":"flex-end"}}>
         {step>0&&<button onClick={()=>{saveEditing();setStep(s=>s-1);}} style={{padding:"13px 28px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:12,color:"rgba(255,255,255,0.7)",fontFamily:"'Cinzel',serif",fontSize:13,cursor:"pointer"}}>← Back</button>}
         <button onClick={()=>{if(!canProceed)return;if(step===2){saveEditing();setTimeout(()=>onStart(eco,teams.map(t=>({...t,players:t.players.filter(p=>p.trim())}))),50);}else{if(step===1&&teams.length===0)initTeams(numTeams);setStep(s=>s+1);}}}
           style={{padding:"13px 36px",background:canProceed?"linear-gradient(135deg,#16a34a,#15803d)":"rgba(255,255,255,0.06)",border:"none",borderRadius:12,color:canProceed?"#fff":"rgba(255,255,255,0.3)",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:13,cursor:canProceed?"pointer":"not-allowed",letterSpacing:"0.1em",boxShadow:canProceed?"0 6px 20px rgba(22,163,74,0.4)":"none"}}>
