@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { CT, ROLES, TEAM_COLORS, SFX } from "./constants";
 import { ECOSYSTEMS } from "./ecosystems";
 import { TriviaChallenge, IdentifyChallenge, HangmanChallenge, MatchChallenge, UnscrambleChallenge, TrueFalseChallenge, FoodWebChallenge } from "./Challenges";
-
 function WowFactsModal({ fact, ecosystem, context, onDone }) {
   const eco = ECOSYSTEMS[ecosystem.id];
   const [phase, setPhase] = useState("in");
@@ -53,7 +52,6 @@ function WowFactsModal({ fact, ecosystem, context, onDone }) {
         maxWidth:"54rem", width:"100%",
         display:"flex", flexDirection:"column", alignItems:"center",
         gap:"1.4rem", position:"relative", zIndex:1,
-        maxHeight:"calc(100vh - 3rem)", overflowY:"auto",
       }}>
         {/* Header */}
         <div style={{textAlign:"center", animation:"fadeUp 0.55s ease"}}>
@@ -232,8 +230,8 @@ function ChallengeModal({ cell, ecosystem, team, pendingOrganism, onResult, chal
     );
   }
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",display:"flex",alignItems:"flex-end",justifyContent:"center",zIndex:200,padding:"0",paddingTop:"env(safe-area-inset-top, 0px)"}}>
-      <div style={{background:"#090e18",border:`1.5px solid ${ct.color}44`,borderRadius:"1.4rem 1.4rem 0 0",padding:"0",width:"100%",maxWidth:"46rem",boxShadow:`0 0 60px ${ct.color}18, 0 -8px 40px rgba(0,0,0,0.7)`,maxHeight:"92dvh",overflowY:"auto",animation:"slideUp 0.3s cubic-bezier(0.34,1.2,0.64,1)"}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200,padding:"1.25rem"}}>
+      <div style={{background:"#090e18",border:`1.5px solid ${ct.color}44`,borderRadius:"1.4rem",padding:"0",width:"100%",maxWidth:"46rem",boxShadow:`0 0 60px ${ct.color}18, 0 8px 40px rgba(0,0,0,0.7)`,maxHeight:"calc(100vh - 2.5rem)",overflowY:"auto",animation:"popIn 0.3s cubic-bezier(0.34,1.2,0.64,1)"}}>
 
         {/* ── Header ── */}
         <div style={{padding:"1.2rem 1.5rem 1rem",borderBottom:`1px solid rgba(255,255,255,0.07)`}}>
