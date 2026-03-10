@@ -96,33 +96,28 @@ function IsometricBoard({ teams, currentTeamIdx, board, gridSize, hasImage }) {
     // ── Build spiral path & screen positions ──────────
     const hexPath = generateHexSpiral(N);
 
-    // Adaptive padding: shrinks on small screens so tiles always fit
-    const PAD = Math.max(16, Math.min(32, Math.min(CW, CH) * 0.04));
-    // Reserve bottom space for the legend (2 rows × 20px + margin)
-    const LEGEND_H = 52;
+    const PAD = Math.max(20, Math.min(40, Math.min(CW, CH) * 0.05));
+    const LEGEND_H = 56;
 
-    // Compute positions at size=1 for auto-fit
     const raw = hexPath.map(([q, r]) => hexToPixel(q, r, 1));
     const allX = raw.map(p => p.x), allY = raw.map(p => p.y);
     const minX = Math.min(...allX), maxX = Math.max(...allX);
     const minY = Math.min(...allY), maxY = Math.max(...allY);
 
-    // Each hex extends ~0.86 units beyond its center — add one full hex-diameter
-    // (2 * 0.86) to both axes so border tiles never get clipped
-    const HEX_EDGE = 1.72; // 2 × 0.86 (draw radius at scale=1)
+    // Account for tile draw radius (0.86) + START badge above tile 0 (~1.2 extra)
+    const HEX_EDGE = 2.2;
     const spanX = maxX - minX + HEX_EDGE;
-    const spanY = maxY - minY + HEX_EDGE;
+    const spanY = maxY - minY + HEX_EDGE + 0.6; // extra for START badge height
 
     const scale = Math.min(
       (CW - PAD * 2) / spanX,
       (CH - PAD * 2 - LEGEND_H) / spanY
-    );
-    const hexR = scale; // circumradius in px
+    ) * 0.94; // 6% safety margin so nothing ever clips
+    const hexR = scale;
 
-    // Center the board (using expanded span so tiles are fully inside)
     const OX = PAD + (CW - PAD * 2 - spanX * scale) / 2 - (minX - HEX_EDGE / 2) * scale;
     const boardH = spanY * scale;
-    const OY = PAD + (CH - PAD * 2 - LEGEND_H - boardH) / 2 - (minY - HEX_EDGE / 2) * scale;
+    const OY = PAD + (CH - PAD * 2 - LEGEND_H - boardH) / 2 - (minY - HEX_EDGE / 2) * scale + scale * 0.3;
 
     // Final steps with screen coords
     const steps = hexPath.map(([q, r], idx) => {
