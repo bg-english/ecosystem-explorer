@@ -258,7 +258,7 @@ function RolesScreen({ teams, onDone }) {
   const teamAssignments = assignments[teamForTab?.id]||{};
 
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",position:"relative",overflow:"hidden auto"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",position:"relative",overflow:"hidden"}}>
       {Array.from({length:30}).map((_,i)=>(
         <div key={i} style={{position:"absolute",left:`${(i*37)%100}%`,top:`${(i*53)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.2,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none"}} />
       ))}
@@ -515,7 +515,7 @@ function WelcomeScreen({ onEnter }) {
   });
 
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 30%,#071a0e 0%,#020407 65%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:"32px 20px",position:"relative",overflow:"hidden auto"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 30%,#071a0e 0%,#020407 65%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:"32px 20px",position:"relative",overflow:"hidden"}}>
       {/* Stars */}
       {Array.from({length:60}).map((_,i)=>(
         <div key={i} style={{position:"absolute",left:`${(i*43+7)%100}%`,top:`${(i*61+11)%100}%`,width:i%7===0?3:i%3===0?2:1,height:i%7===0?3:i%3===0?2:1,borderRadius:"50%",background:"#fff",opacity:i%3===0?0.4:0.15,animation:`twinkle ${2+i%4}s ease-in-out ${(i%5)*0.8}s infinite`,pointerEvents:"none"}} />
@@ -596,7 +596,7 @@ function NarrativeScreen({ onDone }) {
     {science:"Biodiversity makes ecosystems resilient. Less diversity = more fragility.",bridge:"One withered plant changed Jonah's entire experience of the world.",spirit:"Our moral and spiritual health directly affects the world around us — always."},
   ];
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 40% 20%,#071a0e,#020407 70%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"28px 20px",position:"relative",overflow:"hidden auto"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 40% 20%,#071a0e,#020407 70%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"28px 20px",position:"relative",overflow:"hidden"}}>
       {Array.from({length:30}).map((_,i)=>(
         <div key={i} style={{position:"absolute",left:`${(i*37)%100}%`,top:`${(i*61)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.15,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none"}} />
       ))}
@@ -711,17 +711,17 @@ function SetupScreen({ onStart }) {
   const canProceed = step===0?eco:step===1?numTeams>=2:teams.every(t=>t.players.filter(p=>p.trim()).length>0);
 
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 20px",position:"relative",overflow:"hidden auto"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"16px 20px",position:"relative",overflow:"hidden auto"}}>
       {stars.map((s,i)=>(
         <div key={i} style={{position:"absolute",left:s.left,top:s.top,width:s.sz,height:s.sz,borderRadius:"50%",background:"#fff",opacity:s.op,animation:`twinkle ${s.dur} ease-in-out ${s.delay} infinite`,pointerEvents:"none"}} />
       ))}
-      <div style={{textAlign:"center",marginBottom:36,animation:"fadeUp 0.7s ease"}}>
-        <div style={{fontSize:56,marginBottom:8,animation:"float 3s ease-in-out infinite",filter:"drop-shadow(0 0 20px rgba(34,197,94,0.5))"}}>🌍</div>
-        <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:24,color:"#fff",letterSpacing:"0.08em",textShadow:"0 0 30px rgba(74,222,128,0.4)"}}>GUARDIANS OF THE GARDEN</h1>
-        <div style={{fontSize:11,color:"#4ade80",letterSpacing:"0.3em",marginTop:4}}>BOARD GAME · 36–72 SQUARES · 7TH GRADE</div>
+      <div style={{textAlign:"center",marginBottom:14,animation:"fadeUp 0.7s ease"}}>
+        <div style={{fontSize:36,marginBottom:4,animation:"float 3s ease-in-out infinite",filter:"drop-shadow(0 0 20px rgba(34,197,94,0.5))"}}>🌍</div>
+        <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:"#fff",letterSpacing:"0.08em",textShadow:"0 0 30px rgba(74,222,128,0.4)",margin:0}}>GUARDIANS OF THE GARDEN</h1>
+        <div style={{fontSize:10,color:"#4ade80",letterSpacing:"0.3em",marginTop:3}}>BOARD GAME · 36–72 SQUARES · 7TH GRADE</div>
       </div>
       {/* Step indicator */}
-      <div style={{display:"flex",gap:8,marginBottom:32}}>
+      <div style={{display:"flex",gap:8,marginBottom:14}}>
         {["Ecosystem","Teams","Players"].map((s,i)=>(
           <div key={i} style={{display:"flex",alignItems:"center",gap:8}}>
             <div style={{width:28,height:28,borderRadius:"50%",background:i<=step?"#22c55e":"rgba(255,255,255,0.08)",border:`2px solid ${i<=step?"#22c55e":"rgba(255,255,255,0.15)"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:i<=step?"#fff":"rgba(255,255,255,0.3)",fontFamily:"'Cinzel',serif",transition:"all 0.4s"}}>{i<step?"✓":i+1}</div>
@@ -732,33 +732,33 @@ function SetupScreen({ onStart }) {
       </div>
       {step===0&&(
         <div style={{width:"100%",maxWidth:960,animation:"fadeUp 0.5s ease"}}>
-          <p style={{textAlign:"center",color:"rgba(255,255,255,0.4)",marginBottom:24,fontSize:13,letterSpacing:"0.05em"}}>Choose the ecosystem your class will explore</p>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:14}}>
+        <p style={{textAlign:"center",color:"rgba(255,255,255,0.4)",marginBottom:10,fontSize:12,letterSpacing:"0.05em"}}>Choose the ecosystem your class will explore</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:8}}>
             {ecoList.map(e=>{
               const sel=eco?.id===e.id;
               return(
                 <div key={e.id} onClick={()=>setEco(e)} style={{
                   background:sel?`${e.color}18`:"rgba(255,255,255,0.03)",
                   border:`2px solid ${sel?e.color:"rgba(255,255,255,0.07)"}`,
-                  borderRadius:18,padding:"20px 20px 16px",cursor:"pointer",
+                  borderRadius:14,padding:"10px 12px 8px",cursor:"pointer",
                   transition:"all 0.25s cubic-bezier(0.34,1.3,0.64,1)",
                   boxShadow:sel?`0 0 28px ${e.color}44, inset 0 0 20px ${e.color}08`:"none",
                   transform:sel?"scale(1.02)":"scale(1)",
                 }}>
                   {/* Top row */}
-                  <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:12}}>
-                    <div style={{display:"flex",alignItems:"center",gap:12}}>
+                  <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:7}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8}}>
                       <div style={{
-                        width:50,height:50,borderRadius:14,
+                        width:38,height:38,borderRadius:10,
                         background:`${e.color}18`,
                         border:`1.5px solid ${e.color}44`,
                         display:"flex",alignItems:"center",justifyContent:"center",
-                        fontSize:26,
+                        fontSize:20,
                         boxShadow:sel?`0 0 16px ${e.color}55`:"none",
                         transition:"box-shadow 0.3s",
                       }}>{e.emoji}</div>
                       <div>
-                        <div style={{fontFamily:"'Cinzel',serif",fontSize:14,color:"#fff",fontWeight:700,marginBottom:5}}>{e.name}</div>
+                        <div style={{fontFamily:"'Cinzel',serif",fontSize:12,color:"#fff",fontWeight:700,marginBottom:3}}>{e.name}</div>
                         <div style={{display:"flex",alignItems:"center",gap:5}}>
                           <span style={{fontSize:11}}>{diffIcons[e.difficulty]}</span>
                           <span style={{fontSize:10,color:diffColors[e.difficulty]||"#a5f3fc",fontFamily:"'Cinzel',serif",letterSpacing:"0.05em"}}>{e.diffLabel}</span>
@@ -768,26 +768,26 @@ function SetupScreen({ onStart }) {
                     {sel&&<div style={{width:20,height:20,borderRadius:"50%",background:"#22c55e",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#fff",fontWeight:700,flexShrink:0,animation:"popIn 0.3s ease"}}>✓</div>}
                   </div>
                   {/* Stats row */}
-                  <div style={{display:"flex",gap:10,marginBottom:10}}>
+                  <div style={{display:"flex",gap:6,marginBottom:6}}>
                     {[
                       {label:"Organisms", val:e.organisms.length},
                       {label:"Squares",   val:e.boardSize},
                     ].map(stat=>(
-                      <div key={stat.label} style={{flex:1,background:"rgba(0,0,0,0.25)",borderRadius:8,padding:"6px 10px",textAlign:"center"}}>
-                        <div style={{fontFamily:"'Cinzel',serif",fontSize:15,color:e.color,fontWeight:700}}>{stat.val}</div>
-                        <div style={{fontSize:9,color:"rgba(255,255,255,0.3)",letterSpacing:"0.08em"}}>{stat.label.toUpperCase()}</div>
+                      <div key={stat.label} style={{flex:1,background:"rgba(0,0,0,0.25)",borderRadius:6,padding:"4px 8px",textAlign:"center"}}>
+                        <div style={{fontFamily:"'Cinzel',serif",fontSize:13,color:e.color,fontWeight:700}}>{stat.val}</div>
+                        <div style={{fontSize:8,color:"rgba(255,255,255,0.3)",letterSpacing:"0.08em"}}>{stat.label.toUpperCase()}</div>
                       </div>
                     ))}
-                    <div style={{flex:2,background:"rgba(0,0,0,0.25)",borderRadius:8,padding:"6px 10px",textAlign:"center"}}>
-                      <div style={{fontFamily:"'Cinzel',serif",fontSize:10,color:"rgba(255,255,255,0.55)",marginTop:2}}>
+                    <div style={{flex:2,background:"rgba(0,0,0,0.25)",borderRadius:6,padding:"4px 8px",textAlign:"center"}}>
+                      <div style={{fontFamily:"'Cinzel',serif",fontSize:9,color:"rgba(255,255,255,0.5)",marginTop:2}}>
                         {e.difficulty<=2?"Basic chains":e.difficulty<=3?"Moderate chains":e.difficulty<=4?"Complex chains":"Expert chains"}
                       </div>
                     </div>
                   </div>
                   {/* Organism emoji strip */}
-                  <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                  <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
                     {e.organisms.slice(0,8).map(org=>(
-                      <span key={org.id} style={{fontSize:14,opacity:sel?0.9:0.4,transition:"opacity 0.3s"}}>{org.emoji}</span>
+                      <span key={org.id} style={{fontSize:12,opacity:sel?0.9:0.4,transition:"opacity 0.3s"}}>{org.emoji}</span>
                     ))}
                   </div>
                 </div>
@@ -895,7 +895,7 @@ function SetupScreen({ onStart }) {
           )}
         </div>
       )}
-      <div style={{display:"flex",gap:14,marginTop:32}}>
+      <div style={{display:"flex",gap:14,marginTop:16}}>
         {step>0&&<button onClick={()=>{saveEditing();setStep(s=>s-1);}} style={{padding:"13px 28px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:12,color:"rgba(255,255,255,0.7)",fontFamily:"'Cinzel',serif",fontSize:13,cursor:"pointer"}}>← Back</button>}
         <button onClick={()=>{if(!canProceed)return;if(step===2){saveEditing();setTimeout(()=>onStart(eco,teams.map(t=>({...t,players:t.players.filter(p=>p.trim())}))),50);}else{if(step===1&&teams.length===0)initTeams(numTeams);setStep(s=>s+1);}}}
           style={{padding:"13px 36px",background:canProceed?"linear-gradient(135deg,#16a34a,#15803d)":"rgba(255,255,255,0.06)",border:"none",borderRadius:12,color:canProceed?"#fff":"rgba(255,255,255,0.3)",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:13,cursor:canProceed?"pointer":"not-allowed",letterSpacing:"0.1em",boxShadow:canProceed?"0 6px 20px rgba(22,163,74,0.4)":"none"}}>
