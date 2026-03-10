@@ -716,8 +716,8 @@ function SetupScreen({ onStart }) {
         <div key={i} style={{position:"absolute",left:s.left,top:s.top,width:s.sz,height:s.sz,borderRadius:"50%",background:"#fff",opacity:s.op,animation:`twinkle ${s.dur} ease-in-out ${s.delay} infinite`,pointerEvents:"none"}} />
       ))}
       <div style={{textAlign:"center",marginBottom:14,animation:"fadeUp 0.7s ease"}}>
-        <div style={{fontSize:36,marginBottom:4,animation:"float 3s ease-in-out infinite",filter:"drop-shadow(0 0 20px rgba(34,197,94,0.5))"}}>🌍</div>
-        <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:"#fff",letterSpacing:"0.08em",textShadow:"0 0 30px rgba(74,222,128,0.4)",margin:0}}>GUARDIANS OF THE GARDEN</h1>
+        <div style={{fontSize:47,marginBottom:5,animation:"float 3s ease-in-out infinite",filter:"drop-shadow(0 0 20px rgba(34,197,94,0.5))"}}>🌍</div>
+        <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:23,color:"#fff",letterSpacing:"0.08em",textShadow:"0 0 30px rgba(74,222,128,0.4)",margin:0}}>GUARDIANS OF THE GARDEN</h1>
         <div style={{fontSize:10,color:"#4ade80",letterSpacing:"0.3em",marginTop:3}}>BOARD GAME · 36–72 SQUARES · 7TH GRADE</div>
       </div>
       {/* Step indicator */}
