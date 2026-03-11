@@ -670,22 +670,23 @@ function NarrativeScreen({ onDone }) {
   );
 }
 
+// Helper: pad/trim a players array to exactly 7 slots
+const to7 = arr => {
+  const base = Array.isArray(arr) ? arr : [];
+  return Array.from({length:7}, (_,i) => base[i] ?? "");
+};
+
 function SetupScreen({ onStart }) {
   const [step, setStep] = useState(0);
   const [eco, setEco] = useState(null);
   const [numTeams, setNumTeams] = useState(2);
+  // teams[i].players = raw array (may have empties), only cleaned on final submit
   const [teams, setTeams] = useState([]);
-  const [editing, setEditing] = useState({ idx:0, name:"Team 1", players:[""] });
+  // editing = { idx, name, players: string[7] } — always 7 slots, live state
+  const [editing, setEditing] = useState({ idx:0, name:"Team 1", players:to7([]) });
   const ecoList = Object.values(ECOSYSTEMS).sort((a,b)=>a.difficulty-b.difficulty);
   const diffColors = {1:"#4ade80",2:"#86efac",3:"#fbbf24",4:"#f97316",5:"#f87171"};
   const diffIcons  = {1:"🌱",2:"🌿",3:"🌳",4:"⚡",5:"🔥"};
-
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
-  useEffect(() => {
-    const h = () => setIsMobile(window.innerWidth < 640);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
-  }, []);
 
   const stars = useMemo(()=>Array.from({length:44}).map((_,i)=>({
     left:`${(i*43+7)%100}%`, top:`${(i*61+11)%100}%`,
@@ -695,15 +696,45 @@ function SetupScreen({ onStart }) {
   })),[]);
 
   const initTeams = n => {
-    const t = Array.from({length:n},(_,i)=>({id:i,name:`Team ${i+1}`,players:[""],colorIdx:i}));
-    setTeams(t); setEditing({idx:0,name:t[0].name,players:[""]}); setNumTeams(n);
+    const t = Array.from({length:n},(_,i)=>({id:i,name:`Team ${i+1}`,players:to7([]),colorIdx:i}));
+    setTeams(t); setEditing({idx:0,name:t[0].name,players:to7([])}); setNumTeams(n);
   };
-  const saveEditing = () => {
-    const cleaned = editing.players.filter(p=>p.trim());
-    setTeams(prev=>prev.map((t,i)=>i===editing.idx?{...t,name:editing.name||t.name,players:cleaned.length?cleaned:t.players}:t));
+
+  // Flush current editing state into teams array before switching tabs
+  const flushEditing = () => {
+    setTeams(prev=>prev.map((t,i)=>i===editing.idx
+      ? {...t, name: editing.name.trim()||t.name, players: editing.players}
+      : t
+    ));
   };
-  const getEffectivePlayers = (t, i) => i === editing.idx ? editing.players : t.players;
-  const canProceed = step===0?eco:step===1?numTeams>=2:teams.every((t,i)=>getEffectivePlayers(t,i).filter(p=>p.trim()).length>0);
+
+  const switchToTeam = (i) => {
+    flushEditing();
+    setTeams(prev=>{
+      const updated = prev.map((t,ti)=>ti===editing.idx
+        ? {...t, name:editing.name.trim()||t.name, players:editing.players}
+        : t);
+      setEditing({idx:i, name:updated[i].name, players:to7(updated[i].players)});
+      return updated;
+    });
+  };
+
+  const setPlayerAt = (slot, value) => {
+    setEditing(prev=>{
+      const p=[...prev.players];
+      p[slot]=value;
+      return {...prev, players:p};
+    });
+  };
+
+  // canProceed for step 2: live check — editing team uses editing.players, others use teams[i].players
+  const editingHasPlayer = editing.players.some(p=>p.trim().length>0);
+  const otherTeamsOk = teams.every((t,i)=>
+    i===editing.idx
+      ? editingHasPlayer
+      : t.players.some(p=>p.trim().length>0)
+  );
+  const canProceed = step===0?eco:step===1?numTeams>=2:otherTeamsOk;
 
   return (
     <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"16px 20px",position:"relative",overflow:"hidden auto"}}>
@@ -821,89 +852,131 @@ function SetupScreen({ onStart }) {
       )}
       {step===2&&(
         <div style={{width:"100%",maxWidth:700,animation:"fadeUp 0.5s ease"}}>
-          <p style={{textAlign:"center",color:"rgba(255,255,255,0.5)",marginBottom:16,fontSize:13}}>Enter team name and members (max 7)</p>
+          <p style={{textAlign:"center",color:"rgba(255,255,255,0.5)",marginBottom:16,fontSize:13}}>
+            Enter team name and players
+          </p>
 
-          {isMobile ? (
-            <div style={{display:"flex",flexDirection:"column",gap:12}}>
-              <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center"}}>
-                {teams.map((t,i)=>(
-                  <div key={i} onClick={()=>{saveEditing();setEditing({idx:i,name:t.name,players:[...t.players,""].slice(0,7)});}}
-                    style={{background:editing.idx===i?`${TEAM_COLORS[i].bg}33`:"rgba(255,255,255,0.06)",border:`2px solid ${editing.idx===i?TEAM_COLORS[i].bg:"rgba(255,255,255,0.1)"}`,borderRadius:10,padding:"8px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
-                    <div style={{width:10,height:10,borderRadius:"50%",background:TEAM_COLORS[i].bg}} />
-                    <span style={{fontFamily:"'Cinzel',serif",fontSize:12,color:"#fff"}}>{t.name}</span>
-                    <span style={{fontSize:10,color:"rgba(255,255,255,0.35)"}}>{t.players.filter(p=>p.trim()).length}p</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{background:"rgba(0,0,0,0.3)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:16,padding:"16px"}}>
-                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-                  <div style={{width:14,height:14,borderRadius:"50%",background:TEAM_COLORS[editing.idx].bg,flexShrink:0}} />
-                  <input value={editing.name} onChange={e=>setEditing(p=>({...p,name:e.target.value.toUpperCase()}))}
-                    style={{width:180,background:"rgba(255,255,255,0.08)",border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:8,padding:"8px 12px",color:"#fff",fontFamily:"'Cinzel',serif",fontSize:13,outline:"none"}} placeholder="Team name..." />
+          {/* ── Team tabs ── */}
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center",marginBottom:14}}>
+            {teams.map((t,i)=>{
+              const tc = TEAM_COLORS[i];
+              const isActive = editing.idx===i;
+              // Count filled slots: for active tab use live editing state
+              const filledCount = (isActive ? editing.players : t.players).filter(p=>p.trim()).length;
+              const hasAny = filledCount > 0;
+              return(
+                <div key={i} onClick={()=>switchToTeam(i)}
+                  style={{
+                    background: isActive ? `${tc.bg}28` : "rgba(255,255,255,0.04)",
+                    border: `2px solid ${isActive ? tc.bg : hasAny ? tc.bg+"55" : "rgba(255,255,255,0.1)"}`,
+                    borderRadius:12, padding:"9px 18px", cursor:"pointer",
+                    display:"flex", alignItems:"center", gap:9,
+                    transition:"all 0.2s",
+                  }}>
+                  <div style={{width:10,height:10,borderRadius:"50%",background:tc.bg,boxShadow:isActive?`0 0 8px ${tc.bg}`:""}} />
+                  <span style={{fontFamily:"'Cinzel',serif",fontSize:12,color:isActive?"#fff":"rgba(255,255,255,0.6)",fontWeight:isActive?700:400}}>
+                    {isActive ? editing.name || t.name : t.name}
+                  </span>
+                  <span style={{
+                    fontSize:10,
+                    color: hasAny ? tc.light : "rgba(255,255,255,0.25)",
+                    background: hasAny ? `${tc.bg}20` : "rgba(255,255,255,0.05)",
+                    border: `1px solid ${hasAny ? tc.bg+"44" : "rgba(255,255,255,0.08)"}`,
+                    borderRadius:6, padding:"2px 7px",
+                  }}>
+                    {filledCount > 0 ? `${filledCount}p ✓` : "0p"}
+                  </span>
                 </div>
-                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginBottom:8}}>
-                  PLAYERS — one per line (max 7)
-                </div>
-                <textarea
-                  value={editing.players.filter(p=>p).join('\n')}
-                  onChange={e=>{
-                    const lines=e.target.value.split('\n').slice(0,7);
-                    setEditing(prev=>({...prev,players:lines.map(l=>l.toUpperCase())}));
-                  }}
-                  rows={7}
-                  placeholder={"Andrea López\nCarlos Mendez\nSofia Ruiz\nJuan Torres\n..."}
-                  style={{width:"100%",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"9px 12px",color:"#fff",fontFamily:"'Libre Baskerville',serif",fontSize:14,outline:"none",resize:"none",lineHeight:1.85,boxSizing:"border-box"}}
-                />
-                <button onClick={saveEditing} style={{width:"100%",marginTop:6,padding:"12px",background:`${TEAM_COLORS[editing.idx].bg}33`,border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:10,color:"#fff",fontFamily:"'Cinzel',serif",fontSize:13,cursor:"pointer",letterSpacing:"0.1em"}}>✓ Save Team</button>
-              </div>
+              );
+            })}
+          </div>
+
+          {/* ── Editing panel ── */}
+          <div style={{
+            background:"rgba(0,0,0,0.35)",
+            border:`1.5px solid ${TEAM_COLORS[editing.idx].bg}44`,
+            borderRadius:18, padding:"20px 18px",
+          }}>
+            {/* Team name row */}
+            <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:18}}>
+              <div style={{width:16,height:16,borderRadius:"50%",background:TEAM_COLORS[editing.idx].bg,flexShrink:0,
+                boxShadow:`0 0 10px ${TEAM_COLORS[editing.idx].bg}88`}} />
+              <input
+                value={editing.name}
+                onChange={e=>setEditing(p=>({...p,name:e.target.value}))}
+                placeholder="Team name…"
+                style={{
+                  flex:1, maxWidth:220,
+                  background:"rgba(255,255,255,0.07)",
+                  border:`1.5px solid ${TEAM_COLORS[editing.idx].bg}55`,
+                  borderRadius:9, padding:"9px 13px",
+                  color:"#fff", fontFamily:"'Cinzel',serif", fontSize:13, outline:"none",
+                }}
+              />
+              <span style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginLeft:"auto"}}>
+                {editing.players.filter(p=>p.trim()).length} / 7 players
+              </span>
             </div>
-          ) : (
-            <div style={{display:"grid",gridTemplateColumns:"220px 1fr",gap:16}}>
-              <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                {teams.map((t,i)=>(
-                  <div key={i} onClick={()=>{saveEditing();setEditing({idx:i,name:t.name,players:[...t.players,""].slice(0,7)});}}
-                    style={{background:editing.idx===i?`${TEAM_COLORS[i].bg}22`:"rgba(255,255,255,0.04)",border:`2px solid ${editing.idx===i?TEAM_COLORS[i].bg:"rgba(255,255,255,0.08)"}`,borderRadius:12,padding:"12px 14px",cursor:"pointer"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:10}}>
-                      <div style={{width:14,height:14,borderRadius:"50%",background:TEAM_COLORS[i].bg}} />
-                      <span style={{fontFamily:"'Cinzel',serif",fontSize:12,color:"#fff"}}>{t.name}</span>
-                    </div>
-                    <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:4}}>{t.players.filter(p=>p.trim()).length} jugadores</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{background:"rgba(0,0,0,0.3)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:16,padding:"20px"}}>
-                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
-                  <div style={{width:16,height:16,borderRadius:"50%",background:TEAM_COLORS[editing.idx].bg}} />
-                  <input value={editing.name} onChange={e=>setEditing(p=>({...p,name:e.target.value.toUpperCase()}))}
-                    style={{width:180,background:"rgba(255,255,255,0.08)",border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:8,padding:"8px 12px",color:"#fff",fontFamily:"'Cinzel',serif",fontSize:13,outline:"none"}} placeholder="Team name..." />
-                </div>
-                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",letterSpacing:"0.15em",marginBottom:10}}>
-                  PLAYERS — one per line (max 7)
-                </div>
-                <textarea
-                  value={editing.players.filter(p=>p).join('\n')}
-                  onChange={e=>{
-                    const lines=e.target.value.split('\n').slice(0,7);
-                    setEditing(prev=>({...prev,players:lines.map(l=>l.toUpperCase())}));
-                  }}
-                  rows={7}
-                  placeholder={"Andrea López\nCarlos Mendez\nSofia Ruiz\nJuan Torres\n..."}
-                  style={{width:"100%",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 12px",color:"#fff",fontFamily:"'Libre Baskerville',serif",fontSize:13,outline:"none",resize:"none",lineHeight:1.85,boxSizing:"border-box"}}
-                />
-                <button onClick={saveEditing} style={{width:"100%",marginTop:8,padding:"10px",background:`${TEAM_COLORS[editing.idx].bg}33`,border:`1px solid ${TEAM_COLORS[editing.idx].bg}55`,borderRadius:10,color:"#fff",fontFamily:"'Cinzel',serif",fontSize:12,cursor:"pointer",letterSpacing:"0.1em"}}>✓ Save Team</button>
-              </div>
+
+            {/* Player slots */}
+            <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.2em",marginBottom:10}}>
+              PLAYERS (min 1, max 7)
             </div>
-          )}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:8}}>
+              {Array.from({length:7},(_,slot)=>{
+                const val = editing.players[slot] ?? "";
+                const filled = val.trim().length > 0;
+                const optional = slot >= 4;
+                const tc = TEAM_COLORS[editing.idx];
+                return(
+                  <div key={slot} style={{display:"flex",alignItems:"center",gap:8}}>
+                    <div style={{
+                      width:22,height:22,borderRadius:"50%",flexShrink:0,
+                      background: filled ? tc.bg : "rgba(255,255,255,0.06)",
+                      border: `1.5px solid ${filled ? tc.bg : "rgba(255,255,255,0.1)"}`,
+                      display:"flex",alignItems:"center",justifyContent:"center",
+                      fontSize:10,fontWeight:700,
+                      color: filled ? "#fff" : "rgba(255,255,255,0.25)",
+                      transition:"all 0.2s",
+                    }}>{slot+1}</div>
+                    <input
+                      value={val}
+                      onChange={e=>setPlayerAt(slot, e.target.value)}
+                      placeholder={optional ? `Player ${slot+1} (optional)` : `Player ${slot+1}`}
+                      style={{
+                        flex:1,
+                        background: filled ? `${tc.bg}12` : "rgba(255,255,255,0.04)",
+                        border: `1.5px solid ${filled ? tc.bg+"55" : "rgba(255,255,255,0.08)"}`,
+                        borderRadius:9, padding:"9px 12px",
+                        color: filled ? "#fff" : "rgba(255,255,255,0.45)",
+                        fontFamily:"'Libre Baskerville',serif", fontSize:13,
+                        outline:"none", transition:"all 0.2s",
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
       <div style={{display:"flex",gap:14,marginTop:16,width:"100%",maxWidth:step===2?700:step===1?500:960,justifyContent:step>0?"space-between":"flex-end"}}>
-        {step>0&&<button onClick={()=>{saveEditing();setStep(s=>s-1);}} style={{padding:"13px 28px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:12,color:"rgba(255,255,255,0.7)",fontFamily:"'Cinzel',serif",fontSize:13,cursor:"pointer"}}>← Back</button>}
-        <button onClick={()=>{if(!canProceed)return;if(step===2){
-          const merged=teams.map((t,i)=>i===editing.idx
-            ?{...t,name:editing.name||t.name,players:editing.players.filter(p=>p.trim())}
-            :{...t,players:t.players.filter(p=>p.trim())});
-          onStart(eco,merged);
-        }else{if(step===1&&teams.length===0)initTeams(numTeams);setStep(s=>s+1);}}}
+        {step>0&&<button onClick={()=>{flushEditing();setStep(s=>s-1);}} style={{padding:"13px 28px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:12,color:"rgba(255,255,255,0.7)",fontFamily:"'Cinzel',serif",fontSize:13,cursor:"pointer"}}>← Back</button>}
+        <button onClick={()=>{
+          if(!canProceed)return;
+          if(step===2){
+            // Flush live editing state, then submit with all players cleaned
+            const merged = teams.map((t,i)=>{
+              const players = i===editing.idx ? editing.players : t.players;
+              const name    = i===editing.idx ? (editing.name.trim()||t.name) : t.name;
+              return {...t, name, players: players.filter(p=>p.trim())};
+            });
+            onStart(eco, merged);
+          } else {
+            if(step===1&&teams.length===0) initTeams(numTeams);
+            setStep(s=>s+1);
+          }
+        }}
           style={{padding:"13px 36px",background:canProceed?"linear-gradient(135deg,#16a34a,#15803d)":"rgba(255,255,255,0.06)",border:"none",borderRadius:12,color:canProceed?"#fff":"rgba(255,255,255,0.3)",fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:13,cursor:canProceed?"pointer":"not-allowed",letterSpacing:"0.1em",boxShadow:canProceed?"0 6px 20px rgba(22,163,74,0.4)":"none"}}>
           {step===2?"🚀 Launch Game!":"Next →"}
         </button>
