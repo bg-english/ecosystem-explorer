@@ -48,16 +48,14 @@ function GenesisScreen({ teams, onStart }) {
     if (sel !== null) return;
     setSel(idx);
     if (idx === GENESIS_Q.a) {
-      // Correct — find this team's original index and start game
       setTimeout(() => {
         const origIdx = teams.findIndex(t => t.id === chosen.id);
         onStart(origIdx >= 0 ? origIdx : 0);
       }, 1600);
     } else {
-      // Wrong — remove from wheel and spin again
       setTimeout(() => {
         const remaining = activeTeams.filter(t => t.id !== chosen.id);
-        const next = remaining.length > 0 ? remaining : [...teams]; // reset if all wrong
+        const next = remaining.length > 0 ? remaining : [...teams];
         setActiveTeams(next);
         setChosen(null); setSel(null); setSpinPhase("spin");
       }, 2000);
@@ -69,18 +67,15 @@ function GenesisScreen({ teams, onStart }) {
 
   return (
     <div style={{minHeight:"100vh",background:"#000",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start",fontFamily:"'Libre Baskerville',serif",overflow:"hidden auto",position:"relative",paddingBottom:40}}>
-      {/* Chaos particles — memoized */}
       {chaosParticles.map((p,i)=>(
         <div key={i} style={{position:"fixed",left:p.left,top:p.top,fontSize:p.sz,color:"rgba(100,100,150,1)",animation:`chaosFloat ${p.dur} ease-in-out ${p.delay} infinite`,pointerEvents:"none",opacity:phase<2?1:0,transition:"opacity 2s ease"}}>
           {p.sym}
         </div>
       ))}
-      {/* Light burst */}
       {phase>=2&&(
         <div style={{position:"fixed",inset:0,background:"radial-gradient(ellipse at 50% 40%, rgba(255,245,200,0.18) 0%, rgba(255,220,100,0.06) 40%, transparent 70%)",animation:"lightBurst 2s ease forwards",pointerEvents:"none"}} />
       )}
 
-      {/* ── GENESIS TEXT ── */}
       <div style={{textAlign:"center",zIndex:10,padding:"60px 32px 0",maxWidth:700,width:"100%"}}>
         {phase>=1&&(
           <div style={{animation:"genesisReveal 2s ease forwards"}}>
@@ -103,13 +98,10 @@ function GenesisScreen({ teams, onStart }) {
         )}
       </div>
 
-      {/* ── QUESTION + SPINNER (phase 3) ── */}
       {phase>=3&&(
         <div style={{zIndex:10,width:"100%",maxWidth:560,padding:"0 20px",marginTop:36,animation:"fadeUp 0.8s ease"}}>
-          {/* Divider */}
           <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(200,160,60,0.4),transparent)",marginBottom:32}} />
 
-          {/* Question */}
           <div style={{textAlign:"center",marginBottom:28}}>
             <div style={{fontSize:11,letterSpacing:"0.4em",color:"rgba(200,180,120,0.5)",marginBottom:10,textTransform:"uppercase"}}>Opening Question</div>
             <p style={{fontFamily:"'Cinzel',serif",fontSize:19,color:"rgba(255,245,200,0.95)",lineHeight:1.5,fontWeight:700,margin:0}}>
@@ -117,14 +109,12 @@ function GenesisScreen({ teams, onStart }) {
             </p>
           </div>
 
-          {/* Spinner */}
           {spinPhase==="spin"&&(
             <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16,marginBottom:24}}>
               <div style={{fontSize:12,color:"rgba(255,255,255,0.35)",letterSpacing:"0.2em"}}>
                 {activeTeams.length < teams.length ? `Remaining teams: ${activeTeams.map(t=>t.name).join(", ")}` : "Spin the wheel to decide who answers"}
               </div>
               <div style={{position:"relative"}}>
-                {/* Pointer */}
                 <div style={{
                   position:"absolute",top:-20,left:"50%",transform:"translateX(-50%)",
                   zIndex:10,
@@ -163,7 +153,6 @@ function GenesisScreen({ teams, onStart }) {
             </div>
           )}
 
-          {/* Answer phase */}
           {spinPhase==="question"&&chosen&&(
             <div style={{animation:"fadeUp 0.5s ease"}}>
               <div style={{textAlign:"center",marginBottom:16}}>
@@ -211,9 +200,16 @@ function GenesisScreen({ teams, onStart }) {
 
 // ── ROLES SCREEN ────────────────────────────────────
 function RolesScreen({ teams, onDone }) {
+  // ✅ FIX: mobile detection for responsive layout
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+
   const maxSize = Math.max(...teams.map(t=>(t.players||[]).filter(p=>p.trim()).length), 5);
   const activeRoles = ROLES.filter(r=>r.minTeam<=maxSize);
-  // idx: -1=intro, 0..n-1=role cards, n=summary, n+1=assign
   const SUMMARY_IDX = activeRoles.length;
   const ASSIGN_IDX  = activeRoles.length + 1;
   const [idx, setIdx] = useState(-1);
@@ -222,7 +218,6 @@ function RolesScreen({ teams, onDone }) {
   const isAssign  = idx === ASSIGN_IDX;
   const role      = (!isIntro && !isSummary && !isAssign) ? activeRoles[idx] : null;
 
-  // assignments[teamId][roleId] = playerName
   const [assignments, setAssignments] = useState(()=>{
     const a={};
     teams.forEach(t=>{a[t.id]={};});
@@ -258,7 +253,7 @@ function RolesScreen({ teams, onDone }) {
   const teamAssignments = assignments[teamForTab?.id]||{};
 
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",position:"relative",overflow:"hidden"}}>
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 30% 20%,#0d1a0e,#020407 60%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",position:"relative",overflow:"hidden auto"}}>
       {Array.from({length:30}).map((_,i)=>(
         <div key={i} style={{position:"absolute",left:`${(i*37)%100}%`,top:`${(i*53)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.2,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none"}} />
       ))}
@@ -302,13 +297,24 @@ function RolesScreen({ teams, onDone }) {
                 style={{height:8,borderRadius:4,background:i===idx?activeRoles[i].color:i<idx?"rgba(255,255,255,0.18)":"rgba(255,255,255,0.06)",width:i===idx?28:8,transition:"all 0.3s",cursor:"pointer"}} />
             ))}
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"min(300px,38%) 1fr",gap:0,background:"rgba(0,0,0,0.45)",border:`2px solid ${role.color}30`,borderRadius:20,overflow:"hidden",boxShadow:`0 0 60px ${role.color}15`,flexWrap:"wrap"}}>
-            <div style={{position:"relative",minHeight:"clamp(200px,40vh,460px)"}}>
+          {/* ✅ FIX: stacks to single column on mobile */}
+          <div style={{
+            display:"grid",
+            gridTemplateColumns: isMobile ? "1fr" : "min(300px,38%) 1fr",
+            gap:0,
+            background:"rgba(0,0,0,0.45)",
+            border:`2px solid ${role.color}30`,
+            borderRadius:20,
+            overflow:"hidden",
+            boxShadow:`0 0 60px ${role.color}15`,
+          }}>
+            {/* Image panel */}
+            <div style={{position:"relative",minHeight: isMobile ? 220 : "clamp(200px,40vh,460px)"}}>
               <img src={role.img} alt={role.biblical}
                 onError={e=>{e.target.style.display="none";const fb=e.target.parentNode.querySelector(".img-fallback");if(fb)fb.style.display="flex";}}
                 style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top center",filter:"brightness(0.82) saturate(1.15)",display:"block"}} />
               <div className="img-fallback" style={{display:"none",position:"absolute",inset:0,background:`radial-gradient(ellipse at center,${role.color}25,#000)`,alignItems:"center",justifyContent:"center",fontSize:90}}>{role.emoji}</div>
-              <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,transparent 55%,rgba(0,0,0,0.6) 100%)"}} />
+              <div style={{position:"absolute",inset:0,background: isMobile ? "linear-gradient(to bottom,transparent 55%,rgba(0,0,0,0.75) 100%)" : "linear-gradient(to right,transparent 55%,rgba(0,0,0,0.6) 100%)"}} />
               <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,0.75) 0%,transparent 40%)"}} />
               <div style={{position:"absolute",bottom:18,left:16,right:8}}>
                 <div style={{fontSize:9,color:"rgba(255,255,255,0.45)",letterSpacing:"0.25em",marginBottom:3}}>INSPIRED BY</div>
@@ -316,6 +322,7 @@ function RolesScreen({ teams, onDone }) {
                 <div style={{fontSize:11,color:role.color,fontStyle:"italic",marginTop:3}}>{role.ref}</div>
               </div>
             </div>
+            {/* Text panel */}
             <div style={{padding:"clamp(14px,2.5vw,28px) clamp(14px,3vw,26px) 24px clamp(12px,2vw,22px)",display:"flex",flexDirection:"column",gap:"clamp(10px,2vh,16px)",overflowY:"auto"}}>
               <div>
                 <div style={{fontSize:9,color:"rgba(255,255,255,0.3)",letterSpacing:"0.28em",marginBottom:6}}>GUARDIAN {idx+1} OF {activeRoles.length}</div>
@@ -403,7 +410,6 @@ function RolesScreen({ teams, onDone }) {
             <p style={{color:"rgba(255,255,255,0.4)",fontSize:12,marginTop:6}}>Assign one player per role for each team</p>
           </div>
 
-          {/* Team tabs */}
           {teams.length>1&&(
             <div style={{display:"flex",gap:6,justifyContent:"center",flexWrap:"wrap",marginBottom:18}}>
               {teams.map(t=>{
@@ -419,7 +425,6 @@ function RolesScreen({ teams, onDone }) {
             </div>
           )}
 
-          {/* Role assignment grid */}
           <div style={{background:"rgba(0,0,0,0.35)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:18,padding:"20px 18px",marginBottom:20}}>
             {teamPlayers.length===0?(
               <p style={{textAlign:"center",color:"rgba(255,255,255,0.3)",fontSize:13}}>No players registered for this team.</p>
@@ -429,13 +434,11 @@ function RolesScreen({ teams, onDone }) {
                   const assigned=teamAssignments[r.id]||"";
                   return(
                     <div key={r.id} style={{display:"grid",gridTemplateColumns:"44px auto clamp(120px,35%,180px)",gap:8,alignItems:"center",background:assigned?`${r.color}0d`:"rgba(255,255,255,0.02)",border:`1.5px solid ${assigned?r.color+"40":"rgba(255,255,255,0.06)"}`,borderRadius:12,padding:"10px 14px",transition:"all 0.25s"}}>
-                      {/* Role */}
                       <span style={{fontSize:26,textAlign:"center",filter:assigned?`drop-shadow(0 0 8px ${r.color}88)`:"none"}}>{r.emoji}</span>
                       <div>
                         <div style={{fontFamily:"'Cinzel',serif",fontSize:12,color:assigned?r.color:"rgba(255,255,255,0.6)",fontWeight:700}}>{r.name}</div>
                         <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:1}}>{r.challengeIcon} {r.challengeLabel}</div>
                       </div>
-                      {/* Player selector */}
                       <select
                         value={assigned}
                         onChange={e=>setAssignment(teamForTab.id,r.id,e.target.value)}
@@ -452,7 +455,6 @@ function RolesScreen({ teams, onDone }) {
             )}
           </div>
 
-          {/* Error notification */}
           {showError&&(
             <div style={{background:"rgba(239,68,68,0.12)",border:"1.5px solid rgba(239,68,68,0.5)",borderRadius:14,padding:"14px 18px",marginBottom:16,animation:"popIn 0.35s ease",display:"flex",gap:12,alignItems:"flex-start"}}>
               <span style={{fontSize:22,flexShrink:0}}>⚠️</span>
@@ -499,11 +501,11 @@ function WelcomeScreen({ onEnter }) {
   const [step, setStep] = useState(0);
   useEffect(() => {
     const timers = [
-      setTimeout(() => setStep(1), 150),   // quote
-      setTimeout(() => setStep(2), 600),   // leaf emoji
-      setTimeout(() => setStep(3), 1000),  // tagline + title
-      setTimeout(() => setStep(4), 1500),  // divider + subtitle
-      setTimeout(() => setStep(5), 2100),  // button
+      setTimeout(() => setStep(1), 150),
+      setTimeout(() => setStep(2), 600),
+      setTimeout(() => setStep(3), 1000),
+      setTimeout(() => setStep(4), 1500),
+      setTimeout(() => setStep(5), 2100),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -516,19 +518,14 @@ function WelcomeScreen({ onEnter }) {
 
   return (
     <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 50% 30%,#071a0e 0%,#020407 65%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Libre Baskerville',serif",padding:"32px 20px",position:"relative",overflow:"hidden"}}>
-      {/* Stars */}
       {Array.from({length:60}).map((_,i)=>(
         <div key={i} style={{position:"absolute",left:`${(i*43+7)%100}%`,top:`${(i*61+11)%100}%`,width:i%7===0?3:i%3===0?2:1,height:i%7===0?3:i%3===0?2:1,borderRadius:"50%",background:"#fff",opacity:i%3===0?0.4:0.15,animation:`twinkle ${2+i%4}s ease-in-out ${(i%5)*0.8}s infinite`,pointerEvents:"none"}} />
       ))}
-      {/* Subtle green top/bottom accents */}
       <div style={{position:"absolute",top:0,left:0,right:0,height:"2px",background:"linear-gradient(90deg,transparent,rgba(74,222,128,0.5),rgba(253,224,71,0.35),rgba(74,222,128,0.5),transparent)"}} />
       <div style={{position:"absolute",bottom:0,left:0,right:0,height:"2px",background:"linear-gradient(90deg,transparent,rgba(74,222,128,0.5),rgba(253,224,71,0.35),rgba(74,222,128,0.5),transparent)"}} />
-      {/* Ambient glow behind center content */}
       <div style={{position:"absolute",top:"20%",left:"50%",transform:"translateX(-50%)",width:"50vw",height:"50vh",background:"radial-gradient(ellipse,rgba(74,222,128,0.06) 0%,transparent 70%)",pointerEvents:"none"}} />
 
       <div style={{textAlign:"center",maxWidth:600,display:"flex",flexDirection:"column",alignItems:"center",gap:0}}>
-
-        {/* Scripture quote */}
         <div style={{...vis(1),marginBottom:32,padding:"18px 24px",background:"rgba(253,224,71,0.04)",border:"1px solid rgba(253,224,71,0.16)",borderRadius:16,maxWidth:480,backdropFilter:"blur(4px)"}}>
           <p style={{fontStyle:"italic",color:"rgba(255,245,200,0.85)",fontSize:13,lineHeight:1.9,margin:0}}>
             "Then the Lord God provided a gourd and made it grow up over Jonah to give shade over his head and to deliver him from his discomfort. And Jonah was very glad about the gourd."
@@ -536,10 +533,8 @@ function WelcomeScreen({ onEnter }) {
           <p style={{fontSize:11,color:"rgba(253,224,71,0.65)",marginTop:10,letterSpacing:"0.12em",margin:"10px 0 0"}}>— Jonah 4:6</p>
         </div>
 
-        {/* Leaf emoji */}
         <div style={{...vis(2),fontSize:52,marginBottom:12,filter:"drop-shadow(0 0 32px rgba(74,222,128,0.65))",animation:step>=2?"float 4s ease-in-out infinite":"none",display:"block"}}>🌿</div>
 
-        {/* Tagline + title */}
         <div style={{...vis(3)}}>
           <div style={{fontSize:10,color:"#4ade80",letterSpacing:"0.45em",marginBottom:10,fontFamily:"'Cinzel',serif"}}>7TH GRADE SCIENCE · ECOSYSTEMS</div>
           <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:"clamp(20px,5.5vw,34px)",color:"#fff",letterSpacing:"0.04em",textShadow:"0 0 48px rgba(74,222,128,0.5)",marginBottom:0,lineHeight:1.25}}>
@@ -547,7 +542,6 @@ function WelcomeScreen({ onEnter }) {
           </h1>
         </div>
 
-        {/* Divider + subtitle */}
         <div style={{...vis(4),width:"100%",display:"flex",flexDirection:"column",alignItems:"center",marginTop:16}}>
           <div style={{width:70,height:1.5,background:"linear-gradient(90deg,transparent,#4ade80,#fde04788,transparent)",margin:"0 auto 18px"}} />
           <p style={{color:"rgba(255,255,255,0.42)",fontSize:13,lineHeight:1.85,maxWidth:400,margin:0}}>
@@ -555,7 +549,6 @@ function WelcomeScreen({ onEnter }) {
           </p>
         </div>
 
-        {/* CTA button */}
         <div style={{...vis(5),marginTop:32}}>
           <button
             onClick={onEnter}
@@ -596,11 +589,12 @@ function NarrativeScreen({ onDone }) {
     {science:"Biodiversity makes ecosystems resilient. Less diversity = more fragility.",bridge:"One withered plant changed Jonah's entire experience of the world.",spirit:"Our moral and spiritual health directly affects the world around us — always."},
   ];
   return (
-    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 40% 20%,#071a0e,#020407 70%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"28px 20px",position:"relative",overflow:"hidden"}}>
+    // ✅ FIX: changed overflow:"hidden" → overflow:"hidden auto" so page scrolls vertically on mobile
+    <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 40% 20%,#071a0e,#020407 70%)",fontFamily:"'Libre Baskerville',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"28px 20px",position:"relative",overflow:"hidden auto"}}>
       {Array.from({length:30}).map((_,i)=>(
         <div key={i} style={{position:"absolute",left:`${(i*37)%100}%`,top:`${(i*61)%100}%`,width:2,height:2,borderRadius:"50%",background:"#fff",opacity:0.15,animation:`twinkle ${2+i%3}s ease-in-out ${i%4}s infinite`,pointerEvents:"none"}} />
       ))}
-      <button onClick={onDone} style={{position:"absolute",top:16,right:20,background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.35)",fontFamily:"'Cinzel',serif",fontSize:11,padding:"6px 14px",cursor:"pointer",letterSpacing:"0.1em",zIndex:10}} title="Skip narrative">Skip →</button>
+      <button onClick={onDone} style={{position:"fixed",top:16,right:20,background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.35)",fontFamily:"'Cinzel',serif",fontSize:11,padding:"6px 14px",cursor:"pointer",letterSpacing:"0.1em",zIndex:10}} title="Skip narrative">Skip →</button>
       <div style={{display:"flex",gap:8,marginBottom:22,alignItems:"center"}}>
         {["The Story","The Why"].map((label,i)=>(
           <div key={i} style={{display:"flex",alignItems:"center",gap:8}}>
@@ -708,8 +702,6 @@ function SetupScreen({ onStart }) {
     const cleaned = editing.players.filter(p=>p.trim());
     setTeams(prev=>prev.map((t,i)=>i===editing.idx?{...t,name:editing.name||t.name,players:cleaned.length?cleaned:t.players}:t));
   };
-  // Merge editing state for the currently active team so canProceed
-  // reflects live input even before the user clicks "Save Team"
   const getEffectivePlayers = (t, i) => i === editing.idx ? editing.players : t.players;
   const canProceed = step===0?eco:step===1?numTeams>=2:teams.every((t,i)=>getEffectivePlayers(t,i).filter(p=>p.trim()).length>0);
 
@@ -723,7 +715,6 @@ function SetupScreen({ onStart }) {
         <h1 style={{fontFamily:"'Cinzel Decorative',serif",fontSize:23,color:"#fff",letterSpacing:"0.08em",textShadow:"0 0 30px rgba(74,222,128,0.4)",margin:0}}>GUARDIANS OF THE GARDEN</h1>
         <div style={{fontSize:10,color:"#4ade80",letterSpacing:"0.3em",marginTop:3}}>BOARD GAME · 36–72 SQUARES · 7TH GRADE</div>
       </div>
-      {/* Step indicator */}
       <div style={{display:"flex",gap:8,marginBottom:14}}>
         {["Ecosystem","Teams","Players"].map((s,i)=>(
           <div key={i} style={{display:"flex",alignItems:"center",gap:8}}>
@@ -748,7 +739,6 @@ function SetupScreen({ onStart }) {
                   boxShadow:sel?`0 0 28px ${e.color}44, inset 0 0 20px ${e.color}08`:"none",
                   transform:sel?"scale(1.02)":"scale(1)",
                 }}>
-                  {/* Top row */}
                   <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:7}}>
                     <div style={{display:"flex",alignItems:"center",gap:8}}>
                       <div style={{
@@ -770,7 +760,6 @@ function SetupScreen({ onStart }) {
                     </div>
                     {sel&&<div style={{width:20,height:20,borderRadius:"50%",background:"#22c55e",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#fff",fontWeight:700,flexShrink:0,animation:"popIn 0.3s ease"}}>✓</div>}
                   </div>
-                  {/* Stats row */}
                   <div style={{display:"flex",gap:6,marginBottom:6}}>
                     {[
                       {label:"Organisms", val:e.organisms.length},
@@ -787,7 +776,6 @@ function SetupScreen({ onStart }) {
                       </div>
                     </div>
                   </div>
-                  {/* Organism emoji strip */}
                   <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
                     {e.organisms.slice(0,8).map(org=>(
                       <span key={org.id} style={{fontSize:12,opacity:sel?0.9:0.4,transition:"opacity 0.3s"}}>{org.emoji}</span>
@@ -836,9 +824,7 @@ function SetupScreen({ onStart }) {
           <p style={{textAlign:"center",color:"rgba(255,255,255,0.5)",marginBottom:16,fontSize:13}}>Enter team name and members (max 7)</p>
 
           {isMobile ? (
-            /* ── MOBILE: tabs on top, form below ── */
             <div style={{display:"flex",flexDirection:"column",gap:12}}>
-              {/* Team tabs */}
               <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center"}}>
                 {teams.map((t,i)=>(
                   <div key={i} onClick={()=>{saveEditing();setEditing({idx:i,name:t.name,players:[...t.players,""].slice(0,7)});}}
@@ -849,7 +835,6 @@ function SetupScreen({ onStart }) {
                   </div>
                 ))}
               </div>
-              {/* Form */}
               <div style={{background:"rgba(0,0,0,0.3)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:16,padding:"16px"}}>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
                   <div style={{width:14,height:14,borderRadius:"50%",background:TEAM_COLORS[editing.idx].bg,flexShrink:0}} />
@@ -873,7 +858,6 @@ function SetupScreen({ onStart }) {
               </div>
             </div>
           ) : (
-            /* ── DESKTOP: side by side ── */
             <div style={{display:"grid",gridTemplateColumns:"220px 1fr",gap:16}}>
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 {teams.map((t,i)=>(
@@ -915,7 +899,6 @@ function SetupScreen({ onStart }) {
       <div style={{display:"flex",gap:14,marginTop:16,width:"100%",maxWidth:step===2?700:step===1?500:960,justifyContent:step>0?"space-between":"flex-end"}}>
         {step>0&&<button onClick={()=>{saveEditing();setStep(s=>s-1);}} style={{padding:"13px 28px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:12,color:"rgba(255,255,255,0.7)",fontFamily:"'Cinzel',serif",fontSize:13,cursor:"pointer"}}>← Back</button>}
         <button onClick={()=>{if(!canProceed)return;if(step===2){
-          // Merge editing state into teams so unsaved input is never lost
           const merged=teams.map((t,i)=>i===editing.idx
             ?{...t,name:editing.name||t.name,players:editing.players.filter(p=>p.trim())}
             :{...t,players:t.players.filter(p=>p.trim())});
@@ -976,9 +959,5 @@ function SpinnerScreen({ teams, onDone }) {
     </div>
   );
 }
-
-// ── CHALLENGE COMPONENTS ───────────────────────────
-
-// ── TIMER BAR ──────────────────────────────────────
 
 export { GenesisScreen, RolesScreen, WelcomeScreen, NarrativeScreen, SetupScreen, SpinnerScreen };
